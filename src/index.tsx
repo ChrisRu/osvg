@@ -1,5 +1,29 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { App } from './App'
+import { createGlobalStyle } from 'styled-components'
+import { Normalize } from 'styled-normalize'
+import { App } from './components/App'
 
-ReactDOM.render(<App />, document.getElementById('root'))
+const GlobalStyle = createGlobalStyle`
+  html, body {
+    height: 100%;
+    font-family: 'Rubik', sans-serif;
+  }
+
+  #root {
+    height: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+    overflow: hidden;
+  }
+`
+
+ReactDOM.render(
+  <>
+    <Normalize />
+    <GlobalStyle />
+    <App />
+  </>,
+  document.getElementById('root'),
+)
