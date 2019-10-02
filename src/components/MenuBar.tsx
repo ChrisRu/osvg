@@ -9,12 +9,12 @@ const MenuBarWrapper = styled.nav`
   flex-flow: row nowrap;
   align-items: center;
   font-size: 1.1rem;
-  padding: 0.6rem 2rem;
+  padding: 0 2rem;
 `
 
 const Title = styled.span`
   font-weight: bold;
-  margin-right: auto;
+  margin-right: 2rem;
 `
 
 const OpenFileButton = styled.label`
@@ -41,11 +41,27 @@ const OpenFileButton = styled.label`
   }
 `
 
+const ViewButton = styled.button`
+  margin-right: 0.5rem;
+  padding: 1rem 1rem;
+  background: #000;
+  outline: none;
+  border-radius: 0;
+  border: 0;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+`
+
 interface IProps {
   onLoadSVG: (svgContent: string) => void
+  onChangeView: (view: 'svg' | 'code') => void
 }
 
-export function MenuBar({ onLoadSVG }: IProps) {
+export function MenuBar({ onLoadSVG, onChangeView }: IProps) {
   function openFile(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files ? event.target.files[0] : undefined
     if (file === undefined) {
@@ -69,6 +85,8 @@ export function MenuBar({ onLoadSVG }: IProps) {
   return (
     <MenuBarWrapper>
       <Title>SVGO Online</Title>
+      <ViewButton onClick={() => onChangeView('svg')}>SVG View</ViewButton>
+      <ViewButton onClick={() => onChangeView('code')}>Code View</ViewButton>
       <OpenFileButton>
         <UploadIcon />
         <span>Open file</span>
