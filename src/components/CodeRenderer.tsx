@@ -7,9 +7,9 @@ const Wrapper = styled.div`
 `
 
 interface IProps {
-  svgContent?: string
+  SVGContent?: string
 }
 
-export function CodeRenderer({ svgContent }: IProps) {
-  return <Wrapper>{svgContent ? <code>{svgContent}</code> : <span>No SVG loaded</span>}</Wrapper>
+export function CodeRenderer({ SVGContent }: IProps) {
+  return <Wrapper>{SVGContent ? <code>{SVGContent}</code> : <span>No SVG loaded</span>}</Wrapper>
 }

@@ -15,7 +15,6 @@ const GlobalStyle = createGlobalStyle`
     display: flex;
     flex-flow: column nowrap;
     flex: 1;
-    overflow: hidden;
   }
 `
 
