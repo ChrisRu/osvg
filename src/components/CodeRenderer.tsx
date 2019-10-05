@@ -4,6 +4,12 @@ import styled from 'styled-components'
 const Wrapper = styled.div`
   background: #000;
   color: #fff;
+  flex: 1;
+`
+
+const CodeBlock = styled.pre`
+  word-wrap: anywhere;
+  white-space: normal;
 `
 
 interface IProps {
@@ -11,5 +17,9 @@ interface IProps {
 }
 
 export function CodeRenderer({ SVGContent }: IProps) {
-  return <Wrapper>{SVGContent ? <code>{SVGContent}</code> : <span>No SVG loaded</span>}</Wrapper>
+  return (
+    <Wrapper>
+      {SVGContent ? <CodeBlock>{SVGContent}</CodeBlock> : <span>No SVG loaded</span>}
+    </Wrapper>
+  )
 }
