@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { plugins } from '../services/svgoOptions'
+import { plugins, IPlugin } from '../services/svgoOptions'
 
 const settings = Object.values(plugins).reduce((total, next) => {
   return total.concat(...next)
@@ -16,7 +16,9 @@ const SidebarWrapper = styled.div`
   overflow-y: auto;
 `
 
-const OptionGroup = styled.div``
+const OptionGroup = styled.div`
+  margin-bottom: 1rem;
+`
 
 const OptionTitle = styled.h2`
   font-size: 1.2rem;
@@ -27,7 +29,7 @@ const Options = styled.div``
 
 const Option = styled.label`
   display: block;
-  padding: 0.2rem 0.5rem;
+  padding: 0.4rem 0.5rem;
   display: flex;
   align-items: center;
 
@@ -42,17 +44,17 @@ interface IProps {
 }
 
 export function Sidebar({ userSettings, onSettingsUpdate }: IProps) {
-  function getCurrentValue(plugin: { name: string; id: string; default: boolean }) {
+  function getCurrentValue(plugin: IPlugin) {
     return userSettings[plugin.id] === undefined ? plugin.default : userSettings[plugin.id]
   }
 
-  function toggleSetting(pluginId: string) {
-    const setting = settings.find(setting => setting.id === pluginId)
+  function toggleSetting(plugin: IPlugin) {
+    const setting = settings.find(setting => setting.id === plugin.id)
     if (setting && setting.default !== undefined) {
       const currentValue = getCurrentValue(setting)
       onSettingsUpdate({
         ...userSettings,
-        [pluginId]: !currentValue,
+        [plugin.id]: !currentValue,
       })
     }
   }
@@ -67,10 +69,10 @@ export function Sidebar({ userSettings, onSettingsUpdate }: IProps) {
               <Option key={plugin.id}>
                 <input
                   type="checkbox"
-                  onChange={() => toggleSetting(plugin.id)}
+                  onChange={() => toggleSetting(plugin)}
                   checked={getCurrentValue(plugin)}
                 />
-                <span>{plugin.name}</span>
+                <span title={plugin.id}>{plugin.description}</span>
               </Option>
             ))}
           </Options>

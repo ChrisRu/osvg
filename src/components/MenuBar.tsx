@@ -26,6 +26,7 @@ const OpenFileButton = styled.label`
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 0.5rem;
   transition: background-color 0.1s;
+  margin-left: auto;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.3);
@@ -49,10 +50,9 @@ const ViewButton = styled.button`
   border-radius: 0;
   border: 0;
   color: #fff;
-  background: rgba(255, 255, 255, 0.2);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.2);
   }
 `
 

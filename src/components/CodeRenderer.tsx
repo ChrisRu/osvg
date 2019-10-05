@@ -9,6 +9,8 @@ const Wrapper = styled.div`
 `
 
 const CodeBlock = styled.pre`
+  padding: 2rem;
+  margin: 0;
   word-wrap: anywhere;
   white-space: normal;
 `

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { MenuBar } from './MenuBar'
 import { SVGRenderer } from './SVGRenderer'
-import { carSvg } from '../images/car'
+import { dogSvg } from '../images/dog'
 import { Sidebar } from './Sidebar'
 import styled from 'styled-components'
 import { CodeRenderer } from './CodeRenderer'
@@ -23,9 +23,10 @@ export function App() {
   const [SVGContent, setSVGContent] = useState<string>()
   const [userSettings, setUserSettings] = useState<{ [pluginId: string]: boolean }>({})
   const [optimizedSVGContent, setOptimizedSVGContent] = useState<string>()
+  const [error, setError] = useState<Error>()
 
   useEffect(() => {
-    setSVGContent(carSvg)
+    setSVGContent(dogSvg)
   }, [])
 
   useEffect(() => {
@@ -43,26 +44,38 @@ export function App() {
         const userPlugins = (settings
           .filter(setting => setting.default)
           .map(setting => setting.id) as unknown) as PluginConfig[]
-        const result = await worker.SVGOWorker(SVGContent, userPlugins, true, 3)
-        setOptimizedSVGContent(result)
+
+        try {
+          const result = await worker.SVGOWorker(SVGContent, userPlugins, true, 3)
+          setOptimizedSVGContent(result)
+        } catch (error) {
+          setError(error)
+        }
       })()
     }
   }, [SVGContent, userSettings])
-
-  function onError(error: any) {
-    console.error(error)
-  }
 
   return (
     <>
       <MenuBar onLoadSVG={setSVGContent} onChangeView={setView} />
       <Main>
-        <Sidebar userSettings={userSettings} onSettingsUpdate={setUserSettings} />
-        <Overlay before={SVGContent} after={optimizedSVGContent} />
-        {view === 'svg' ? (
-          <SVGRenderer SVGContent={optimizedSVGContent} onLoadError={onError} />
+        {SVGContent === undefined ? (
+          <span>Please upload a valid SVG</span>
+        ) : error !== undefined ? (
+          <span>Failed loading image</span>
         ) : (
-          <CodeRenderer SVGContent={optimizedSVGContent} />
+          <>
+            <Sidebar userSettings={userSettings} onSettingsUpdate={setUserSettings} />
+            <Overlay before={SVGContent} after={optimizedSVGContent} />
+            {view === 'svg' ? (
+              <SVGRenderer
+                SVGContent={optimizedSVGContent}
+                onLoadError={() => setError(new Error('Failed rendering SVG'))}
+              />
+            ) : (
+              <CodeRenderer SVGContent={optimizedSVGContent} />
+            )}
+          </>
         )}
       </Main>
     </>
