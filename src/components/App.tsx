@@ -9,6 +9,7 @@ import * as worker from '../services/svgo.worker'
 import { Overlay } from './Overlay'
 import { plugins } from '../services/svgoOptions'
 import { PluginConfig } from 'svgo'
+import { IFileDetails } from '../services/openFile'
 
 const Main = styled.main`
   position: relative;
@@ -20,13 +21,13 @@ const Main = styled.main`
 
 export function App() {
   const [view, setView] = useState<'svg' | 'code'>('svg')
-  const [SVGContent, setSVGContent] = useState<string>()
-  const [userSettings, setUserSettings] = useState<{ [pluginId: string]: boolean }>({})
+  const [SVGContent, setSVGContent] = useState<IFileDetails>()
   const [optimizedSVGContent, setOptimizedSVGContent] = useState<string>()
+  const [userSettings, setUserSettings] = useState<{ [pluginId: string]: boolean }>({})
   const [error, setError] = useState<Error>()
 
   useEffect(() => {
-    setSVGContent(dogSvg)
+    setSVGContent({ contents: dogSvg, name: 'doggo.svg' })
   }, [])
 
   useEffect(() => {
@@ -41,12 +42,12 @@ export function App() {
           }
         })
 
-        const userPlugins = (settings
+        const userPlugins = settings
           .filter(setting => setting.default)
-          .map(setting => setting.id) as unknown) as PluginConfig[]
+          .map(setting => (({ [setting.id]: true } as unknown) as PluginConfig))
 
         try {
-          const result = await worker.SVGOWorker(SVGContent, userPlugins, true, 3)
+          const result = await worker.SVGOWorker(SVGContent.contents, userPlugins, true, 3)
           setOptimizedSVGContent(result)
         } catch (error) {
           setError(error)
@@ -57,7 +58,13 @@ export function App() {
 
   return (
     <>
-      <MenuBar onLoadSVG={setSVGContent} onChangeView={setView} />
+      <MenuBar
+        view={view}
+        before={SVGContent}
+        after={optimizedSVGContent}
+        onChangeView={setView}
+        onLoadSVG={setSVGContent}
+      />
       <Main>
         {SVGContent === undefined ? (
           <span>Please upload a valid SVG</span>
@@ -68,10 +75,7 @@ export function App() {
             <Sidebar userSettings={userSettings} onSettingsUpdate={setUserSettings} />
             <Overlay before={SVGContent} after={optimizedSVGContent} />
             {view === 'svg' ? (
-              <SVGRenderer
-                SVGContent={optimizedSVGContent}
-                onLoadError={() => setError(new Error('Failed rendering SVG'))}
-              />
+              <SVGRenderer SVGContent={optimizedSVGContent} />
             ) : (
               <CodeRenderer SVGContent={optimizedSVGContent} />
             )}

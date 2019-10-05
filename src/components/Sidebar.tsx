@@ -7,10 +7,10 @@ const settings = Object.values(plugins).reduce((total, next) => {
 }, [])
 
 const SidebarWrapper = styled.div`
-  background: #000;
+  background: #181818;
   color: #fff;
   max-width: 400px;
-  padding: 0.5rem;
+  padding: 1rem;
   box-sizing: border-box;
   max-height: 100%;
   overflow-y: auto;

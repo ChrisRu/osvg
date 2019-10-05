@@ -9,9 +9,9 @@ export async function SVGOWorker(
 ) {
   const options: SVGO.Options = {
     full: true,
-    // @ts-ignore
     multipass: true,
-    datauri: 'unenc',
+    // @ts-ignore
+    datauri: 'cheaty string so it doesnt encode anything',
     floatPrecision: floatPrecision,
     plugins: userConfig,
     js2svg: {
@@ -23,5 +23,5 @@ export async function SVGOWorker(
   // @ts-ignore
   const optimized = await new SVGOPlugin(options).optimize(svg)
 
-  return optimized.data.replace('data:image/svg+xml,', '')
+  return optimized.data
 }

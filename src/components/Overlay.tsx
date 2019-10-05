@@ -1,59 +1,49 @@
 import React from 'react'
 import styled from 'styled-components'
+import { saveSvg } from '../services/saveSvg'
+import { IFileDetails } from '../services/openFile'
+import { DownloadIcon } from './Icons'
 
 const Wrapper = styled.div`
   position: absolute;
   padding: 1rem;
-  top: 0;
+  bottom: 0;
   right: 0;
 `
 
-const Percentage = styled.div<{ improvement: boolean }>`
-  background: #fff;
-  padding: 0.5rem;
-  font-size: 1.2rem;
-  color: ${p => (p.improvement ? 'green' : 'red')};
+const DownloadButton = styled.button`
+  background: #3a3a3a;
+  padding: 0.5rem 1rem;
+  border: 1px solid #fff;
+  color: #fff;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  svg {
+    margin-right: 0.5rem;
+    width: 1.2rem;
+  }
+
+  &:hover {
+    background-color: #464646;
+  }
 `
 
 interface IProps {
-  before?: string
+  before?: IFileDetails
   after?: string
 }
 
 export function Overlay({ before, after }: IProps) {
-  const percentage =
-    before && after
-      ? Math.round(((before.length - after.length) / before.length) * 10000) / 100
-      : undefined
-
-  console.log(after ? after.substr(0, 200) : '')
-
-  const improvement = percentage !== undefined && percentage > 0
-
-  function saveSvg(name: string) {
-    if (after === undefined) {
-      return
-    }
-
-    const svgBlob = new Blob([after], { type: 'image/svg+xml;charset=utf-8' })
-    const svgUrl = URL.createObjectURL(svgBlob)
-    const downloadLink = document.createElement('a')
-    downloadLink.href = svgUrl
-    downloadLink.download = name
-    document.body.appendChild(downloadLink)
-    downloadLink.click()
-    document.body.removeChild(downloadLink)
-  }
-
   return (
     <Wrapper>
-      {percentage === undefined ? null : (
-        <Percentage improvement={improvement}>
-          {improvement ? '-' : '+'}
-          {percentage.toString().replace('-', '')}%
-        </Percentage>
-      )}
-      {after ? <button onClick={() => saveSvg('whatever.svg')}>Download</button> : null}
+      {before && after ? (
+        <DownloadButton onClick={() => saveSvg(after, before.name)}>
+          <DownloadIcon />
+          <span>Download</span>
+        </DownloadButton>
+      ) : null}
     </Wrapper>
   )
 }

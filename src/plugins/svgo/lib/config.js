@@ -70,7 +70,6 @@ function preparePluginsArray(config, plugins) {
       // name
     } else {
       plugin = loadPlugin(config, item)
-      plugin.active = true
       plugin.name = item
       if (typeof plugin.params === 'object') {
         plugin.params = Object.assign({}, plugin.params)
