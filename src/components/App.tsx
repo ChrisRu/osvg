@@ -43,7 +43,7 @@ export function App() {
         const userPlugins = (settings
           .filter(setting => setting.default)
           .map(setting => setting.id) as unknown) as PluginConfig[]
-        const result = await worker.SVGOWorker(SVGContent, userPlugins, 3)
+        const result = await worker.SVGOWorker(SVGContent, userPlugins, true, 3)
         setOptimizedSVGContent(result)
       })()
     }

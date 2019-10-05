@@ -5,6 +5,7 @@ const Wrapper = styled.div`
   background: #000;
   color: #fff;
   flex: 1;
+  overflow: auto;
 `
 
 const CodeBlock = styled.pre`

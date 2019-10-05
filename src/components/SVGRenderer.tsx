@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 function createTransparentBackgroundImage(color: string) {
   return (
-    'data:image/svg+xml;utf8,' +
+    'data:image/svg+xml;charset=utf8,' +
     encodeURIComponent(`<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2">
     <path fill="${color}" d="M0 0h1v1H0zM1 1h1v1H1z"/>
   </svg>`)
@@ -40,7 +40,7 @@ export function SVGRenderer({
   gridSize = 40,
   transparentColor = '#efefef',
 }: IProps) {
-  const imgSrc = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(SVGContent || '')
+  const imgSrc = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(SVGContent || '')}`
 
   return (
     <Wrapper gridSize={gridSize} transparentColor={transparentColor}>

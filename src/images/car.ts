@@ -1,4 +1,6 @@
 export const carSvg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1052.3622 744.09448">
+  <title>Car</title>
+  <desc>It's a red car</desc>
   <defs>
     <radialGradient id="a" gradientUnits="userSpaceOnUse" cy="-15.034" cx="22.682" gradientTransform="matrix(1 0 0 2.37143 0 19.9519)" r="3.2432">
       <stop stop-color="#e7e7e7" offset="0"/>

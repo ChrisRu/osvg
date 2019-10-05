@@ -12,7 +12,7 @@ const Percentage = styled.div<{ improvement: boolean }>`
   background: #fff;
   padding: 0.5rem;
   font-size: 1.2rem;
-  color: ${p => (p.improvement ? 'lime' : 'red')};
+  color: ${p => (p.improvement ? 'green' : 'red')};
 `
 
 interface IProps {
@@ -26,11 +26,24 @@ export function Overlay({ before, after }: IProps) {
       ? Math.round(((before.length - after.length) / before.length) * 10000) / 100
       : undefined
 
-  console.log('=========================TEST')
-  console.log(before)
-  console.log(after)
+  console.log(after ? after.substr(0, 200) : '')
 
   const improvement = percentage !== undefined && percentage > 0
+
+  function saveSvg(name: string) {
+    if (after === undefined) {
+      return
+    }
+
+    const svgBlob = new Blob([after], { type: 'image/svg+xml;charset=utf-8' })
+    const svgUrl = URL.createObjectURL(svgBlob)
+    const downloadLink = document.createElement('a')
+    downloadLink.href = svgUrl
+    downloadLink.download = name
+    document.body.appendChild(downloadLink)
+    downloadLink.click()
+    document.body.removeChild(downloadLink)
+  }
 
   return (
     <Wrapper>
@@ -40,6 +53,7 @@ export function Overlay({ before, after }: IProps) {
           {percentage.toString().replace('-', '')}%
         </Percentage>
       )}
+      {after ? <button onClick={() => saveSvg('whatever.svg')}>Download</button> : null}
     </Wrapper>
   )
 }

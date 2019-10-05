@@ -207,11 +207,11 @@ export const plugins = {
       name: 'Cleanup attribute whitespace',
       default: true,
     },
-    {
-      id: 'prefixIds',
-      name: 'Prefix IDs',
-      default: false,
-    },
+    // {
+    //   id: 'prefixIds',
+    //   name: 'Prefix IDs',
+    //   default: false,
+    // },
     {
       id: 'moveElemsAttrsToGroup',
       name: 'Move attrs to parent group',

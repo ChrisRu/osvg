@@ -1,6 +1,12 @@
-import SVGO from 'svgo'
+import SVGOPlugin from '../plugins/svgo/index'
+import SVGO from '../plugins/svgo/types'
 
-export async function SVGOWorker(svg: string, userConfig: SVGO.PluginConfig[], floatPrecision = 3) {
+export async function SVGOWorker(
+  svg: string,
+  userConfig: SVGO.PluginConfig[],
+  pretty = false,
+  floatPrecision = 3,
+) {
   const options: SVGO.Options = {
     full: true,
     // @ts-ignore
@@ -8,9 +14,14 @@ export async function SVGOWorker(svg: string, userConfig: SVGO.PluginConfig[], f
     datauri: 'unenc',
     floatPrecision: floatPrecision,
     plugins: userConfig,
+    js2svg: {
+      pretty,
+    },
+    svg2js: {},
   }
 
-  const optimized = await new SVGO(options).optimize(svg)
+  // @ts-ignore
+  const optimized = await new SVGOPlugin(options).optimize(svg)
 
   return optimized.data.replace('data:image/svg+xml,', '')
 }

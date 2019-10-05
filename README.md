@@ -9,7 +9,7 @@ A GUI for optimizing your SVG's online using SVGO.
 - [x] Remove doctype (on)
 - [x] Remove XML Instructions (on)
 - [x] Remove comments (on)
-- [x] Remove xlmns (off)
+- [x] Remove xmlns (off)
 - [x] Remove editor data (on)
 - [x] Remove unused namespaces (on)
 - [x] Remove unused defs (on)
