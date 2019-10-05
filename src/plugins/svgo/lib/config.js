@@ -1,4 +1,6 @@
 /* eslint-disable */
+const plugins = require('../plugins/index.js').plugins
+
 /**
  * Read and/or extend/replace default config file,
  * prepare and optimize plugins array.
@@ -80,65 +82,6 @@ function preparePluginsArray(config, plugins) {
 }
 
 /**
- * Extend plugins with the custom config object.
- *
- * @param {Array} plugins input plugins
- * @param {Object} config config
- * @return {Array} output plugins
- */
-function extendConfig(defaults, config) {
-  var key
-
-  // plugins
-  if (config.plugins) {
-    config.plugins.forEach(function(item) {
-      // {}
-      if (typeof item === 'object') {
-        key = Object.keys(item)[0]
-
-        if (item[key] == null) {
-          console.error(
-            `Error: '${key}' plugin is misconfigured! Have you padded its content in YML properly?\n`,
-          )
-        }
-
-        // custom
-        if (typeof item[key] === 'object' && item[key].fn && typeof item[key].fn === 'function') {
-          defaults.plugins.push(setupCustomPlugin(key, item[key]))
-
-          // plugin defined via path
-        } else if (typeof item[key] === 'object' && item[key].path) {
-          defaults.plugins.push(
-            setPluginActiveState(loadPlugin(config, undefined, item[key].path), item, key),
-          )
-        } else {
-          defaults.plugins.forEach(function(plugin) {
-            console.log(plugin.name, key)
-            if (plugin.name === key) {
-              plugin = setPluginActiveState(plugin, item, key)
-            }
-          })
-        }
-      }
-    })
-  }
-
-  defaults.multipass = config.multipass
-
-  // svg2js
-  if (config.svg2js) {
-    defaults.svg2js = config.svg2js
-  }
-
-  // js2svg
-  if (config.js2svg) {
-    defaults.js2svg = config.js2svg
-  }
-
-  return defaults
-}
-
-/**
  * Setup and enable a custom plugin
  *
  * @param {String} plugin name
@@ -195,61 +138,7 @@ function setPluginActiveState(plugin, item, key) {
     plugin.active = true
   }
 
-  console.log(plugin.name, plugin.active)
-
   return plugin
-}
-
-const all_plugins = {
-  addAttributesToSVGElement: require('../plugins/addAttributesToSVGElement'),
-  addClassesToSVGElement: require('../plugins/addClassesToSVGElement'),
-  cleanupAttrs: require('../plugins/cleanupAttrs'),
-  cleanupEnableBackground: require('../plugins/cleanupEnableBackground'),
-  cleanupIDs: require('../plugins/cleanupIDs'),
-  cleanupListOfValues: require('../plugins/cleanupListOfValues'),
-  cleanupNumericValues: require('../plugins/cleanupNumericValues'),
-  collapseGroups: require('../plugins/collapseGroups'),
-  convertColors: require('../plugins/convertColors'),
-  convertEllipseToCircle: require('../plugins/convertEllipseToCircle'),
-  convertPathData: require('../plugins/convertPathData'),
-  convertShapeToPath: require('../plugins/convertShapeToPath'),
-  convertStyleToAttrs: require('../plugins/convertStyleToAttrs'),
-  convertTransform: require('../plugins/convertTransform'),
-  inlineStyles: require('../plugins/inlineStyles'),
-  mergePaths: require('../plugins/mergePaths'),
-  minifyStyles: require('../plugins/minifyStyles'),
-  moveElemsAttrsToGroup: require('../plugins/moveElemsAttrsToGroup'),
-  moveGroupAttrsToElems: require('../plugins/moveGroupAttrsToElems'),
-  prefixIds: require('../plugins/prefixIds'),
-  removeAttributesBySelector: require('../plugins/removeAttributesBySelector'),
-  removeAttrs: require('../plugins/removeAttrs'),
-  removeComments: require('../plugins/removeComments'),
-  removeDesc: require('../plugins/removeDesc'),
-  removeDimensions: require('../plugins/removeDimensions'),
-  removeDoctype: require('../plugins/removeDoctype'),
-  removeEditorsNSData: require('../plugins/removeEditorsNSData'),
-  removeElementsByAttr: require('../plugins/removeElementsByAttr'),
-  removeEmptyAttrs: require('../plugins/removeEmptyAttrs'),
-  removeEmptyContainers: require('../plugins/removeEmptyContainers'),
-  removeEmptyText: require('../plugins/removeEmptyText'),
-  removeHiddenElems: require('../plugins/removeHiddenElems'),
-  removeMetadata: require('../plugins/removeMetadata'),
-  removeNonInheritableGroupAttrs: require('../plugins/removeNonInheritableGroupAttrs'),
-  removeOffCanvasPaths: require('../plugins/removeOffCanvasPaths'),
-  removeRasterImages: require('../plugins/removeRasterImages'),
-  removeScriptElement: require('../plugins/removeScriptElement'),
-  removeStyleElement: require('../plugins/removeStyleElement'),
-  removeTitle: require('../plugins/removeTitle'),
-  removeUnknownsAndDefaults: require('../plugins/removeUnknownsAndDefaults'),
-  removeUnusedNS: require('../plugins/removeUnusedNS'),
-  removeUselessDefs: require('../plugins/removeUselessDefs'),
-  removeUselessStrokeAndFill: require('../plugins/removeUselessStrokeAndFill'),
-  removeViewBox: require('../plugins/removeViewBox'),
-  removeXMLNS: require('../plugins/removeXMLNS'),
-  removeXMLProcInst: require('../plugins/removeXMLProcInst'),
-  reusePaths: require('../plugins/reusePaths'),
-  sortAttrs: require('../plugins/sortAttrs'),
-  sortDefsChildren: require('../plugins/sortDefsChildren'),
 }
 
 /**
@@ -260,5 +149,5 @@ const all_plugins = {
  * @return {Object} plugin
  */
 function loadPlugin(config, name) {
-  return all_plugins[name]
+  return plugins[name]
 }
