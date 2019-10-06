@@ -73,7 +73,10 @@ export function App() {
     if (SVGContent) {
       SVGOWorker(SVGContent.contents, settings, true, 3)
         .then(setOptimizedSVGContent)
-        .catch(setError)
+        .catch(error => {
+          console.error(error)
+          setError(error)
+        })
     }
   }, [SVGContent, settings])
 

@@ -18,11 +18,11 @@ const Wrapper = styled.div<{ gridSize: number; transparentColor: string }>`
   background-image: url('${p => createTransparentBackgroundImage(p.transparentColor)}');
 `
 
-const StyledObject = styled.object`
-  max-height: 90vh;
-  max-width: 100vw;
-  min-height: 50vh;
-  min-width: 50vw;
+const StyledObject = styled.object<{ hasWidth: boolean }>`
+  max-height: 100%;
+  max-width: 100%;
+  min-width: ${p => (p.hasWidth ? undefined : '100%')};
+  min-height: ${p => (p.hasWidth ? undefined : '100%')};
 `
 
 interface IProps {
@@ -34,7 +34,13 @@ interface IProps {
 export function SVGRenderer({ SVGContent, gridSize = 40, transparentColor = '#efefef' }: IProps) {
   return (
     <Wrapper gridSize={gridSize} transparentColor={transparentColor}>
-      {SVGContent ? <StyledObject type="image/svg+xml" data={svgToDataUri(SVGContent)} /> : null}
+      {SVGContent ? (
+        <StyledObject
+          hasWidth={SVGContent !== undefined && /^<svg[^>]+width=/.test(SVGContent)}
+          type="image/svg+xml"
+          data={svgToDataUri(SVGContent)}
+        />
+      ) : null}
     </Wrapper>
   )
 }
