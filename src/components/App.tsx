@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { MenuBar } from './MenuBar'
-import { SVGRenderer } from './SVGRenderer'
-import { dogSvg } from '../images/dog'
-import { Sidebar } from './Sidebar'
 import styled from 'styled-components'
-import { CodeRenderer } from './CodeRenderer'
-import * as worker from '../services/svgo.worker'
+import { MenuBar } from './MenuBar'
+import { Sidebar } from './Sidebar'
 import { Overlay } from './Overlay'
-import { plugins } from '../services/svgoOptions'
-import { PluginConfig } from 'svgo'
+import { SVGRenderer } from './SVGRenderer'
+import { CodeRenderer } from './CodeRenderer'
+import { SVGOWorker } from '../services/svgo.worker'
 import { IFileDetails } from '../services/openFile'
+import { dogSvg } from '../images/dog'
+import { useSettings } from '../hooks/settingsHook'
+import { WarningIcon } from './Icons'
 
 const Main = styled.main`
   position: relative;
@@ -19,60 +19,93 @@ const Main = styled.main`
   overflow: hidden;
 `
 
+const ErrorMessage = styled.div`
+  background: #000;
+  flex: 1;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+
+  p {
+    font-size: 1.1rem;
+    max-width: 25rem;
+    opacity: 0.9;
+    color: #fff;
+  }
+`
+
+const ErrorTitle = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    height: 2.4rem;
+    margin-right: 1rem;
+    stroke: #fff;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    color: #fff;
+    margin: 0;
+  }
+`
+
 export function App() {
   const [view, setView] = useState<'svg' | 'code'>('svg')
   const [SVGContent, setSVGContent] = useState<IFileDetails>()
   const [optimizedSVGContent, setOptimizedSVGContent] = useState<string>()
-  const [userSettings, setUserSettings] = useState<{ [pluginId: string]: boolean }>({})
+  const { settings, updateSetting } = useSettings()
   const [error, setError] = useState<Error>()
 
+  function openFile(svgFile: IFileDetails) {
+    setSVGContent(svgFile)
+    setError(undefined)
+  }
+
   useEffect(() => {
-    setSVGContent({ contents: dogSvg, name: 'doggo.svg' })
+    openFile({ contents: dogSvg, name: 'doggo.svg' })
   }, [])
 
   useEffect(() => {
     if (SVGContent) {
-      ;(async function() {
-        const settings = Object.values(JSON.parse(JSON.stringify(plugins)) as typeof plugins).flat()
-
-        Object.keys(userSettings).forEach(key => {
-          const setting = settings.find(setting => setting.id === key)
-          if (setting) {
-            setting.default = userSettings[key]
-          }
-        })
-
-        const userPlugins = settings
-          .filter(setting => setting.default)
-          .map(setting => (({ [setting.id]: true } as unknown) as PluginConfig))
-
-        try {
-          const result = await worker.SVGOWorker(SVGContent.contents, userPlugins, true, 3)
-          setOptimizedSVGContent(result)
-        } catch (error) {
-          setError(error)
-        }
-      })()
+      SVGOWorker(SVGContent.contents, settings, true, 3)
+        .then(setOptimizedSVGContent)
+        .catch(setError)
     }
-  }, [SVGContent, userSettings])
+  }, [SVGContent, settings])
 
   return (
     <>
       <MenuBar
         view={view}
+        error={error}
         before={SVGContent}
         after={optimizedSVGContent}
         onChangeView={setView}
-        onLoadSVG={setSVGContent}
+        onLoadSVG={openFile}
       />
       <Main>
         {SVGContent === undefined ? (
-          <span>Please upload a valid SVG</span>
+          <ErrorMessage>
+            <span>Please upload an SVG</span>
+          </ErrorMessage>
         ) : error !== undefined ? (
-          <span>Failed loading image</span>
+          <ErrorMessage>
+            <ErrorTitle>
+              <WarningIcon />
+              <h1>Failed loading image</h1>
+            </ErrorTitle>
+            <p>
+              Please check if the file you uploaded is an SVG and if it&apos;s valid by W3
+              standards.
+            </p>
+          </ErrorMessage>
         ) : (
           <>
-            <Sidebar userSettings={userSettings} onSettingsUpdate={setUserSettings} />
+            <Sidebar settings={settings} onSettingsUpdate={updateSetting} />
             <Overlay before={SVGContent} after={optimizedSVGContent} />
             {view === 'svg' ? (
               <SVGRenderer SVGContent={optimizedSVGContent} />

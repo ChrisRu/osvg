@@ -1,10 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
-import { plugins, IPlugin } from '../services/svgoOptions'
-
-const settings = Object.values(plugins).reduce((total, next) => {
-  return total.concat(...next)
-}, [])
+import * as R from 'ramda'
+import { ISetting } from '../services/svgo.worker'
+import { capitalize } from '../services/stringTransform'
+import { Checkbox } from './Checkbox'
 
 const SidebarWrapper = styled.div`
   background: #181818;
@@ -33,46 +32,50 @@ const Option = styled.label`
   display: flex;
   align-items: center;
 
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
   input {
     margin-right: 0.5rem;
   }
 `
 
 interface IProps {
-  userSettings: { [pluginId: string]: boolean }
-  onSettingsUpdate: (settings: { [pluginId: string]: boolean }) => void
+  settings: ISetting[]
+  onSettingsUpdate: (setting: ISetting) => void
 }
 
-export function Sidebar({ userSettings, onSettingsUpdate }: IProps) {
-  function getCurrentValue(plugin: IPlugin) {
-    return userSettings[plugin.id] === undefined ? plugin.default : userSettings[plugin.id]
-  }
-
-  function toggleSetting(plugin: IPlugin) {
-    const setting = settings.find(setting => setting.id === plugin.id)
-    if (setting && setting.default !== undefined) {
-      const currentValue = getCurrentValue(setting)
-      onSettingsUpdate({
-        ...userSettings,
-        [plugin.id]: !currentValue,
-      })
+export function Sidebar({ settings, onSettingsUpdate }: IProps) {
+  const groupedSettings = settings.reduce<{ [key: string]: ISetting[] }>((total, setting) => {
+    if (setting.category in total) {
+      total[setting.category].push(setting)
+    } else {
+      total[setting.category] = [setting]
     }
-  }
+    return total
+  }, {})
 
   return (
     <SidebarWrapper>
-      {Object.entries(plugins).map(([header, plugins]) => (
+      {Object.entries(groupedSettings).map(([header, settings]) => (
         <OptionGroup key={header}>
-          <OptionTitle>{header}</OptionTitle>
+          <OptionTitle>
+            {header
+              .split(' ')
+              .map(capitalize)
+              .join(' ')}
+          </OptionTitle>
           <Options>
-            {plugins.map(plugin => (
-              <Option key={plugin.id}>
-                <input
-                  type="checkbox"
-                  onChange={() => toggleSetting(plugin)}
-                  checked={getCurrentValue(plugin)}
+            {settings.map(setting => (
+              <Option key={setting.description}>
+                <Checkbox
+                  onChange={() =>
+                    onSettingsUpdate(R.set(R.lensProp('value'), !setting.value, setting))
+                  }
+                  checked={setting.value}
                 />
-                <span title={plugin.id}>{plugin.description}</span>
+                <span>{setting.description}</span>
               </Option>
             ))}
           </Options>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components'
 import { UploadIcon } from './Icons'
 import { openFile, IFileDetails } from '../services/openFile'
@@ -10,17 +10,16 @@ const MenuBarWrapper = styled.nav`
   flex-flow: row nowrap;
   align-items: center;
   font-size: 1.1rem;
-  padding: 0 2rem;
 `
 
 const Title = styled.span`
   font-weight: bold;
   margin-right: 2rem;
+  margin-left: 2rem;
 `
 const ViewButton = styled.button<{ active: boolean }>`
   padding: calc(0.7rem + 3px) 1.5rem 0.7rem;
   background: transparent;
-  outline: none;
   border: 0;
   color: #fff;
   box-sizing: border-box;
@@ -29,6 +28,10 @@ const ViewButton = styled.button<{ active: boolean }>`
   border-width: 3px;
   border-bottom-style: solid;
   border-color: ${p => (p.active ? '#fff' : 'transparent')};
+
+  &:focus {
+    background: rgba(255, 255, 255, 0.1);
+  }
 
   &:hover {
     background: rgba(255, 255, 255, 0.1);
@@ -54,16 +57,19 @@ const Percentage = styled.span<{ improvement: boolean }>`
   color: ${p => (p.improvement ? '#63e163' : '#ff7171')};
 `
 
-const OpenFileLabel = styled.label`
+const OpenFileLabel = styled.label.attrs({ role: 'button', tabIndex: 0 })`
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   padding: 0.3rem 1rem;
+  margin-right: 0.5rem;
   box-sizing: border-box;
   background-color: rgba(255, 255, 255, 0.15);
   transition: background-color 0.1s;
+  outline: none;
 
-  &:hover {
+  &:hover,
+  &:focus {
     background-color: rgba(255, 255, 255, 0.2);
   }
 
@@ -79,13 +85,16 @@ const OpenFileLabel = styled.label`
 
 interface IProps {
   view: string
+  error?: Error
   onChangeView: (view: 'svg' | 'code') => void
   before?: IFileDetails
   after?: string
   onLoadSVG: (svg: IFileDetails) => void
 }
 
-export function MenuBar({ view, before, after, onLoadSVG, onChangeView }: IProps) {
+export function MenuBar({ view, error, before, after, onLoadSVG, onChangeView }: IProps) {
+  const checkboxRef = useRef<HTMLInputElement>(null)
+
   const percentage =
     before && after
       ? Math.round(((before.contents.length - after.length) / before.contents.length) * 10000) / 100
@@ -106,19 +115,23 @@ export function MenuBar({ view, before, after, onLoadSVG, onChangeView }: IProps
       <ViewButton onClick={() => onChangeView('code')} active={view === 'code'}>
         Code
       </ViewButton>
-      <FileDetails>
-        <FileName>{before ? before.name : ''}</FileName>
-        {percentage === undefined ? null : (
-          <Percentage improvement={improvement}>
-            {improvement ? '-' : '+'}
-            {percentage.toString().replace('-', '')}%
-          </Percentage>
-        )}
-      </FileDetails>
+      {error ? (
+        <FileDetails />
+      ) : (
+        <FileDetails>
+          <FileName>{before ? before.name : ''}</FileName>
+          {percentage === undefined ? null : (
+            <Percentage improvement={improvement}>
+              {improvement ? '-' : '+'}
+              {percentage.toString().replace('-', '')}%
+            </Percentage>
+          )}
+        </FileDetails>
+      )}
       <OpenFileLabel>
         <UploadIcon />
         <span>Open file</span>
-        <input type="file" onChange={onOpenFile} />
+        <input type="file" id="upload-file" onChange={onOpenFile} ref={checkboxRef} />
       </OpenFileLabel>
     </MenuBarWrapper>
   )

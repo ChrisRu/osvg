@@ -14,15 +14,24 @@ const Wrapper = styled.div`
 const DownloadButton = styled.button`
   background: #3a3a3a;
   padding: 0.5rem 1rem;
-  border: 1px solid #fff;
   color: #fff;
+  border: 0;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+  outline: none;
 
   svg {
     margin-right: 0.5rem;
     width: 1.2rem;
+  }
+
+  span {
+    font-size: 1.1rem;
+  }
+
+  &:focus {
+    background-color: #464646;
   }
 
   &:hover {
