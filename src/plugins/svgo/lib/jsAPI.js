@@ -1,6 +1,5 @@
 /* eslint-disable */
-
-var cssSelect = require('css-select')
+import cssSelect from 'css-select'
 
 var svgoCssSelectAdapter = require('./css-select-adapter')
 var cssSelectOpts = {
@@ -8,7 +7,7 @@ var cssSelectOpts = {
   adapter: svgoCssSelectAdapter,
 }
 
-var JSAPI = (module.exports = function(data, parentNode) {
+export default function JSAPI(data, parentNode) {
   Object.assign(this, data)
   if (parentNode) {
     Object.defineProperty(this, 'parentNode', {
@@ -16,7 +15,7 @@ var JSAPI = (module.exports = function(data, parentNode) {
       value: parentNode,
     })
   }
-})
+}
 
 /**
  * Perform a deep clone of this node.

@@ -1,4 +1,4 @@
-export const plugins = {
+module.exports = {
   addAttributesToSVGElement: require('../plugins/addAttributesToSVGElement'),
   addClassesToSVGElement: require('../plugins/addClassesToSVGElement'),
   cleanupAttrs: require('../plugins/cleanupAttrs'),

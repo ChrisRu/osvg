@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { svgToDataUri } from '../services/svgToDataUri'
 
@@ -19,12 +19,11 @@ const Wrapper = styled.div<{ gridSize: number; transparentColor: string }>`
   overflow: hidden;
 `
 
-const StyledObject = styled.object<{ hasWidth: boolean; zoom: number }>`
+const StyledObject = styled.object<{ hasWidth: boolean }>`
   max-height: 100%;
   max-width: 100%;
   min-width: ${p => (p.hasWidth ? undefined : '100%')};
   min-height: ${p => (p.hasWidth ? undefined : '100%')};
-  transform: scale(${p => p.zoom});
   transition: transform 0.1s;
   pointer-events: none;
 `
@@ -36,32 +35,10 @@ interface IProps {
 }
 
 export function SVGRenderer({ SVGContent, gridSize = 40, transparentColor = '#efefef' }: IProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [zoom, setZoom] = useState(1)
-
-  useEffect(() => {
-    function scroll(event: any) {
-      console.log(event)
-      setZoom(zoom => zoom + (event.deltaY * -1) / 100)
-      setZoom(zoom => (zoom < 0 ? 0 : zoom))
-    }
-
-    if (ref.current) {
-      ref.current.addEventListener('wheel', scroll)
-    }
-
-    return function() {
-      if (ref.current) {
-        ref.current.removeEventListener('wheel', scroll)
-      }
-    }
-  }, [])
-
   return (
-    <Wrapper ref={ref} gridSize={gridSize} transparentColor={transparentColor}>
+    <Wrapper gridSize={gridSize} transparentColor={transparentColor}>
       {SVGContent ? (
         <StyledObject
-          zoom={zoom}
           hasWidth={SVGContent !== undefined && /^<svg[^>]+width=/.test(SVGContent)}
           type="image/svg+xml"
           data={svgToDataUri(SVGContent)}

@@ -1,5 +1,6 @@
-var csstree = require('css-tree'),
-  csstools = require('../css-tools')
+import csstree from 'css-tree'
+
+var csstools = require('../css-tools')
 
 var CSSStyleDeclaration = function(node) {
   this.parentNode = node
@@ -271,4 +272,4 @@ CSSStyleDeclaration.prototype.setProperty = function(propertyName, value, priori
   return property
 }
 
-module.exports = CSSStyleDeclaration
+export default CSSStyleDeclaration

@@ -1,4 +1,6 @@
 /* eslint-disable */
+import unquote from 'unquote'
+
 export const type = 'perItem'
 
 export const active = false
@@ -11,10 +13,7 @@ export const params = {
 
 export const description = 'prefix IDs'
 
-var path = require('path'),
-  csstree = require('css-tree'),
-  unquote = require('unquote'),
-  collections = require('./_collections.js'),
+var collections = require('./_collections.js'),
   referencesProps = collections.referencesProps,
   rxId = /^#(.*)$/, // regular expression for matching an ID + extracing its name
   addPrefix = null

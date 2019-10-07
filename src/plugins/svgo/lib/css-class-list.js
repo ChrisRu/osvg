@@ -1,9 +1,4 @@
 /* eslint-disable */
-var values = require('object.values')
-if (!Object.values) {
-  values.shim()
-}
-
 var CSSClassList = function(node) {
   this.parentNode = node
   this.classNames = new Set()
@@ -127,4 +122,4 @@ CSSClassList.prototype.contains = function(className) {
   return this.classNames.has(className)
 }
 
-module.exports = CSSClassList
+export default CSSClassList

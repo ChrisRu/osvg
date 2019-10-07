@@ -1,7 +1,7 @@
-var csstree = require('css-tree'),
-  List = csstree.List,
-  stable = require('stable'),
-  specificity = require('csso/lib/restructure/prepare/specificity')
+import cssTree from 'css-tree'
+import { List } from 'css-tree'
+import stable from 'stable'
+import specificity from 'csso/lib/restructure/prepare/specificity'
 
 /**
  * Flatten a CSS AST to a selectors list.
@@ -12,7 +12,7 @@ var csstree = require('css-tree'),
 function flattenToSelectors(cssAst) {
   var selectors = []
 
-  csstree.walk(cssAst, {
+  cssTree.walk(cssAst, {
     visit: 'Rule',
     enter: function(node) {
       if (node.type !== 'Rule') {
@@ -73,7 +73,7 @@ function filterByMqs(selectors, useMqs) {
       selector.atrule.expression &&
       selector.atrule.expression.children.first().type === 'MediaQueryList'
     ) {
-      var mqExpr = csstree.generate(selector.atrule.expression)
+      var mqExpr = cssTree.generate(selector.atrule.expression)
       mqStr = [mqName, mqExpr].join(' ')
     }
 
@@ -90,7 +90,7 @@ function filterByMqs(selectors, useMqs) {
  */
 function filterByPseudos(selectors, usePseudos) {
   return selectors.filter(function(selector) {
-    var pseudoSelectorsStr = csstree.generate({
+    var pseudoSelectorsStr = cssTree.generate({
       type: 'Selector',
       children: new List().fromArray(
         selector.pseudos.map(function(pseudo) {
@@ -171,7 +171,7 @@ function sortSelectors(selectors) {
  */
 function csstreeToStyleDeclaration(declaration) {
   var propertyName = declaration.property,
-    propertyValue = csstree.generate(declaration.value),
+    propertyValue = cssTree.generate(declaration.value),
     propertyPriority = declaration.important ? 'important' : ''
   return {
     name: propertyName,

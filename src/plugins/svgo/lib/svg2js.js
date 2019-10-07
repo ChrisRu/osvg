@@ -1,9 +1,9 @@
 /* eslint-disable */
+import SAX from 'sax'
 
-var SAX = require('sax'),
-  JSAPI = require('./jsAPI.js'),
-  CSSClassList = require('./css-class-list'),
-  CSSStyleDeclaration = require('./css-style-declaration'),
+var JSAPI = require('./jsAPI.js').default,
+  CSSClassList = require('./css-class-list').default,
+  CSSStyleDeclaration = require('./css-style-declaration').default,
   entityDeclaration = /<!ENTITY\s+(\S+)\s+(?:'([^\']+)'|"([^\"]+)")\s*>/g
 
 var config = {
@@ -21,7 +21,7 @@ var config = {
  * @param {String} data input data
  * @param {Function} callback
  */
-module.exports = function(data, callback) {
+export default function(data, callback) {
   var sax = SAX.parser(config.strict, config),
     root = new JSAPI({ elem: '#document', content: [] }),
     current = root,

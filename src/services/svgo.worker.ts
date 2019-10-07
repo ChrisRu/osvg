@@ -320,7 +320,6 @@ export async function SVGOWorker(
   }
 
   const optimized = await new SVGO(options).optimize(svg)
-  console.log(optimized)
 
   return optimized.data
 }

@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "license": "Apache-2.0",
+  "homepage": "https://svgo-online.netlify.com",
   "dependencies": {
     "css-select": "^2.0.2",
-    "css-tree": "^1.0.0-alpha.34",
+    "css-tree": "1.0.0-alpha.29",
     "csso": "^3.5.1",
     "ramda": "^0.26.1",
     "react": "^16.10.1",

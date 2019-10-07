@@ -1,4 +1,4 @@
-var baseCssAdapter = require('css-select-base-adapter')
+import baseCssAdapter from 'css-select-base-adapter'
 
 /**
  * DOMUtils API for SVGO AST (used by css-select)
@@ -47,4 +47,4 @@ var svgoCssSelectAdapterMin = {
 // use base adapter for default implementation
 var svgoCssSelectAdapter = baseCssAdapter(svgoCssSelectAdapterMin)
 
-module.exports = svgoCssSelectAdapter
+export default svgoCssSelectAdapter

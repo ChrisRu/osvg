@@ -7,13 +7,12 @@
  * @copyright © 2012 Kir Belevich
  * @license MIT https://raw.githubusercontent.com/svg/svgo/master/LICENSE
  */
-
-var CONFIG = require('./lib/config.js'),
-  SVG2JS = require('./lib/svg2js.js'),
-  PLUGINS = require('./lib/plugins.js'),
-  JSAPI = require('./lib/jsAPI.js'),
-  encodeSVGDatauri = require('./lib/tools.js').encodeSVGDatauri,
-  JS2SVG = require('./lib/js2svg.js')
+const CONFIG = require('./lib/config')
+const SVG2JS = require('./lib/svg2js').default
+const PLUGINS = require('./lib/plugins')
+const JSAPI = require('./lib/jsAPI')
+const encodeSVGDatauri = require('./lib/tools').encodeSVGDatauri
+const JS2SVG = require('./lib/js2svg')
 
 var SVGO = function(config) {
   this.config = CONFIG(config)
@@ -81,4 +80,4 @@ SVGO.prototype.createContentItem = function(data) {
 
 SVGO.Config = CONFIG
 
-export default SVGO
+module.exports.svgo = SVGO

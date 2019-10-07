@@ -12,8 +12,7 @@ export const params = {
 
 export const description = 'inline styles (additional options)'
 
-var csstree = require('css-tree'),
-  cssTools = require('../css-tools')
+var cssTools = require('../css-tools')
 
 /**
  * Moves + merges styles from style elements to element styles

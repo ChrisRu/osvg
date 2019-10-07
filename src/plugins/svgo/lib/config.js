@@ -1,5 +1,5 @@
 /* eslint-disable */
-const plugins = require('../plugins/index.js').plugins
+const plugins = require('../plugins/index')
 
 /**
  * Read and/or extend/replace default config file,
