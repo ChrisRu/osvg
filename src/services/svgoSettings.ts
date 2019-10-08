@@ -135,7 +135,7 @@ export const defaultSettings: ISetting[] = [
         | PluginRemoveDimensions
         | PluginRemoveViewBox),
     category: 'stripping',
-    value: true,
+    value: false,
   },
   {
     description: 'Remove unused namespaces declaration',
