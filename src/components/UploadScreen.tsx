@@ -125,10 +125,11 @@ const Upload = styled.div`
 `
 
 interface IProps {
+  loadingError: boolean
   onLoadSVG: (content: IFileDetails) => void
 }
 
-export function UploadScreen({ onLoadSVG }: IProps) {
+export function UploadScreen({ loadingError, onLoadSVG }: IProps) {
   // Dragging is a number, because drag leave events are triggered
   // when hovering over a transitioning element.
   const [dragging, setDragging] = useState(0)

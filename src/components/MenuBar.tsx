@@ -65,19 +65,19 @@ const Percentage = styled.span<{ improvement: boolean }>`
 interface IProps {
   view: string
   error?: Error
-  before?: IFileDetails
+  before: IFileDetails
   after?: string
   onChangeView: (view: 'svg' | 'code') => void
   onClose: () => void
 }
 
 export function MenuBar({ view, error, before, after, onChangeView, onClose }: IProps) {
-  const percentage =
-    before && after
-      ? Math.round(((before.contents.length - after.length) / before.contents.length) * 10000) / 100
-      : undefined
+  const percentage = after
+    ? Math.round(((before.contents.length - after.length) / before.contents.length) * 10000) / 100
+    : undefined
 
-  const improvement = percentage !== undefined && percentage > 0
+  const improvement = percentage !== undefined && percentage >= 0
+
   return (
     <MenuBarWrapper>
       <Title onClick={onClose}>SVGO Online</Title>

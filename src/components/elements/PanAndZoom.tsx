@@ -1,17 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import styled from 'styled-components'
 
-interface IProps {
-  children: React.ReactNode
-}
-
-const Wrapper = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
 type Coordinates = [number, number]
 
 function getXY(obj: MouseEvent | Touch): Coordinates {
@@ -30,7 +19,18 @@ function getPoints(event: MouseEvent | TouchEvent) {
   }
 }
 
+const Wrapper = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 let lastPoints: Coordinates[] = []
+
+interface IProps {
+  children: React.ReactNode
+}
 
 export function PanAndZoom({ children }: IProps) {
   const wrapperRef = useRef<HTMLDivElement>(null)

@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   margin: 1rem;
 `
 
-const ThemeButton = styled.button<{ flip?: boolean }>`
+const ThemeButton = styled.button`
   position: absolute;
   top: 0;
   right: 0;
@@ -24,8 +24,9 @@ const ThemeButton = styled.button<{ flip?: boolean }>`
   margin: 0;
   opacity: 0.7;
   height: 24px;
-  transform: rotate(${p => (p.flip ? 180 : 0)}deg);
+  transform: rotate(${p => (p.theme.foreground === '#fff' ? 180 : 0)}deg);
   transition: opacity 0.1s;
+  color: ${p => p.theme.foreground};
 
   &:hover,
   &:focus {
@@ -65,19 +66,18 @@ const DownloadButton = styled.button`
 `
 
 interface IProps {
-  before?: IFileDetails
+  before: IFileDetails
   after?: string
-  iconColor: string
   toggleTheme: () => void
 }
 
-export function Overlay({ before, after, iconColor, toggleTheme }: IProps) {
+export function Overlay({ before, after, toggleTheme }: IProps) {
   return (
     <Wrapper>
-      <ThemeButton onClick={toggleTheme} flip={iconColor === '#fff'}>
-        <ThemeIcon color={iconColor} />
+      <ThemeButton onClick={toggleTheme}>
+        <ThemeIcon />
       </ThemeButton>
-      {before && after ? (
+      {after ? (
         <DownloadButton onClick={() => saveSvg(after, before.name)}>
           <DownloadIcon />
           <span>Download</span>

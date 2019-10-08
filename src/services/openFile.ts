@@ -6,7 +6,7 @@ export interface IFileDetails {
 export function openFile(files: FileList | null) {
   return new Promise<IFileDetails>(resolve => {
     const file = files ? files[0] : undefined
-    if (file === undefined) {
+    if (!file) {
       return
     }
 

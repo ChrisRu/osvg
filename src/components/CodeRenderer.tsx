@@ -2,8 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
-  background: #282828;
-  color: #fff;
+  background: ${p => p.theme.background};
+  color: ${p => p.theme.foreground};
   flex: 1;
   overflow: auto;
 `
