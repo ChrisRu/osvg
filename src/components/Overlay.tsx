@@ -2,16 +2,40 @@ import React from 'react'
 import styled from 'styled-components'
 import { saveSvg } from '../services/saveSvg'
 import { IFileDetails } from '../services/openFile'
-import { DownloadIcon } from './Icons'
+import { DownloadIcon, ThemeIcon } from './Icons'
 
 const Wrapper = styled.div`
   position: absolute;
-  padding: 1rem;
+  top: 0;
   bottom: 0;
   right: 0;
+  z-index: 1;
+  margin: 1rem;
+`
+
+const ThemeButton = styled.button`
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  margin: 0;
+  opacity: 0.7;
+  height: 24px;
+  transition: opacity 0.1s;
+
+  &:hover,
+  &:focus {
+    opacity: 1;
+  }
 `
 
 const DownloadButton = styled.button`
+  position: absolute;
+  bottom: 0;
+  right: 0;
   background: #3a3a3a;
   padding: 0.5rem 1rem;
   color: #fff;
@@ -42,11 +66,16 @@ const DownloadButton = styled.button`
 interface IProps {
   before?: IFileDetails
   after?: string
+  iconColor: string
+  toggleTheme: () => void
 }
 
-export function Overlay({ before, after }: IProps) {
+export function Overlay({ before, after, iconColor, toggleTheme }: IProps) {
   return (
     <Wrapper>
+      <ThemeButton onClick={toggleTheme}>
+        <ThemeIcon color={iconColor} />
+      </ThemeButton>
       {before && after ? (
         <DownloadButton onClick={() => saveSvg(after, before.name)}>
           <DownloadIcon />

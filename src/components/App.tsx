@@ -8,8 +8,9 @@ import { CodeRenderer } from './CodeRenderer'
 import { SVGOWorker } from '../services/svgo.worker'
 import { IFileDetails } from '../services/openFile'
 import { dogSvg } from '../images/dog'
-import { useSettings } from '../hooks/settingsHook'
+import { useSettings } from '../hooks/useSettings'
 import { WarningIcon } from './Icons'
+import { useTheme } from '../hooks/useTheme'
 
 const Main = styled.main`
   position: relative;
@@ -57,13 +58,10 @@ export function App() {
   const [view, setView] = useState<'svg' | 'code'>('svg')
   const [SVGContent, setSVGContent] = useState<IFileDetails>()
   const [optimizedSVGContent, setOptimizedSVGContent] = useState<string>()
-  const { settings, updateSetting } = useSettings()
   const [error, setError] = useState<Error>()
 
-  function openFile(svgFile: IFileDetails) {
-    setSVGContent(svgFile)
-    setError(undefined)
-  }
+  const { settings, updateSetting } = useSettings()
+  const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
     openFile({ contents: dogSvg, name: 'doggo.svg' })
@@ -79,6 +77,11 @@ export function App() {
         })
     }
   }, [SVGContent, settings])
+
+  function openFile(svgFile: IFileDetails) {
+    setSVGContent(svgFile)
+    setError(undefined)
+  }
 
   return (
     <>
@@ -109,9 +112,14 @@ export function App() {
         ) : (
           <>
             <Sidebar settings={settings} onSettingsUpdate={updateSetting} />
-            <Overlay before={SVGContent} after={optimizedSVGContent} />
+            <Overlay
+              before={SVGContent}
+              after={optimizedSVGContent}
+              iconColor={theme.iconColor}
+              toggleTheme={toggleTheme}
+            />
             {view === 'svg' ? (
-              <SVGRenderer SVGContent={optimizedSVGContent} />
+              <SVGRenderer SVGContent={optimizedSVGContent} colorPattern={theme.colorPattern} />
             ) : (
               <CodeRenderer SVGContent={optimizedSVGContent} />
             )}

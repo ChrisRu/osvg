@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import * as R from 'ramda'
-import { ISetting } from '../services/svgo.worker'
+import { ISetting } from '../services/svgoSettings'
 import { capitalize } from '../services/stringTransform'
 import { Checkbox } from './Checkbox'
 

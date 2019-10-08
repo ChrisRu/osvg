@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import * as R from 'ramda'
-import { defaultSettings, ISetting } from '../services/svgo.worker'
+import { defaultSettings, ISetting } from '../services/svgoSettings'
 
 const savedSettingsKey = 'svgo-online@settings'
 

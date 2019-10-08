@@ -92,3 +92,25 @@ export function WarningIcon() {
     </svg>
   )
 }
+
+export function ThemeIcon({ color = '#fff' }: { color?: string }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs />
+      <mask id="mask0" maskUnits="userSpaceOnUse" x="3" y="3" width="50" height="50">
+        <path
+          d="M28 53c13.807 0 25-11.193 25-25S41.807 3 28 3 3 14.193 3 28s11.193 25 25 25z"
+          fill="#fff"
+        />
+      </mask>
+      <g mask="url(#mask0)">
+        <path d="M28 0h28v56H28V0z" fill={color} />
+      </g>
+      <path
+        d="M28 52.5c13.531 0 24.5-10.969 24.5-24.5S41.531 3.5 28 3.5 3.5 14.469 3.5 28 14.469 52.5 28 52.5z"
+        stroke={color}
+        strokeWidth="7"
+      />
+    </svg>
+  )
+}
