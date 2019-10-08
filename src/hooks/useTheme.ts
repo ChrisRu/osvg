@@ -24,7 +24,7 @@ export function useTheme() {
     colorPattern: [string, string]
     iconColor: string
   } = {
-    colorPattern: theme === 'dark' ? ['#222', '#282828'] : ['#fff', '#efefef'],
+    colorPattern: theme === 'dark' ? ['#222', '#282828'] : ['#efefef', '#fff'],
     iconColor: theme === 'dark' ? '#fff' : '#181818',
   }
 

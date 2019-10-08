@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { saveSvg } from '../services/saveSvg'
 import { IFileDetails } from '../services/openFile'
-import { DownloadIcon, ThemeIcon } from './Icons'
+import { DownloadIcon, ThemeIcon } from './elements/Icons'
 
 const Wrapper = styled.div`
   position: absolute;
@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   margin: 1rem;
 `
 
-const ThemeButton = styled.button`
+const ThemeButton = styled.button<{ flip?: boolean }>`
   position: absolute;
   top: 0;
   right: 0;
@@ -24,6 +24,7 @@ const ThemeButton = styled.button`
   margin: 0;
   opacity: 0.7;
   height: 24px;
+  transform: rotate(${p => (p.flip ? 180 : 0)}deg);
   transition: opacity 0.1s;
 
   &:hover,
@@ -73,7 +74,7 @@ interface IProps {
 export function Overlay({ before, after, iconColor, toggleTheme }: IProps) {
   return (
     <Wrapper>
-      <ThemeButton onClick={toggleTheme}>
+      <ThemeButton onClick={toggleTheme} flip={iconColor === '#fff'}>
         <ThemeIcon color={iconColor} />
       </ThemeButton>
       {before && after ? (

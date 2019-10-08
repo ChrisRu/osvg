@@ -3,9 +3,9 @@ export interface IFileDetails {
   name: string
 }
 
-export function openFile(event: React.ChangeEvent<HTMLInputElement>) {
+export function openFile(files: FileList | null) {
   return new Promise<IFileDetails>(resolve => {
-    const file = event.target.files ? event.target.files[0] : undefined
+    const file = files ? files[0] : undefined
     if (file === undefined) {
       return
     }

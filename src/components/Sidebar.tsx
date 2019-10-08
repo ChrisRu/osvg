@@ -3,11 +3,11 @@ import styled from 'styled-components'
 import * as R from 'ramda'
 import { ISetting } from '../services/svgoSettings'
 import { capitalize } from '../services/stringTransform'
-import { Checkbox } from './Checkbox'
+import { Checkbox } from './elements/Checkbox'
 
 const SidebarWrapper = styled.div`
   background: #181818;
-  color: #fff;
+  color: #efefef;
   max-width: 400px;
   padding: 1rem;
   box-sizing: border-box;
@@ -22,6 +22,7 @@ const OptionGroup = styled.div`
 const OptionTitle = styled.h2`
   font-size: 1.2rem;
   margin: 1rem 0 0.5rem;
+  color: #fff;
 `
 
 const Options = styled.div``

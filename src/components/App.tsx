@@ -7,10 +7,10 @@ import { SVGRenderer } from './SVGRenderer'
 import { CodeRenderer } from './CodeRenderer'
 import { SVGOWorker } from '../services/svgo.worker'
 import { IFileDetails } from '../services/openFile'
-import { dogSvg } from '../images/dog'
 import { useSettings } from '../hooks/useSettings'
-import { WarningIcon } from './Icons'
+import { WarningIcon } from './elements/Icons'
 import { useTheme } from '../hooks/useTheme'
+import { UploadScreen } from './UploadScreen'
 
 const Main = styled.main`
   position: relative;
@@ -22,6 +22,7 @@ const Main = styled.main`
 
 const ErrorMessage = styled.div`
   background: #000;
+  color: #fff;
   flex: 1;
   display: flex;
   flex-flow: column nowrap;
@@ -64,10 +65,6 @@ export function App() {
   const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
-    openFile({ contents: dogSvg, name: 'doggo.svg' })
-  }, [])
-
-  useEffect(() => {
     if (SVGContent) {
       SVGOWorker(SVGContent.contents, settings, true, 3)
         .then(setOptimizedSVGContent)
@@ -83,6 +80,24 @@ export function App() {
     setError(undefined)
   }
 
+  if (SVGContent === undefined) {
+    return <UploadScreen onLoadSVG={openFile} />
+  }
+
+  if (error !== undefined) {
+    return (
+      <ErrorMessage>
+        <ErrorTitle>
+          <WarningIcon />
+          <h1>Failed loading image</h1>
+        </ErrorTitle>
+        <p>
+          Please check if the file you uploaded is an SVG and if it&apos;s valid by W3 standards.
+        </p>
+      </ErrorMessage>
+    )
+  }
+
   return (
     <>
       <MenuBar
@@ -91,39 +106,20 @@ export function App() {
         before={SVGContent}
         after={optimizedSVGContent}
         onChangeView={setView}
-        onLoadSVG={openFile}
+        onClose={() => setSVGContent(undefined)}
       />
       <Main>
-        {SVGContent === undefined ? (
-          <ErrorMessage>
-            <span>Please upload an SVG</span>
-          </ErrorMessage>
-        ) : error !== undefined ? (
-          <ErrorMessage>
-            <ErrorTitle>
-              <WarningIcon />
-              <h1>Failed loading image</h1>
-            </ErrorTitle>
-            <p>
-              Please check if the file you uploaded is an SVG and if it&apos;s valid by W3
-              standards.
-            </p>
-          </ErrorMessage>
+        <Sidebar settings={settings} onSettingsUpdate={updateSetting} />
+        <Overlay
+          before={SVGContent}
+          after={optimizedSVGContent}
+          iconColor={theme.iconColor}
+          toggleTheme={toggleTheme}
+        />
+        {view === 'svg' ? (
+          <SVGRenderer SVGContent={optimizedSVGContent} colorPattern={theme.colorPattern} />
         ) : (
-          <>
-            <Sidebar settings={settings} onSettingsUpdate={updateSetting} />
-            <Overlay
-              before={SVGContent}
-              after={optimizedSVGContent}
-              iconColor={theme.iconColor}
-              toggleTheme={toggleTheme}
-            />
-            {view === 'svg' ? (
-              <SVGRenderer SVGContent={optimizedSVGContent} colorPattern={theme.colorPattern} />
-            ) : (
-              <CodeRenderer SVGContent={optimizedSVGContent} />
-            )}
-          </>
+          <CodeRenderer SVGContent={optimizedSVGContent} />
         )}
       </Main>
     </>
