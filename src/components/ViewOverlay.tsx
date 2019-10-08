@@ -27,6 +27,7 @@ const ThemeButton = styled.button`
   transform: rotate(${p => (p.theme.foreground === '#fff' ? 180 : 0)}deg);
   transition: opacity 0.1s;
   color: ${p => p.theme.foreground};
+  cursor: pointer;
 
   &:hover,
   &:focus {
@@ -71,7 +72,7 @@ interface IProps {
   toggleTheme: () => void
 }
 
-export function Overlay({ before, after, toggleTheme }: IProps) {
+export function ViewOverlay({ before, after, toggleTheme }: IProps) {
   return (
     <Wrapper>
       <ThemeButton onClick={toggleTheme}>

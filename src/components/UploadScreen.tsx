@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react'
 import styled from 'styled-components'
-import { UploadIcon, ClipboardIcon } from './elements/Icons'
+import { UploadIcon, ClipboardIcon, PawIcon, WarningIcon } from './elements/Icons'
 import { openFile, IFileDetails } from '../services/openFile'
+import { useSingleTime } from '../hooks/useSingleTime'
 
 const MegaWrapper = styled.div`
   flex: 1;
@@ -67,15 +68,15 @@ const Title = styled.div`
   }
 `
 
-const OpenFileLabel = styled.label.attrs({ role: 'button', tabIndex: 0 })`
+const OpenFileButton = styled.button`
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   padding: 0.6rem 1.2rem;
-  margin-right: 0.5rem;
-  box-sizing: border-box;
+  margin: 0 0.5rem;
   background-color: #fff;
   color: #000;
+  border: 0;
   transition: background-color 0.1s;
   outline: none;
   font-size: 1.2rem;
@@ -85,11 +86,21 @@ const OpenFileLabel = styled.label.attrs({ role: 'button', tabIndex: 0 })`
     background-color: #ccc;
   }
 
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
+
   svg {
     margin-right: 0.8rem;
     width: 1.6rem;
   }
+`
 
+const OpenFileLabel = styled(OpenFileButton).attrs({ role: 'button', tabIndex: 0 })`
   input {
     display: none;
   }
@@ -97,7 +108,7 @@ const OpenFileLabel = styled.label.attrs({ role: 'button', tabIndex: 0 })`
 
 const MarkupInputWrapper = styled.div`
   position: relative;
-  margin-left: 0.5rem;
+  margin: 0 0.5rem;
 
   svg {
     color: #888;
@@ -112,6 +123,7 @@ const MarkupInput = styled.input`
   padding: 0.6rem 1.2rem 0.6rem 3.8rem;
   font-size: 1.2rem;
   border: 0;
+  line-height: initial;
 `
 
 const Upload = styled.div`
@@ -124,15 +136,72 @@ const Upload = styled.div`
   }
 `
 
+const Tip = styled.div`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #282828;
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+`
+
+const Overlay = styled.div`
+  z-index: 2;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+`
+
+const ErrorMessage = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 30rem;
+  background: #222;
+  color: #fff;
+
+  p {
+    font-size: 1.2rem;
+    margin: 0;
+    padding: 1rem;
+  }
+`
+
+const ErrorTitle = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+  background: #282828;
+  padding: 1rem;
+
+  h1 {
+    font-size: 1.8rem;
+    margin: 0;
+  }
+
+  svg {
+    width: 1.8rem;
+    height: 1.8rem;
+    margin-right: 1rem;
+  }
+`
+
 interface IProps {
-  loadingError: boolean
+  loadingError?: Error
   onLoadSVG: (content: IFileDetails) => void
+  hideError: () => void
 }
 
-export function UploadScreen({ loadingError, onLoadSVG }: IProps) {
+export function UploadScreen({ loadingError, onLoadSVG, hideError }: IProps) {
   // Dragging is a number, because drag leave events are triggered
   // when hovering over a transitioning element.
   const [dragging, setDragging] = useState(0)
+  const [tipShown, hideTip] = useSingleTime('tip:drag-drop')
   const inputFileRef = useRef<HTMLInputElement>(null)
 
   function onDragOver(event: React.DragEvent<HTMLDivElement>) {
@@ -153,6 +222,7 @@ export function UploadScreen({ loadingError, onLoadSVG }: IProps) {
     event.preventDefault()
 
     if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+      hideTip()
       onLoadSVG(await openFile(event.dataTransfer.files))
     }
   }
@@ -168,6 +238,19 @@ export function UploadScreen({ loadingError, onLoadSVG }: IProps) {
         onLoadSVG({ contents: text, name: 'file.svg' })
       }
     }
+  }
+
+  function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Enter') {
+      onLoadSVG({ contents: (event.target as any).value, name: 'file.svg' })
+    }
+  }
+
+  async function onDemo() {
+    const response = await fetch('/dog.svg')
+    const contents = await response.text()
+
+    onLoadSVG({ contents, name: 'doggo.svg' })
   }
 
   return (
@@ -193,21 +276,51 @@ export function UploadScreen({ loadingError, onLoadSVG }: IProps) {
             />
           </svg>
         </BackgroundText>
+        {loadingError ? (
+          <Overlay onClick={hideError}>
+            <ErrorMessage>
+              <ErrorTitle>
+                <WarningIcon />
+                <h1>oops!</h1>
+              </ErrorTitle>
+              <p>
+                Could not load the file. Please check if the file you uploaded is an SVG and whether
+                it&apos;s valid by W3 standards.
+              </p>
+            </ErrorMessage>
+          </Overlay>
+        ) : null}
         <ContentWrapper>
+          {tipShown ? null : (
+            <Tip onClick={hideTip}>
+              <strong>TIP: </strong>
+              <span>You can also drop your files in here right from your file explorer</span>
+            </Tip>
+          )}
           <Title>
             <h1>SVGO Online</h1>
             <p>Optimize your SVGs right in your browser</p>
           </Title>
           <Upload>
-            <OpenFileLabel>
+            <OpenFileLabel as="label">
               <UploadIcon />
               <span>Open file</span>
-              <input type="file" id="upload-file" onChange={onOpenFile} ref={inputFileRef} />
+              <input
+                type="file"
+                id="upload-file"
+                accept=".svg"
+                onChange={onOpenFile}
+                ref={inputFileRef}
+              />
             </OpenFileLabel>
             <MarkupInputWrapper>
               <ClipboardIcon />
-              <MarkupInput placeholder="Paste markup" onPaste={onPaste} />
+              <MarkupInput placeholder="Paste markup" onPaste={onPaste} onKeyDown={onKeyDown} />
             </MarkupInputWrapper>
+            <OpenFileButton onClick={onDemo}>
+              <PawIcon />
+              <span>Demo</span>
+            </OpenFileButton>
           </Upload>
         </ContentWrapper>
       </Wrapper>

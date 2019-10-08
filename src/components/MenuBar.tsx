@@ -27,7 +27,6 @@ const ViewButton = styled.button<{ active: boolean }>`
   background: transparent;
   border: 0;
   color: #fff;
-  box-sizing: border-box;
   padding-top: calc(0.7rem + 3px);
 
   border-width: 3px;

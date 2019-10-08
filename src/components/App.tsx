@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import { MenuBar } from './MenuBar'
 import { Sidebar } from './Sidebar'
-import { Overlay } from './Overlay'
+import { ViewOverlay } from './ViewOverlay'
 import { UploadScreen } from './UploadScreen'
 import { SVGRenderer } from './SVGRenderer'
 import { CodeRenderer } from './CodeRenderer'
@@ -44,8 +44,17 @@ export function App() {
     setError(undefined)
   }
 
-  if (!SVGContent) {
-    return <UploadScreen loadingError={!!error} onLoadSVG={openFile} />
+  if (!SVGContent || error) {
+    return (
+      <UploadScreen
+        loadingError={error}
+        onLoadSVG={openFile}
+        hideError={() => {
+          setSVGContent(undefined)
+          setError(undefined)
+        }}
+      />
+    )
   }
 
   return (
@@ -61,7 +70,7 @@ export function App() {
         />
         <Main>
           <Sidebar settings={settings} onSettingsUpdate={updateSetting} />
-          <Overlay before={SVGContent} after={optimizedSVGContent} toggleTheme={toggleTheme} />
+          <ViewOverlay before={SVGContent} after={optimizedSVGContent} toggleTheme={toggleTheme} />
           {view === 'svg' ? (
             <SVGRenderer SVGContent={optimizedSVGContent} />
           ) : (
