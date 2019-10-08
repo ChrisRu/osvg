@@ -1,5 +1,5 @@
 export const dogSvg = `
-<svg width="158" height="121" viewBox="0 0 178 141" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="790" height="605" viewBox="0 0 178 141" fill="none" xmlns="http://www.w3.org/2000/svg">
   <title>Doggy</title>
   <desc>A very cute doggy</desc>
   <!-- unknown comment -->
