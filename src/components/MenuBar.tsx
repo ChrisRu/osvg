@@ -49,7 +49,8 @@ const FileInfo = styled.div`
   display: flex;
   flex-flow: row nowrap;
   margin-left: auto;
-  margin-right: auto;
+  width: calc(100% - 400px);
+  justify-content: center;
 `
 
 const FileName = styled.span`
@@ -58,8 +59,6 @@ const FileName = styled.span`
 `
 
 const FileDetails = styled.span`
-  position: absolute;
-  left: 100%;
   white-space: nowrap;
 `
 
