@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { IFileDetails } from '../services/openFile'
+import { getFileSizeGZIP, getFileSize } from '../services/gzip.worker'
+import { getHumanReadableBytes } from '../services/byteService'
 
 const MenuBarWrapper = styled.nav`
   background: #181818;
@@ -42,7 +44,7 @@ const ViewButton = styled.button<{ active: boolean }>`
   }
 `
 
-const FileDetails = styled.div`
+const FileInfo = styled.div`
   position: relative;
   display: flex;
   flex-flow: row nowrap;
@@ -52,30 +54,56 @@ const FileDetails = styled.div`
 
 const FileName = styled.span`
   font-weight: bold;
-  margin-right: 0.5rem;
+  margin-right: 1.5rem;
+`
+
+const FileDetails = styled.span`
+  position: absolute;
+  left: 100%;
+  white-space: nowrap;
+`
+
+const FileSize = styled.span`
+  opacity: 0.7;
 `
 
 const Percentage = styled.span<{ improvement: boolean }>`
-  position: absolute;
-  left: 100%;
+  margin-left: 0.5rem;
   color: ${p => (p.improvement ? '#63e163' : '#ff7171')};
 `
 
 interface IProps {
   view: string
   error?: Error
-  before: IFileDetails
-  after?: string
+  initialFile: IFileDetails
+  compressedFile?: string
   onChangeView: (view: 'svg' | 'code') => void
   onClose: () => void
 }
 
-export function MenuBar({ view, error, before, after, onChangeView, onClose }: IProps) {
-  const percentage = after
-    ? Math.round(((before.contents.length - after.length) / before.contents.length) * 10000) / 100
-    : undefined
+function getSize(contents: string, gzip: boolean) {
+  return gzip ? getFileSizeGZIP(contents) : getFileSize(contents)
+}
 
-  const improvement = percentage !== undefined && percentage >= 0
+function getPercentage(initialSize: number, newSize: number) {
+  return Math.round(((initialSize - newSize) / initialSize) * 10000) / 100
+}
+
+export function MenuBar({
+  view,
+  error,
+  initialFile,
+  compressedFile,
+  onChangeView,
+  onClose,
+}: IProps) {
+  const [gzip] = useState(true)
+
+  const initialSize = getSize(initialFile.contents, gzip)
+  const compressedSize = getSize(compressedFile || initialFile.contents, gzip)
+
+  const percentage = getPercentage(initialSize, compressedSize)
+  const improvement = compressedFile !== undefined && percentage >= 0
 
   return (
     <MenuBarWrapper>
@@ -87,17 +115,20 @@ export function MenuBar({ view, error, before, after, onChangeView, onClose }: I
         Code
       </ViewButton>
       {error ? (
-        <FileDetails />
+        <FileInfo />
       ) : (
-        <FileDetails>
-          <FileName>{before ? before.name : ''}</FileName>
-          {percentage === undefined ? null : (
-            <Percentage improvement={improvement}>
-              {improvement ? '-' : '+'}
-              {percentage.toString().replace('-', '')}%
-            </Percentage>
-          )}
-        </FileDetails>
+        <FileInfo>
+          <FileName>{initialFile.name}</FileName>
+          <FileDetails>
+            <FileSize>{getHumanReadableBytes(compressedSize)}</FileSize>
+            {percentage === undefined ? null : (
+              <Percentage improvement={improvement}>
+                {improvement ? '-' : '+'}
+                {percentage.toString().replace('-', '')}%
+              </Percentage>
+            )}
+          </FileDetails>
+        </FileInfo>
       )}
     </MenuBarWrapper>
   )

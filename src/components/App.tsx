@@ -63,8 +63,8 @@ export function App() {
         <MenuBar
           view={view}
           error={error}
-          before={SVGContent}
-          after={optimizedSVGContent}
+          initialFile={SVGContent}
+          compressedFile={optimizedSVGContent}
           onChangeView={setView}
           onClose={() => setSVGContent(undefined)}
         />
