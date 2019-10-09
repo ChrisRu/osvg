@@ -242,7 +242,7 @@ export function UploadScreen({ loadingError, onLoadSVG, hideError }: IProps) {
 
   function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === 'Enter') {
-      onLoadSVG({ contents: (event.target as any).value, name: 'file.svg' })
+      onLoadSVG({ contents: (event.target as HTMLInputElement).value, name: 'file.svg' })
     }
   }
 

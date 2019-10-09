@@ -12,7 +12,7 @@ function getMidpoint([x1, y1]: Coordinates, [x2, y2]: Coordinates): Coordinates 
 }
 
 function getPoints(event: MouseEvent | TouchEvent) {
-  if ((event as any).touches) {
+  if ((event as TouchEvent).touches) {
     return Array.from((event as TouchEvent).touches).map(getXY)
   } else {
     return [getXY(event as MouseEvent)]
