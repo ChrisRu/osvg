@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import * as R from 'ramda'
-import { ISetting } from '../services/svgoSettings'
+import { ISetting, ISettings } from '../services/svgoSettings'
 import { capitalize } from '../services/stringTransformService'
 import { Checkbox } from './elements/Checkbox'
 
@@ -18,13 +18,13 @@ const OptionGroup = styled.div`
   margin-bottom: 1rem;
 `
 
-const OptionTitle = styled.h2`
+const OptionGroupTitle = styled.h2`
   font-size: 1.2rem;
   margin: 1rem 0 0.5rem;
   color: #fff;
 `
 
-const Options = styled.div``
+const OptionGroupOptions = styled.div``
 
 const Option = styled.label`
   display: block;
@@ -41,67 +41,99 @@ const Option = styled.label`
   }
 `
 
+const OptionRange = styled.div`
+  display: block;
+  padding: 0.4rem 2rem 0.4rem;
+  display: flex;
+  align-items: center;
+  max-width: 90%;
+  margin-bottom: 0.4rem;
+
+  input {
+    flex: 1;
+  }
+`
+
+const OptionTitle = styled.span`
+  display: block;
+  margin-top: 1rem;
+  padding-left: 2rem;
+`
+
+const OptionRangeValue = styled.span`
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-left: 1rem;
+`
+
 interface IProps {
-  settings: ISetting[]
-  prettify: boolean
-  precision: number
+  settings: ISettings
   togglePrettify: () => void
   setPrecision: (value: number) => void
   onSettingsUpdate: (setting: ISetting) => void
 }
 
-export function Sidebar({
-  settings,
-  prettify,
-  precision,
-  togglePrettify,
-  setPrecision,
-  onSettingsUpdate,
-}: IProps) {
-  const groupedSettings = settings.reduce<{ [key: string]: ISetting[] }>((total, setting) => {
-    if (setting.category in total) {
-      total[setting.category].push(setting)
-    } else {
-      total[setting.category] = [setting]
-    }
-    return total
-  }, {})
+export function Sidebar({ settings, togglePrettify, setPrecision, onSettingsUpdate }: IProps) {
+  console.log(settings)
+
+  const groupedSettings = settings.plugins.reduce<{ [key: string]: ISetting[] }>(
+    (total, setting) => {
+      if (setting.category in total) {
+        total[setting.category].push(setting)
+      } else {
+        total[setting.category] = [setting]
+      }
+      return total
+    },
+    {},
+  )
 
   return (
     <SidebarWrapper>
-      <Option>
-        <Checkbox checked={prettify} onChange={togglePrettify} />
-        <span>Prettify</span>
-      </Option>
-      <Option>
-        <input
-          type="number"
-          value={precision}
-          onChange={event => setPrecision(Number(event.target.value))}
-        />
-        <span>Precision</span>
-      </Option>
-      {Object.entries(groupedSettings).map(([header, settings]) => (
+      {Object.entries(groupedSettings).map(([header, plugins]) => (
         <OptionGroup key={header}>
-          <OptionTitle>
+          <OptionGroupTitle>
             {header
               .split(' ')
               .map(capitalize)
               .join(' ')}
-          </OptionTitle>
-          <Options>
-            {settings.map(setting => (
-              <Option key={setting.description}>
+          </OptionGroupTitle>
+          {header === 'rounding' ? (
+            <>
+              <OptionTitle>Precision</OptionTitle>
+              <OptionRange>
+                <input
+                  type="range"
+                  min="0"
+                  max="8"
+                  value={settings.precision}
+                  onChange={event => setPrecision(Number(event.target.value))}
+                />
+                <OptionRangeValue>{settings.precision}</OptionRangeValue>
+              </OptionRange>
+            </>
+          ) : null}
+          {header === 'pretty code' ? (
+            <OptionGroupOptions>
+              <Option>
+                <Checkbox checked={settings.prettify} onChange={togglePrettify} />
+                <span>Prettify</span>
+              </Option>
+            </OptionGroupOptions>
+          ) : null}
+          <OptionGroupOptions>
+            {plugins.map(plugin => (
+              <Option key={plugin.description}>
                 <Checkbox
                   onChange={() =>
-                    onSettingsUpdate(R.set(R.lensProp('value'), !setting.value, setting))
+                    onSettingsUpdate(R.set(R.lensProp('value'), !plugin.value, plugin))
                   }
-                  checked={setting.value}
+                  checked={plugin.value}
                 />
-                <span>{setting.description}</span>
+                <span>{plugin.description}</span>
               </Option>
             ))}
-          </Options>
+          </OptionGroupOptions>
         </OptionGroup>
       ))}
     </SidebarWrapper>

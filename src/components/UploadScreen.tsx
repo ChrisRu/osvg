@@ -291,8 +291,8 @@ export function UploadScreen({ loadingError, onLoadSVG, hideError }: IProps) {
             </Tip>
           )}
           <Title>
-            <h1>SVGO Online</h1>
-            <p>Optimize your SVGs right in your browser</p>
+            <h1>iSVG</h1>
+            <p>Optimize SVGs right in your web browser</p>
           </Title>
           <Upload>
             <OpenFileLabel title="Open an SVG from your filesystem" as="label">

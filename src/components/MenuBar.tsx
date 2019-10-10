@@ -15,8 +15,10 @@ const MenuBarWrapper = styled.nav`
 
 const Title = styled.span`
   font-weight: bold;
+  font-size: 1.4rem;
   margin-right: 2rem;
   margin-left: 2rem;
+  opacity: 0.8;
   cursor: pointer;
   white-space: nowrap;
 
@@ -147,7 +149,7 @@ export function MenuBar({
   return (
     <MenuBarWrapper>
       <Title title="Close the SVG and go to the home screen" onClick={onClose}>
-        SVGO Online
+        iSVG
       </Title>
       <MenuButton
         title="View SVG Image"

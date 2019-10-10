@@ -21,6 +21,14 @@ describe('string transform', () => {
     expect(fixFileExtension('test.htmls', 'svg')).toEqual('test.htmls.svg')
   })
 
+  it('fix just file extension', () => {
+    expect(fixFileExtension('.s', 'svg')).toEqual('file.svg')
+  })
+
+  it('fix empty file name', () => {
+    expect(fixFileExtension('', 'svg')).toEqual('file.svg')
+  })
+
   it('fix file extension missing', () => {
     expect(fixFileExtension('test', 'svg')).toEqual('test.svg')
   })

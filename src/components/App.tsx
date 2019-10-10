@@ -26,15 +26,19 @@ const defaultFileName = 'file.svg'
 
 export function App() {
   const [view, setView] = useState<'svg' | 'code'>('svg')
-  const [prettify, setPrettify] = useState(false)
-  const [precision, setPrecision] = useState(3)
   const [fileName, setFileName] = useState<string>(defaultFileName)
   const [SVGContent, setSVGContent] = useState<string>()
   const [optimizedSVGContent, setOptimizedSVGContent] = useState<string>()
   const [error, setError] = useState<Error>()
 
-  const { settings, updateSetting } = useSettings()
+  const { settings, updateSetting, togglePrettify, setPrecision } = useSettings()
   const { theme, toggleTheme } = useTheme()
+
+  useEffect(() => {
+    if (fileName !== 'file.svg') {
+      document.title = `${fileName} | iSVG`
+    }
+  }, [fileName])
 
   useEffect(() => {
     async function keydown(event: KeyboardEvent) {
@@ -63,14 +67,14 @@ export function App() {
 
   useEffect(() => {
     if (SVGContent) {
-      SVGOWorker(SVGContent, settings, prettify, precision)
+      SVGOWorker(SVGContent, settings.plugins, settings.prettify, settings.precision)
         .then(setOptimizedSVGContent)
         .catch(error => {
           console.error(error)
           setError(error)
         })
     }
-  }, [SVGContent, settings, precision, prettify])
+  }, [SVGContent, settings])
 
   function openFile(contents: string, fileName?: string) {
     setSVGContent(contents)
@@ -109,11 +113,9 @@ export function App() {
         />
         <Main>
           <Sidebar
-            prettify={prettify}
-            togglePrettify={() => setPrettify(value => !value)}
-            precision={precision}
-            setPrecision={setPrecision}
             settings={settings}
+            togglePrettify={togglePrettify}
+            setPrecision={setPrecision}
             onSettingsUpdate={updateSetting}
           />
           <ViewOverlay fileName={fileName} after={optimizedSVGContent} toggleTheme={toggleTheme} />

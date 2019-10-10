@@ -1,8 +1,10 @@
-# SVGO Online
+# iSVG
 
-A GUI for optimizing your SVG's online using [SVGO](https://github.com/svg/svgo).
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c373035d-35a7-4991-a8cd-8773860b675d/deploy-status)](https://app.netlify.com/sites/isvg/deploys)
 
-Try it out at: https://svgo-online.netlify.com
+A GUI for optimizing your SVGs online using [SVGO](https://github.com/svg/svgo).
+
+Try it out at: https://isvg.netlify.com
 
 ## Setup
 

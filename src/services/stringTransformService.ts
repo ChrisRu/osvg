@@ -4,6 +4,10 @@ export function capitalize(string: string) {
 
 export function fixFileExtension(fileName: string, extension: string) {
   const value = fileName.trim()
+  if (!value) {
+    return 'file.svg'
+  }
+
   if (!value.includes('.')) {
     return value + '.' + extension
   }
@@ -20,7 +24,7 @@ export function fixFileExtension(fileName: string, extension: string) {
   }
 
   if (lastPart !== extension) {
-    return value.slice(0, lastDotIndex - 1) + '.' + extension
+    return (value.slice(0, lastDotIndex - 1) || 'file') + '.' + extension
   }
 
   return value

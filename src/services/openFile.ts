@@ -7,6 +7,7 @@ export async function createOpenFile() {
   const files = await new Promise<FileList | null>(resolve => {
     const fileInput = document.createElement('input')
     fileInput.type = 'file'
+    fileInput.accept = '.svg'
     fileInput.style.display = 'none'
     fileInput.onchange = data => {
       resolve(data.target ? (data.target as HTMLInputElement).files : null)

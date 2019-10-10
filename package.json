@@ -45,7 +45,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint . --ext .tsx,.ts"
+    "lint": "eslint . --ext .tsx,.ts",
+    "deploy": "npm run build",
+    "predeploy": "npm run test"
   },
   "eslintConfig": {
     "extends": "react-app"
