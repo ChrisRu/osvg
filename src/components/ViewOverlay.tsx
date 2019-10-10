@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { saveSvg } from '../services/saveSvg'
-import { IFileDetails } from '../services/openFile'
 import { DownloadIcon, ThemeIcon } from './elements/Icons'
 
 const Wrapper = styled.div`
@@ -67,19 +66,19 @@ const DownloadButton = styled.button`
 `
 
 interface IProps {
-  before: IFileDetails
+  fileName: string
   after?: string
   toggleTheme: () => void
 }
 
-export function ViewOverlay({ before, after, toggleTheme }: IProps) {
+export function ViewOverlay({ fileName, after, toggleTheme }: IProps) {
   return (
     <Wrapper>
       <ThemeButton onClick={toggleTheme}>
         <ThemeIcon />
       </ThemeButton>
       {after ? (
-        <DownloadButton onClick={() => saveSvg(after, before.name)}>
+        <DownloadButton onClick={() => saveSvg(after, fileName)}>
           <DownloadIcon />
           <span>Download</span>
         </DownloadButton>

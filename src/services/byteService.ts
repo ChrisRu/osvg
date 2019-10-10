@@ -9,8 +9,8 @@ export function getHumanReadableBytes(bytes: number) {
   let unitIndex = -1
   do {
     bytes /= thresh
-    ++unitIndex
+    unitIndex++
   } while (Math.abs(bytes) >= thresh && unitIndex < units.length - 1)
 
-  return bytes.toFixed(2) + ' ' + units[unitIndex]
+  return Number(bytes.toFixed(2)) + ' ' + units[unitIndex]
 }

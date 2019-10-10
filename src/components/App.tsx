@@ -7,9 +7,10 @@ import { UploadScreen } from './UploadScreen'
 import { SVGRenderer } from './SVGRenderer'
 import { CodeRenderer } from './CodeRenderer'
 import { SVGOWorker } from '../services/svgo.worker'
-import { IFileDetails } from '../services/openFile'
 import { useSettings } from '../hooks/useSettings'
 import { useTheme } from '../hooks/useTheme'
+import { getSVGTitle } from '../services/svgService'
+import { fixFileExtension } from '../services/stringTransformService'
 
 const Main = styled.main`
   position: relative;
@@ -19,9 +20,12 @@ const Main = styled.main`
   overflow: hidden;
 `
 
+const defaultFileName = 'file.svg'
+
 export function App() {
   const [view, setView] = useState<'svg' | 'code'>('svg')
-  const [SVGContent, setSVGContent] = useState<IFileDetails>()
+  const [fileName, setFileName] = useState<string>(defaultFileName)
+  const [SVGContent, setSVGContent] = useState<string>()
   const [optimizedSVGContent, setOptimizedSVGContent] = useState<string>()
   const [error, setError] = useState<Error>()
 
@@ -30,7 +34,7 @@ export function App() {
 
   useEffect(() => {
     if (SVGContent) {
-      SVGOWorker(SVGContent.contents, settings, true, 3)
+      SVGOWorker(SVGContent, settings, true, 3)
         .then(setOptimizedSVGContent)
         .catch(error => {
           console.error(error)
@@ -39,8 +43,9 @@ export function App() {
     }
   }, [SVGContent, settings])
 
-  function openFile(svgFile: IFileDetails) {
-    setSVGContent(svgFile)
+  function openFile(contents: string, fileName?: string) {
+    setSVGContent(contents)
+    setFileName(fileName ? fileName : getSVGTitle(contents) || defaultFileName)
     setError(undefined)
   }
 
@@ -63,14 +68,19 @@ export function App() {
         <MenuBar
           view={view}
           error={error}
+          fileName={fileName}
           initialFile={SVGContent}
           compressedFile={optimizedSVGContent}
+          onUpdateFileName={setFileName}
+          onRewriteFileName={() => {
+            setFileName(fixFileExtension(fileName, 'svg'))
+          }}
           onChangeView={setView}
           onClose={() => setSVGContent(undefined)}
         />
         <Main>
           <Sidebar settings={settings} onSettingsUpdate={updateSetting} />
-          <ViewOverlay before={SVGContent} after={optimizedSVGContent} toggleTheme={toggleTheme} />
+          <ViewOverlay fileName={fileName} after={optimizedSVGContent} toggleTheme={toggleTheme} />
           {view === 'svg' ? (
             <SVGRenderer SVGContent={optimizedSVGContent} />
           ) : (

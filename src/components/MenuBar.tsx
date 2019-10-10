@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { IFileDetails } from '../services/openFile'
-import { getFileSizeGZIP, getFileSize } from '../services/gzip.worker'
+import { getFileSizeGZIP, getFileSize } from '../services/fileSizeService'
 import { getHumanReadableBytes } from '../services/byteService'
 
 const MenuBarWrapper = styled.nav`
@@ -24,7 +23,7 @@ const Title = styled.span`
   }
 `
 
-const ViewButton = styled.button<{ active: boolean }>`
+const MenuButton = styled.button<{ active: boolean }>`
   padding: calc(0.7rem + 3px) 1.5rem 0.7rem;
   background: transparent;
   border: 0;
@@ -51,11 +50,26 @@ const FileInfo = styled.div`
   margin-left: auto;
   width: calc(100% - 400px);
   justify-content: center;
+  align-items: center;
 `
 
-const FileName = styled.span`
+const FileNameInput = styled.input`
   font-weight: bold;
-  margin-right: 1.5rem;
+  margin-right: 0.5rem;
+  padding: 0.4rem;
+  background: transparent;
+  color: #fff;
+  text-align: center;
+  border: 0;
+  width: max-content;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &:focus {
+    background: rgba(255, 255, 255, 0.2);
+  }
 `
 
 const FileDetails = styled.span`
@@ -71,15 +85,6 @@ const Percentage = styled.span<{ improvement: boolean }>`
   color: ${p => (p.improvement ? '#63e163' : '#ff7171')};
 `
 
-interface IProps {
-  view: string
-  error?: Error
-  initialFile: IFileDetails
-  compressedFile?: string
-  onChangeView: (view: 'svg' | 'code') => void
-  onClose: () => void
-}
-
 function getSize(contents: string, gzip: boolean) {
   return gzip ? getFileSizeGZIP(contents) : getFileSize(contents)
 }
@@ -88,18 +93,33 @@ function getPercentage(initialSize: number, newSize: number) {
   return Math.round(((initialSize - newSize) / initialSize) * 10000) / 100
 }
 
+interface IProps {
+  view: string
+  error?: Error
+  fileName: string
+  initialFile: string
+  compressedFile?: string
+  onChangeView: (view: 'svg' | 'code') => void
+  onClose: () => void
+  onUpdateFileName: (fileName: string) => void
+  onRewriteFileName: () => void
+}
+
 export function MenuBar({
   view,
   error,
+  fileName,
   initialFile,
   compressedFile,
+  onUpdateFileName,
+  onRewriteFileName,
   onChangeView,
   onClose,
 }: IProps) {
   const [gzip] = useState(true)
 
-  const initialSize = getSize(initialFile.contents, gzip)
-  const compressedSize = getSize(compressedFile || initialFile.contents, gzip)
+  const initialSize = getSize(initialFile, gzip)
+  const compressedSize = getSize(compressedFile || initialFile, gzip)
 
   const percentage = getPercentage(initialSize, compressedSize)
   const improvement = compressedFile !== undefined && percentage >= 0
@@ -107,17 +127,22 @@ export function MenuBar({
   return (
     <MenuBarWrapper>
       <Title onClick={onClose}>SVGO Online</Title>
-      <ViewButton onClick={() => onChangeView('svg')} active={view === 'svg'}>
+      <MenuButton onClick={() => onChangeView('svg')} active={view === 'svg'}>
         Image
-      </ViewButton>
-      <ViewButton onClick={() => onChangeView('code')} active={view === 'code'}>
+      </MenuButton>
+      <MenuButton onClick={() => onChangeView('code')} active={view === 'code'}>
         Code
-      </ViewButton>
+      </MenuButton>
       {error ? (
         <FileInfo />
       ) : (
         <FileInfo>
-          <FileName>{initialFile.name}</FileName>
+          <FileNameInput
+            type="text"
+            value={fileName}
+            onChange={event => onUpdateFileName(event.target.value)}
+            onBlur={onRewriteFileName}
+          />
           <FileDetails>
             <FileSize>{getHumanReadableBytes(compressedSize)}</FileSize>
             {percentage === undefined ? null : (

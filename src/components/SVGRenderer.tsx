@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { svgToDataUri } from '../services/svgToDataUri'
+import { svgToDataUri } from '../services/svgService'
 import { PanAndZoom } from './elements/PanAndZoom'
 
 function createBackground(color: string, size: number) {

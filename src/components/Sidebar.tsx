@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import * as R from 'ramda'
 import { ISetting } from '../services/svgoSettings'
-import { capitalize } from '../services/stringTransform'
+import { capitalize } from '../services/stringTransformService'
 import { Checkbox } from './elements/Checkbox'
 
 const SidebarWrapper = styled.div`
