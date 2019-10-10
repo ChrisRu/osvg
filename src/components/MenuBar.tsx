@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { getFileSizeGZIP, getFileSize } from '../services/fileSizeService'
 import { getHumanReadableBytes } from '../services/byteService'
+import { CloseIcon } from './elements/Icons'
 
 const MenuBarWrapper = styled.nav`
   background: #181818;
@@ -17,9 +18,28 @@ const Title = styled.span`
   margin-right: 2rem;
   margin-left: 2rem;
   cursor: pointer;
+  white-space: nowrap;
 
   &:hover {
     color: #ccc;
+  }
+`
+
+const CloseButton = styled.button`
+  margin: 0 0.5rem;
+  padding: 0.2rem;
+  border: 0;
+  opacity: 0.7;
+  color: #fff;
+  background: transparent;
+
+  &:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  svg {
+    vertical-align: middle;
   }
 `
 
@@ -126,11 +146,21 @@ export function MenuBar({
 
   return (
     <MenuBarWrapper>
-      <Title onClick={onClose}>SVGO Online</Title>
-      <MenuButton onClick={() => onChangeView('svg')} active={view === 'svg'}>
+      <Title title="Close the SVG and go to the home screen" onClick={onClose}>
+        SVGO Online
+      </Title>
+      <MenuButton
+        title="View SVG Image"
+        onClick={() => onChangeView('svg')}
+        active={view === 'svg'}
+      >
         Image
       </MenuButton>
-      <MenuButton onClick={() => onChangeView('code')} active={view === 'code'}>
+      <MenuButton
+        title="View SVG Code"
+        onClick={() => onChangeView('code')}
+        active={view === 'code'}
+      >
         Code
       </MenuButton>
       {error ? (
@@ -138,12 +168,18 @@ export function MenuBar({
       ) : (
         <FileInfo>
           <FileNameInput
+            title="Change the filename"
             type="text"
             value={fileName}
             onChange={event => onUpdateFileName(event.target.value)}
             onBlur={onRewriteFileName}
+            onKeyDown={event => {
+              if (event.key === 'Escape' || event.key === 'Enter') {
+                ;(event.target as HTMLInputElement).blur()
+              }
+            }}
           />
-          <FileDetails>
+          <FileDetails title={gzip ? 'gzipped size' : 'stored size'}>
             <FileSize>{getHumanReadableBytes(compressedSize)}</FileSize>
             {percentage === undefined ? null : (
               <Percentage improvement={improvement}>
@@ -154,6 +190,9 @@ export function MenuBar({
           </FileDetails>
         </FileInfo>
       )}
+      <CloseButton title="Close the currently open SVG" onClick={onClose}>
+        <CloseIcon />
+      </CloseButton>
     </MenuBarWrapper>
   )
 }

@@ -3,6 +3,21 @@ export interface IFileDetails {
   name: string
 }
 
+export async function createOpenFile() {
+  const files = await new Promise<FileList | null>(resolve => {
+    const fileInput = document.createElement('input')
+    fileInput.type = 'file'
+    fileInput.style.display = 'none'
+    fileInput.onchange = data => {
+      resolve(data.target ? (data.target as HTMLInputElement).files : null)
+    }
+    document.body.appendChild(fileInput)
+    fileInput.click()
+  })
+
+  return openFile(files)
+}
+
 export function openFile(files: FileList | null) {
   return new Promise<IFileDetails>(resolve => {
     const file = files ? files[0] : undefined

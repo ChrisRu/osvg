@@ -43,10 +43,21 @@ const Option = styled.label`
 
 interface IProps {
   settings: ISetting[]
+  prettify: boolean
+  precision: number
+  togglePrettify: () => void
+  setPrecision: (value: number) => void
   onSettingsUpdate: (setting: ISetting) => void
 }
 
-export function Sidebar({ settings, onSettingsUpdate }: IProps) {
+export function Sidebar({
+  settings,
+  prettify,
+  precision,
+  togglePrettify,
+  setPrecision,
+  onSettingsUpdate,
+}: IProps) {
   const groupedSettings = settings.reduce<{ [key: string]: ISetting[] }>((total, setting) => {
     if (setting.category in total) {
       total[setting.category].push(setting)
@@ -58,6 +69,18 @@ export function Sidebar({ settings, onSettingsUpdate }: IProps) {
 
   return (
     <SidebarWrapper>
+      <Option>
+        <Checkbox checked={prettify} onChange={togglePrettify} />
+        <span>Prettify</span>
+      </Option>
+      <Option>
+        <input
+          type="number"
+          value={precision}
+          onChange={event => setPrecision(Number(event.target.value))}
+        />
+        <span>Precision</span>
+      </Option>
       {Object.entries(groupedSettings).map(([header, settings]) => (
         <OptionGroup key={header}>
           <OptionTitle>

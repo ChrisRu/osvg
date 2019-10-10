@@ -11,6 +11,8 @@ import { useSettings } from '../hooks/useSettings'
 import { useTheme } from '../hooks/useTheme'
 import { getSVGTitle } from '../services/svgService'
 import { fixFileExtension } from '../services/stringTransformService'
+import { createOpenFile } from '../services/openFile'
+import { saveSvg } from '../services/saveSvg'
 
 const Main = styled.main`
   position: relative;
@@ -24,6 +26,8 @@ const defaultFileName = 'file.svg'
 
 export function App() {
   const [view, setView] = useState<'svg' | 'code'>('svg')
+  const [prettify, setPrettify] = useState(false)
+  const [precision, setPrecision] = useState(3)
   const [fileName, setFileName] = useState<string>(defaultFileName)
   const [SVGContent, setSVGContent] = useState<string>()
   const [optimizedSVGContent, setOptimizedSVGContent] = useState<string>()
@@ -33,15 +37,40 @@ export function App() {
   const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
+    async function keydown(event: KeyboardEvent) {
+      if (event.ctrlKey) {
+        if (event.key === 'o') {
+          event.preventDefault()
+          const details = await createOpenFile()
+          openFile(details.contents, details.name)
+        }
+
+        if (event.key === 's') {
+          if (optimizedSVGContent) {
+            event.preventDefault()
+            saveSvg(optimizedSVGContent, fileName)
+          }
+        }
+      }
+    }
+
+    window.addEventListener('keydown', keydown)
+
+    return function() {
+      window.removeEventListener('keydown', keydown)
+    }
+  }, [optimizedSVGContent, fileName])
+
+  useEffect(() => {
     if (SVGContent) {
-      SVGOWorker(SVGContent, settings, true, 3)
+      SVGOWorker(SVGContent, settings, prettify, precision)
         .then(setOptimizedSVGContent)
         .catch(error => {
           console.error(error)
           setError(error)
         })
     }
-  }, [SVGContent, settings])
+  }, [SVGContent, settings, precision, prettify])
 
   function openFile(contents: string, fileName?: string) {
     setSVGContent(contents)
@@ -79,7 +108,14 @@ export function App() {
           onClose={() => setSVGContent(undefined)}
         />
         <Main>
-          <Sidebar settings={settings} onSettingsUpdate={updateSetting} />
+          <Sidebar
+            prettify={prettify}
+            togglePrettify={() => setPrettify(value => !value)}
+            precision={precision}
+            setPrecision={setPrecision}
+            settings={settings}
+            onSettingsUpdate={updateSetting}
+          />
           <ViewOverlay fileName={fileName} after={optimizedSVGContent} toggleTheme={toggleTheme} />
           {view === 'svg' ? (
             <SVGRenderer SVGContent={optimizedSVGContent} />

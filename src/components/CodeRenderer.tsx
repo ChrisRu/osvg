@@ -12,7 +12,7 @@ const CodeBlock = styled.pre`
   padding: 2rem;
   margin: 0;
   word-wrap: anywhere;
-  white-space: normal;
+  white-space: pre-wrap;
 `
 
 interface IProps {

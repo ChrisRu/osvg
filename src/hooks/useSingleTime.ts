@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 
 export function useSingleTime(uniqueName: string): [boolean, () => void] {
-  const [shown, setShown] = useState(false)
+  const [shown, setShown] = useState(true)
 
   useEffect(() => {
     const item = localStorage.getItem('svgo-online@' + uniqueName)
-    if (item === 'YES') {
-      setShown(true)
+    if (item !== 'YES') {
+      setShown(false)
     }
   }, [uniqueName])
 

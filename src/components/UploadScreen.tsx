@@ -295,7 +295,7 @@ export function UploadScreen({ loadingError, onLoadSVG, hideError }: IProps) {
             <p>Optimize your SVGs right in your browser</p>
           </Title>
           <Upload>
-            <OpenFileLabel as="label">
+            <OpenFileLabel title="Open an SVG from your filesystem" as="label">
               <UploadIcon />
               <span>Open file</span>
               <input
@@ -308,9 +308,14 @@ export function UploadScreen({ loadingError, onLoadSVG, hideError }: IProps) {
             </OpenFileLabel>
             <MarkupInputWrapper>
               <ClipboardIcon />
-              <MarkupInput placeholder="Paste markup" onPaste={onPaste} onKeyDown={onKeyDown} />
+              <MarkupInput
+                title="Paste your SVG's markup in here"
+                placeholder="Paste markup"
+                onPaste={onPaste}
+                onKeyDown={onKeyDown}
+              />
             </MarkupInputWrapper>
-            <OpenFileButton onClick={onDemo}>
+            <OpenFileButton title="Open an example file" onClick={onDemo}>
               <PawIcon />
               <span>Demo</span>
             </OpenFileButton>

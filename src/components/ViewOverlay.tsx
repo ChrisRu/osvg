@@ -74,11 +74,14 @@ interface IProps {
 export function ViewOverlay({ fileName, after, toggleTheme }: IProps) {
   return (
     <Wrapper>
-      <ThemeButton onClick={toggleTheme}>
+      <ThemeButton title="Toggle theme" onClick={toggleTheme}>
         <ThemeIcon />
       </ThemeButton>
       {after ? (
-        <DownloadButton onClick={() => saveSvg(after, fileName)}>
+        <DownloadButton
+          title="Download the SVG to your local filesystem"
+          onClick={() => saveSvg(after, fileName)}
+        >
           <DownloadIcon />
           <span>Download</span>
         </DownloadButton>
