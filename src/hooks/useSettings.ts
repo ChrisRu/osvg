@@ -48,7 +48,11 @@ export function useSettings() {
     const settingLens = R.lensIndex(
       R.findIndex(R.propEq('description', setting.description))(settings.plugins),
     )
-    setSettings(R.set(settingLens, setting))
+    setSettings(settings => ({
+      precision: settings.precision,
+      prettify: settings.prettify,
+      plugins: R.set(settingLens, setting, settings.plugins),
+    }))
   }
 
   function togglePrettify() {

@@ -1,4 +1,4 @@
-import { gzip } from 'pako'
+import { gzip } from 'pako/dist/pako_deflate'
 
 export function getFileSize(contents: string) {
   return new Blob([contents]).size
