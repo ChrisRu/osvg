@@ -198,7 +198,7 @@ interface IProps {
   hideError: () => void
 }
 
-export function UploadScreen({ loadingError, onLoadSVG, hideError }: IProps) {
+export function HomeScreen({ loadingError, onLoadSVG, hideError }: IProps) {
   // Dragging is a number, because drag leave events are triggered
   // when hovering over a transitioning element.
   const [dragging, setDragging] = useState(0)

@@ -74,8 +74,6 @@ interface IProps {
 }
 
 export function Sidebar({ settings, togglePrettify, setPrecision, onSettingsUpdate }: IProps) {
-  console.log(settings)
-
   const groupedSettings = settings.plugins.reduce<{ [key: string]: ISetting[] }>(
     (total, setting) => {
       if (setting.category in total) {

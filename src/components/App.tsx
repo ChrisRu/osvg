@@ -3,7 +3,7 @@ import styled, { ThemeProvider } from 'styled-components'
 import { MenuBar } from './MenuBar'
 import { Sidebar } from './Sidebar'
 import { ViewOverlay } from './ViewOverlay'
-import { UploadScreen } from './UploadScreen'
+import { HomeScreen } from './HomeScreen'
 import { SVGRenderer } from './SVGRenderer'
 import { CodeRenderer } from './CodeRenderer'
 import { SVGOWorker } from '../services/svgo.worker'
@@ -32,13 +32,15 @@ export function App() {
   const [error, setError] = useState<Error>()
 
   const { settings, updateSetting, togglePrettify, setPrecision } = useSettings()
-  const { theme, toggleTheme } = useTheme()
+  const { theme, toggleTheme, themeName } = useTheme()
 
   useEffect(() => {
-    if (fileName !== 'file.svg') {
+    if (!SVGContent) {
+      document.title = 'iSVG | Optimize your SVGs'
+    } else if (fileName !== 'file.svg') {
       document.title = `${fileName} | iSVG`
     }
-  }, [fileName])
+  }, [SVGContent, fileName])
 
   useEffect(() => {
     async function keydown(event: KeyboardEvent) {
@@ -84,7 +86,7 @@ export function App() {
 
   if (!SVGContent || error) {
     return (
-      <UploadScreen
+      <HomeScreen
         loadingError={error}
         onLoadSVG={openFile}
         hideError={() => {
@@ -122,7 +124,7 @@ export function App() {
           {view === 'svg' ? (
             <SVGRenderer SVGContent={optimizedSVGContent} />
           ) : (
-            <CodeRenderer SVGContent={optimizedSVGContent} />
+            <CodeRenderer SVGContent={optimizedSVGContent} theme={themeName} />
           )}
         </Main>
       </>

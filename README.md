@@ -11,3 +11,5 @@ Try it out at: https://isvg.netlify.com
 1. Clone the repo.
 2. Run `npm install` to install the dependencies
 3. Run `npm start` to start the development server
+
+(the i is for improved)
