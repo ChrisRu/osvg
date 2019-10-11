@@ -291,7 +291,7 @@ export function HomeScreen({ loadingError, onLoadSVG, hideError }: IProps) {
             </Tip>
           )}
           <Title>
-            <h1>iSVG</h1>
+            <h1>oSVG</h1>
             <p>Optimize SVGs right in your web browser</p>
           </Title>
           <Upload>

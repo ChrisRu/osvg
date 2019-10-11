@@ -149,7 +149,7 @@ export function MenuBar({
   return (
     <MenuBarWrapper>
       <Title title="Close the SVG and go to the home screen" onClick={onClose}>
-        iSVG
+        oSVG
       </Title>
       <MenuButton
         title="View SVG Image"

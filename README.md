@@ -1,10 +1,10 @@
-# iSVG
+# oSVG
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/c373035d-35a7-4991-a8cd-8773860b675d/deploy-status)](https://app.netlify.com/sites/isvg/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c373035d-35a7-4991-a8cd-8773860b675d/deploy-status)](https://app.netlify.com/sites/oSVG/deploys)
 
 A GUI for optimizing your SVGs online using [SVGO](https://github.com/svg/svgo).
 
-Try it out at: https://isvg.netlify.com
+Try it out at: https://oSVG.netlify.com
 
 ## Setup
 
@@ -12,4 +12,4 @@ Try it out at: https://isvg.netlify.com
 2. Run `npm install` to install the dependencies
 3. Run `npm start` to start the development server
 
-(the i is for improved)
+(the o stands for optimize)

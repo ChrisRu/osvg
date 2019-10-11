@@ -36,9 +36,9 @@ export function App() {
 
   useEffect(() => {
     if (!SVGContent) {
-      document.title = 'iSVG | Optimize your SVGs'
+      document.title = 'oSVG | Optimize your SVGs'
     } else if (fileName !== 'file.svg') {
-      document.title = `${fileName} | iSVG`
+      document.title = `${fileName} | oSVG`
     }
   }, [SVGContent, fileName])
 
