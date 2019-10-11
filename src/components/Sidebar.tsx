@@ -51,6 +51,11 @@ const OptionRange = styled.div`
 
   input {
     flex: 1;
+    background: transparent;
+
+    &::-moz-range-track {
+      background-color: #ccc;
+    }
   }
 `
 

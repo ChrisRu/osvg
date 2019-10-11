@@ -26,7 +26,7 @@ const defaultFileName = 'file.svg'
 
 export function App() {
   const [view, setView] = useState<'svg' | 'code'>('svg')
-  const [fileName, setFileName] = useState<string>(defaultFileName)
+  const [fileName, setFileName] = useState<string>()
   const [SVGContent, setSVGContent] = useState<string>()
   const [optimizedSVGContent, setOptimizedSVGContent] = useState<string>()
   const [error, setError] = useState<Error>()
@@ -35,10 +35,10 @@ export function App() {
   const { theme, toggleTheme, themeName } = useTheme()
 
   useEffect(() => {
-    if (!SVGContent) {
+    if (!SVGContent || !fileName) {
       document.title = 'oSVG | Optimize your SVGs'
-    } else if (fileName !== 'file.svg') {
-      document.title = `${fileName} | oSVG`
+    } else {
+      document.title = `${fileName || defaultFileName} | oSVG`
     }
   }, [SVGContent, fileName])
 
@@ -54,7 +54,7 @@ export function App() {
         if (event.key === 's') {
           if (optimizedSVGContent) {
             event.preventDefault()
-            saveSvg(optimizedSVGContent, fileName)
+            saveSvg(optimizedSVGContent, fileName || defaultFileName)
           }
         }
       }
@@ -108,7 +108,7 @@ export function App() {
           compressedFile={optimizedSVGContent}
           onUpdateFileName={setFileName}
           onRewriteFileName={() => {
-            setFileName(fixFileExtension(fileName, 'svg'))
+            setFileName(fileName ? fixFileExtension(fileName, 'svg') : defaultFileName)
           }}
           onChangeView={setView}
           onClose={() => setSVGContent(undefined)}
@@ -120,7 +120,11 @@ export function App() {
             setPrecision={setPrecision}
             onSettingsUpdate={updateSetting}
           />
-          <ViewOverlay fileName={fileName} after={optimizedSVGContent} toggleTheme={toggleTheme} />
+          <ViewOverlay
+            fileName={fileName || defaultFileName}
+            after={optimizedSVGContent}
+            toggleTheme={toggleTheme}
+          />
           {view === 'svg' ? (
             <SVGRenderer SVGContent={optimizedSVGContent} />
           ) : (

@@ -16,7 +16,7 @@ const MenuBarWrapper = styled.nav`
 
 const Title = styled.span`
   display: block;
-  padding: 0.5rem 1.5rem;
+  padding: 0.3rem 1.5rem;
   cursor: pointer;
 
   svg {
@@ -125,7 +125,7 @@ function getPercentage(initialSize: number, newSize: number) {
 interface IProps {
   view: string
   error?: Error
-  fileName: string
+  fileName?: string
   initialFile: string
   compressedFile?: string
   onChangeView: (view: 'svg' | 'code') => void

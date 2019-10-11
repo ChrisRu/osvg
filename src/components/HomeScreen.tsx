@@ -57,6 +57,7 @@ const Title = styled.div`
     font-size: 5rem;
     margin: 0;
     margin-bottom: 0.75rem;
+    user-select: none;
 
     svg {
       width: 3.2rem;
