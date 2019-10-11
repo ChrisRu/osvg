@@ -61,7 +61,7 @@ const Title = styled.div`
     svg {
       width: 3.2rem;
       height: 3.2rem;
-      margin-bottom: -0.3rem;
+      margin-bottom: -0.1rem;
       margin-right: 0.3rem;
     }
   }
