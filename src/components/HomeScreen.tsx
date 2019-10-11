@@ -4,6 +4,7 @@ import { UploadIcon, ClipboardIcon, PawIcon, WarningIcon } from './elements/Icon
 import { SVGOTextLogo } from './elements/SVGOTextLogo'
 import { openFile } from '../services/openFile'
 import { useSingleTime } from '../hooks/useSingleTime'
+import { Logo } from './elements/Logo'
 
 const MegaWrapper = styled.div`
   flex: 1;
@@ -56,6 +57,13 @@ const Title = styled.div`
     font-size: 5rem;
     margin: 0;
     margin-bottom: 0.75rem;
+
+    svg {
+      width: 3.2rem;
+      height: 3.2rem;
+      margin-bottom: -0.3rem;
+      margin-right: 0.3rem;
+    }
   }
 
   p {
@@ -291,7 +299,10 @@ export function HomeScreen({ loadingError, onLoadSVG, hideError }: IProps) {
             </Tip>
           )}
           <Title>
-            <h1>oSVG</h1>
+            <h1 aria-label="oSVG">
+              <Logo fill="#fff" />
+              <span>SVG</span>
+            </h1>
             <p>Optimize SVGs right in your web browser</p>
           </Title>
           <Upload>

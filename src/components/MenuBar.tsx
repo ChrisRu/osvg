@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { getFileSizeGZIP, getFileSize } from '../services/fileSizeService'
 import { getHumanReadableBytes } from '../services/byteService'
 import { CloseIcon } from './elements/Icons'
+import { Logo } from './elements/Logo'
 
 const MenuBarWrapper = styled.nav`
   background: #181818;
@@ -14,16 +15,22 @@ const MenuBarWrapper = styled.nav`
 `
 
 const Title = styled.span`
-  font-weight: bold;
-  font-size: 1.4rem;
-  margin-right: 2rem;
-  margin-left: 2rem;
-  opacity: 0.8;
+  display: block;
+  padding: 0.5rem 1.5rem;
   cursor: pointer;
-  white-space: nowrap;
+
+  svg {
+    width: 2.2rem;
+    height: 2.2rem;
+    transition: transform 0.2s;
+  }
 
   &:hover {
-    color: #ccc;
+    background: rgba(255, 255, 255, 0.2);
+
+    svg {
+      transform: rotate(180deg);
+    }
   }
 `
 
@@ -149,7 +156,7 @@ export function MenuBar({
   return (
     <MenuBarWrapper>
       <Title title="Close the SVG and go to the home screen" onClick={onClose}>
-        oSVG
+        <Logo />
       </Title>
       <MenuButton
         title="View SVG Image"
