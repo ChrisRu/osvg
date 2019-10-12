@@ -41,6 +41,21 @@ const ThemeButton = styled.button`
   }
 `
 
+const OriginalButton = styled.button`
+  background: rgba(255, 255, 255, 0.4);
+  color: rgba(0, 0, 0, 0.6);
+  border: 0;
+  padding: 0.3rem 0.5rem;
+  margin: 0;
+  text-transform: uppercase;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  font-weight: bold;
+  border-radius: 0.5rem;
+  letter-spacing: 0.5px;
+`
+
 const DownloadButton = styled.button`
   position: absolute;
   bottom: 0;
@@ -75,13 +90,18 @@ const DownloadButton = styled.button`
 interface IProps {
   fileName: string
   optimizedSVG?: string
+  original: boolean
+  onToggleOriginal: () => void
 }
 
-export function ViewOverlay({ fileName, optimizedSVG }: IProps) {
+export function ViewOverlay({ fileName, original, optimizedSVG, onToggleOriginal }: IProps) {
   const { toggleTheme } = useContext<ITheme>(ThemeContext)
 
   return (
     <Wrapper>
+      {/* <OriginalButton onClick={onToggleOriginal}>
+        Show {original ? 'optimized' : 'original'}
+      </OriginalButton> */}
       <ThemeButton title="Toggle theme" onClick={toggleTheme}>
         <ThemeIcon />
       </ThemeButton>

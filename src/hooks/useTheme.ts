@@ -20,7 +20,7 @@ const themes: { [key in ThemeName]: IColorTheme } = {
   dark: {
     foreground: '#fff',
     background: '#212123',
-    backgroundSecondary: '#262627',
+    backgroundSecondary: '#262629',
     backgroundTertiary: '#212123',
   },
   light: {

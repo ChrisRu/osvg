@@ -213,8 +213,10 @@ export function HomeScreen({ loadingError, onLoadSVG, hideError }: IProps) {
   // Dragging is a number, because drag leave events are triggered
   // when hovering over a transitioning element.
   const [dragging, setDragging] = useState(0)
-  const [tipShown, hideTip] = useSingleTime('tip:drag-drop')
+
   const inputFileRef = useRef<HTMLInputElement>(null)
+
+  const [tipShown, hideTip] = useSingleTime('tip:drag-drop')
 
   function onDragOver(event: React.DragEvent<HTMLDivElement>) {
     event.preventDefault()

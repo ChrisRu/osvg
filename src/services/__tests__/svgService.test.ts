@@ -1,4 +1,4 @@
-import { getSVGTitle, svgToDataUri, dataUriToSvg } from '../svgService'
+import { getSVGTitle, SVGToDataUri, dataUriToSVG } from '../svgService'
 
 describe('SVG', () => {
   it('should get the title', () => {
@@ -14,21 +14,21 @@ describe('SVG', () => {
   })
 
   it('should be able to transform svg to data uri', () => {
-    expect(svgToDataUri('<svg></svg>')).toEqual('data:image/svg+xml,%3Csvg%3E%3C%2Fsvg%3E')
+    expect(SVGToDataUri('<svg></svg>')).toEqual('data:image/svg+xml,%3Csvg%3E%3C%2Fsvg%3E')
   })
 
   it('should be able to transform svg to data uri with different data type', () => {
-    expect(svgToDataUri('<svg></svg>', 'data:bullshit')).toEqual(
+    expect(SVGToDataUri('<svg></svg>', 'data:bullshit')).toEqual(
       'data:bullshit,%3Csvg%3E%3C%2Fsvg%3E',
     )
   })
 
   it('should be able to transform data uri to svg', () => {
-    expect(dataUriToSvg('data:image/svg+xml,%3Csvg%3E%3C%2Fsvg%3E')).toEqual('<svg></svg>')
+    expect(dataUriToSVG('data:image/svg+xml,%3Csvg%3E%3C%2Fsvg%3E')).toEqual('<svg></svg>')
   })
 
   it('should be able to transform data uri with different data type to svg', () => {
-    expect(dataUriToSvg('data:bullshit,%3Csvg%3E%3C%2Fsvg%3E', 'data:bullshit')).toEqual(
+    expect(dataUriToSVG('data:bullshit,%3Csvg%3E%3C%2Fsvg%3E', 'data:bullshit')).toEqual(
       '<svg></svg>',
     )
   })

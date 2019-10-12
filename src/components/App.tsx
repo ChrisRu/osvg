@@ -25,21 +25,21 @@ const defaultFileName = 'file.svg'
 
 export function App() {
   const [view, setView] = useState<'svg' | 'code'>('svg')
-  const [fileName, setFileName] = useState<string>()
-  const [SVGContent, setSVGContent] = useState<string>()
-  const [optimizedSVGContent, setOptimizedSVGContent] = useState<string>()
   const [error, setError] = useState<Error>()
+  const [fileName, setFileName] = useState<string>('')
+  const [initialSVG, setInitialSVG] = useState<string>()
+  const [optimizedSVG, setOptimizedSVGContent] = useState<string>()
 
   const { settings, updateSetting, togglePrettify, setPrecision } = useSettings()
   const { theme, toggleTheme, themeName } = useTheme()
 
   useEffect(() => {
-    if (!SVGContent || !fileName) {
+    if (!initialSVG || !fileName) {
       document.title = 'oSVG | Optimize your SVGs'
     } else {
       document.title = `${fileName || defaultFileName} | oSVG`
     }
-  }, [SVGContent, fileName])
+  }, [initialSVG, fileName])
 
   useEffect(() => {
     async function keydown(event: KeyboardEvent) {
@@ -51,9 +51,9 @@ export function App() {
         }
 
         if (event.key === 's') {
-          if (optimizedSVGContent) {
+          if (optimizedSVG) {
             event.preventDefault()
-            saveSvg(optimizedSVGContent, fileName || defaultFileName)
+            saveSvg(optimizedSVG, fileName || defaultFileName)
           }
         }
       }
@@ -64,32 +64,32 @@ export function App() {
     return function() {
       window.removeEventListener('keydown', keydown)
     }
-  }, [optimizedSVGContent, fileName])
+  }, [optimizedSVG, fileName])
 
   useEffect(() => {
-    if (SVGContent) {
-      SVGOWorker(SVGContent, settings.plugins, settings.prettify, settings.precision)
+    if (initialSVG) {
+      SVGOWorker(initialSVG, settings.plugins, settings.prettify, settings.precision)
         .then(setOptimizedSVGContent)
         .catch(error => {
           console.error(error)
           setError(error)
         })
     }
-  }, [SVGContent, settings])
+  }, [initialSVG, settings])
 
   function openFile(contents: string, fileName?: string) {
-    setSVGContent(contents)
+    setInitialSVG(contents)
     setFileName(fileName ? fileName : getSVGTitle(contents) || defaultFileName)
     setError(undefined)
   }
 
-  if (!SVGContent || error) {
+  if (!initialSVG || error) {
     return (
       <HomeScreen
         loadingError={error}
         onLoadSVG={openFile}
         hideError={() => {
-          setSVGContent(undefined)
+          setInitialSVG(undefined)
           setError(undefined)
         }}
       />
@@ -103,26 +103,34 @@ export function App() {
           view={view}
           error={error}
           fileName={fileName}
-          initialSVG={SVGContent}
-          optimizedSVG={optimizedSVGContent}
+          initialSVG={initialSVG}
+          optimizedSVG={optimizedSVG}
           onUpdateFileName={setFileName}
           onRewriteFileName={() =>
             setFileName(fileName ? fixFileExtension(fileName, 'svg') : defaultFileName)
           }
           onChangeView={setView}
-          onClose={() => setSVGContent(undefined)}
+          onClose={() => setInitialSVG(undefined)}
         />
         <Main>
           <Sidebar
             settings={settings}
+            onSettingsUpdate={updateSetting}
             togglePrettify={togglePrettify}
             setPrecision={setPrecision}
-            onSettingsUpdate={updateSetting}
           />
           {view === 'svg' ? (
-            <SVGRenderer SVGContent={optimizedSVGContent} fileName={fileName || defaultFileName} />
+            <SVGRenderer
+              initialSVG={initialSVG}
+              optimizedSVG={optimizedSVG}
+              fileName={fileName || defaultFileName}
+            />
           ) : (
-            <CodeRenderer SVGContent={optimizedSVGContent} fileName={fileName || defaultFileName} />
+            <CodeRenderer
+              initialSVG={initialSVG}
+              optimizedSVG={optimizedSVG}
+              fileName={fileName || defaultFileName}
+            />
           )}
         </Main>
       </>

@@ -1,11 +1,3 @@
-import {
-  PluginConfig,
-  PluginMoveElemsAttrsToGroup,
-  PluginMoveGroupAttrsToElems,
-  PluginRemoveDimensions,
-  PluginRemoveViewBox,
-} from '../plugins/svgo/types'
-
 export interface ISettings {
   plugins: ISetting[]
   precision: number
@@ -14,7 +6,7 @@ export interface ISettings {
 
 export interface ISetting {
   description: string
-  getConfig: (value: boolean) => PluginConfig
+  id: string
   category: string
   value: boolean
 }
@@ -25,281 +17,283 @@ export const defaultSettings: ISettings = {
   plugins: [
     {
       description: 'Remove doctype declaration',
-      getConfig: (value: boolean) => ({ removeDoctype: value }),
+      id: 'removeDoctype',
       category: 'stripping',
       value: true,
     },
     {
       description: 'Remove XML processing instructions',
-      getConfig: (value: boolean) => ({ removeXMLProcInst: value }),
+      id: 'removeXMLProcInst',
       category: 'stripping',
       value: true,
     },
     {
       description: 'Remove comments',
-      getConfig: (value: boolean) => ({ removeComments: value }),
+      id: 'removeComments',
       category: 'stripping',
       value: true,
     },
     {
       description: 'Remove XMLNS (used for inline <svg>)',
-      getConfig: (value: boolean) => ({ removeXMLNS: value }),
+      id: 'removeXMLNS',
       category: 'stripping',
       value: false,
     },
     {
       description: 'Remove editor namespaces, elements and attributes',
-      getConfig: (value: boolean) => ({ removeEditorsNSData: value }),
+      id: 'removeEditorsNSData',
       category: 'stripping',
       value: true,
     },
     {
       description: 'Remove raster images',
-      getConfig: (value: boolean) => ({ removeRasterImages: value }),
+      id: 'removeRasterImages',
       category: 'stripping',
       value: false,
     },
     {
       description: 'Remove elements in <defs> without an id',
-      getConfig: (value: boolean) => ({ removeUselessDefs: value }),
+      id: 'removeUselessDefs',
       category: 'stripping',
       value: true,
     },
     {
       description: "Remove unknown elements' content and attributes",
-      getConfig: (value: boolean) => ({ removeUnknownsAndDefaults: value }),
+      id: 'removeUnknownsAndDefaults',
       category: 'stripping',
       value: true,
     },
     {
       description: "Remove non-inheritable group's presentational attributes",
-      getConfig: (value: boolean) => ({ removeNonInheritableGroupAttrs: value }),
+      id: 'removeNonInheritableGroupAttrs',
       category: 'stripping',
       value: true,
     },
     {
       description: 'Remove useless stroke and fill attributes',
-      getConfig: (value: boolean) => ({ removeUselessStrokeAndFill: value }),
+      id: 'removeUselessStrokeAndFill',
       category: 'stripping',
       value: true,
     },
     {
       description: 'Remove hidden elements (zero sized or with absent attributes)',
-      getConfig: (value: boolean) => ({ removeHiddenElems: value }),
+      id: 'removeHiddenElems',
       category: 'stripping',
       value: true,
     },
     {
       description: 'Remove empty <text> elements',
-      getConfig: (value: boolean) => ({ removeEmptyText: value }),
+      id: 'removeEmptyText',
       category: 'stripping',
       value: true,
     },
     {
       description: 'Remove empty attributes',
-      getConfig: (value: boolean) => ({ removeEmptyAttrs: value }),
+      id: 'removeEmptyAttrs',
       category: 'stripping',
       value: true,
     },
     {
       description: 'Remove empty container elements',
-      getConfig: (value: boolean) => ({ removeEmptyContainers: value }),
+      id: 'removeEmptyContainers',
       category: 'stripping',
       value: true,
     },
     {
       description: 'Remove <style> elements',
-      getConfig: (value: boolean) => ({ removeStyleElement: value }),
+      id: 'removeStyleElement',
       category: 'stripping',
       value: false,
     },
     {
       description: 'Remove <script> elements',
-      getConfig: (value: boolean) => ({ removeScriptElement: value }),
+      id: 'removeScriptElement',
       category: 'stripping',
       value: false,
     },
     {
       description: 'Remove <title> element',
-      getConfig: (value: boolean) => ({ removeTitle: value }),
+      id: 'removeTitle',
       category: 'stripping',
       value: false,
     },
     {
       description: 'Remove <desc> element',
-      getConfig: (value: boolean) => ({ removeDesc: value }),
+      id: 'removeDesc',
       category: 'stripping',
       value: false,
     },
     {
       description: 'Remove <metadata> element',
-      getConfig: (value: boolean) => ({ removeMetadata: value }),
+      id: 'removeMetadata',
       category: 'stripping',
       value: true,
     },
     {
       description: 'Prefer viewbox over width and height',
-      getConfig: (value: boolean) =>
-        (({ [value ? 'removeDimensions' : 'removeViewBox']: true } as unknown) as
-          | PluginRemoveDimensions
-          | PluginRemoveViewBox),
+      id: 'removeDimensions',
+      // getConfig: value =>
+      //   (({ [value ? 'removeDimensions' : 'removeViewBox']: true } as unknown) as
+      //     | PluginRemoveDimensions
+      //     | PluginRemoveViewBox),
       category: 'stripping',
       value: false,
     },
     {
       description: 'Remove unused namespaces declaration',
-      getConfig: (value: boolean) => ({ removeUnusedNS: value }),
+      id: 'removeUnusedNS',
       category: 'stripping',
       value: true,
     },
     // {
-    //   getConfig: (value: boolean) => ({ removeAttributesBySelector: value }),
+    //   getConfig: (value) => ({ removeAttributesBySelector: value }),
     //   description: 'Remove attributes of elements that match a CSS selector',
     //   category: 'stripping'
     //   value: []
     // },
     // {
-    //   getConfig: (value: boolean) => ({ removeElementsByAttr: value }),
+    //   getConfig: (value) => ({ removeElementsByAttr: value }),
     //   description: 'Remove arbitrary elements by ID or className',
     //   category: 'stripping'
     //   value: []
     // },
     // {
-    //   getConfig: (value: boolean) => ({ removeOffCanvasPaths: value }),
+    //   getConfig: (value) => ({ removeOffCanvasPaths: value }),
     //   description: 'Remove elements that are drawn outside of the viewbox',
     //   category: 'stripping'
     //   value: []
     // },
     {
       description: "Round numeric values to the fixed precision, removes default 'px' units",
-      getConfig: (value: boolean) => ({ cleanupNumericValues: value }),
+      id: 'cleanupNumericValues',
       category: 'rounding',
       value: true,
     },
     {
       description: 'Round lists of values to the fixed precision',
-      getConfig: (value: boolean) => ({ cleanupListOfValues: value }),
+      id: 'cleanupListOfValues',
       category: 'rounding',
       value: true,
     },
     {
       description: 'Optimize path data by writing in shorter form with transformations',
-      getConfig: (value: boolean) => ({ convertPathData: value }),
+      id: 'convertPathData',
       category: 'rounding',
       value: true,
     },
     {
       description: 'Collapse multiple transformations and optimize them',
-      getConfig: (value: boolean) => ({ convertTransform: value }),
+      id: 'convertTransform',
       category: 'rounding',
       value: true,
     },
     {
       description: 'Convert non-eccentric <ellipse> elements to <circle> elements',
-      getConfig: (value: boolean) => ({ convertEllipseToCircle: value }),
+      id: 'convertEllipseToCircle',
       category: 'shapes',
       value: true,
     },
     {
       description: 'Convert basic shapes to more compact path form',
-      getConfig: (value: boolean) => ({ convertShapeToPath: value }),
+      id: 'convertShapeToPath',
       category: 'shapes',
       value: true,
     },
     {
       description: 'Minify styles and remove unused styles based on usage',
-      getConfig: (value: boolean) => ({ minifyStyles: value }),
+      id: 'minifyStyles',
       category: 'styles',
       value: true,
     },
     {
       description: 'Minify colours to smaller strings',
-      getConfig: (value: boolean) => ({ convertColors: value }),
+      id: 'convertColors',
       category: 'styles',
       value: true,
     },
     // {
     //   description: 'Inline styles',
-    //   getConfig: (value: boolean) => ({ inlineStyles: value }),
+    //   getConfig: (value) => ({ inlineStyles: value }),
     //   category: 'styles'
     //   value: false
     // },
     {
       description: 'Convert style to attributes',
-      getConfig: (value: boolean) => ({ convertStyleToAttrs: value }),
+      id: 'convertStyleToAttrs',
       category: 'styles',
       value: true,
     },
     {
       description: 'Remove unused IDs and minifies used IDs',
-      getConfig: (value: boolean) => ({ cleanupIDs: value }),
+      id: 'cleanupIDs',
       category: 'styles',
       value: true,
     },
     {
       description: 'Sort attributes',
-      getConfig: (value: boolean) => ({ sortAttrs: value }),
+      id: 'sortAttrs',
       category: 'pretty code',
       value: true,
     },
     {
       description: 'Sort children of <defs> to improve compression',
-      getConfig: (value: boolean) => ({ sortDefsChildren: value }),
+      id: 'sortDefsChildren',
       category: 'pretty code',
       value: true,
     },
     {
       description: 'Cleanup attributes from newlines, trailing and repeating spaces',
-      getConfig: (value: boolean) => ({ cleanupAttrs: value }),
+      id: 'cleanupAttrs',
       category: 'pretty code',
       value: true,
     },
     // {
-    //   getConfig: (value: boolean) => ({ prefixIds: value }),
+    //   getConfig: (value) => ({ prefixIds: value }),
     //   description: 'Prefix IDs',
     //   category: 'pretty code'
     // },
     {
       description: 'Prefer attributes on parent group instead of individual elements',
-      getConfig: (value: boolean) =>
-        (({
-          [value ? 'moveElemsAttrsToGroup' : 'moveGroupAttrsToElems']: true,
-        } as unknown) as PluginMoveElemsAttrsToGroup | PluginMoveGroupAttrsToElems),
+      id: 'moveElemsAttrsToGroup',
+      // getConfig: value =>
+      //   ({
+      //     [value ? 'moveElemsAttrsToGroup' : 'moveGroupAttrsToElems']: true,
+      //   } as unknown),
       category: 'pretty code',
       value: true,
     },
     {
       description: 'Cleanup enable-background',
-      getConfig: (value: boolean) => ({ cleanupEnableBackground: value }),
+      id: 'cleanupEnableBackground',
       category: 'other',
       value: true,
     },
     {
       description: 'Collapse useless groups',
-      getConfig: (value: boolean) => ({ collapseGroups: value }),
+      id: 'collapseGroups',
       category: 'other',
       value: true,
     },
     {
       description: 'Merge multiple paths into one',
-      getConfig: (value: boolean) => ({ mergePaths: value }),
+      id: 'mergePaths',
       category: 'other',
       value: true,
     },
     {
       description: 'Replace duplicate elements with <use> elements',
-      getConfig: (value: boolean) => ({ reusePaths: value }),
+      id: 'reusePaths',
       category: 'other',
       value: true,
     },
     // {
-    //   getConfig: (value: boolean) => ({ addClassesToSVGElement: value }),
+    //   getConfig: (value) => ({ addClassesToSVGElement: value }),
     //   description: 'Add classes to <svg> element',
     //   category: 'other'
     //   value: []
     // },
     // {
-    //   getConfig: (value: boolean) => ({ addAttributesToSVGElement: value }),
+    //   getConfig: (value) => ({ addAttributesToSVGElement: value }),
     //   description: 'Add attributes to an outer <svg> element',
     //   category: 'other'
     //   value: []

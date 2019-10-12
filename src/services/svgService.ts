@@ -11,10 +11,10 @@ export function getSVGTitle(contents: string) {
 
 const svgDataType = 'data:image/svg+xml'
 
-export function svgToDataUri(svg: string, dataType = svgDataType) {
+export function SVGToDataUri(svg: string, dataType = svgDataType) {
   return `${dataType},${encodeURIComponent(svg)}`
 }
 
-export function dataUriToSvg(dataUri: string, dataType = svgDataType) {
+export function dataUriToSVG(dataUri: string, dataType = svgDataType) {
   return decodeURIComponent(dataUri.replace(`${dataType},`, ''))
 }

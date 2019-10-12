@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
 import darkTheme from '../plugins/prism-themes/atom-dark'
@@ -25,23 +25,28 @@ const Code = styled(SyntaxHighlighter)`
 `
 
 interface IProps {
-  SVGContent?: string
+  initialSVG: string
+  optimizedSVG?: string
   fileName: string
 }
 
-export function CodeRenderer({ SVGContent, fileName }: IProps) {
+export function CodeRenderer({ initialSVG, optimizedSVG, fileName }: IProps) {
+  const [showOriginal, setShowOriginal] = useState(false)
   const { themeName } = useContext<ITheme>(ThemeContext)
+
+  const SVG = showOriginal || !optimizedSVG ? initialSVG : optimizedSVG
 
   return (
     <Wrapper>
-      <ViewOverlay optimizedSVG={SVGContent} fileName={fileName} />
-      {SVGContent ? (
-        <Code language="markup" style={themeName === 'light' ? lightTheme : darkTheme}>
-          {SVGContent}
-        </Code>
-      ) : (
-        <span>No SVG loaded</span>
-      )}
+      <ViewOverlay
+        optimizedSVG={optimizedSVG}
+        fileName={fileName}
+        original={showOriginal}
+        onToggleOriginal={() => setShowOriginal(v => !v)}
+      />
+      <Code language="markup" style={themeName === 'light' ? lightTheme : darkTheme}>
+        {SVG}
+      </Code>
     </Wrapper>
   )
 }

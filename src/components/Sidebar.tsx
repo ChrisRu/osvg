@@ -73,9 +73,9 @@ const OptionRangeValue = styled.span`
 
 interface IProps {
   settings: ISettings
+  onSettingsUpdate: (setting: ISetting) => void
   togglePrettify: () => void
   setPrecision: (value: number) => void
-  onSettingsUpdate: (setting: ISetting) => void
 }
 
 export function Sidebar({ settings, togglePrettify, setPrecision, onSettingsUpdate }: IProps) {
@@ -108,7 +108,7 @@ export function Sidebar({ settings, togglePrettify, setPrecision, onSettingsUpda
                 <input
                   type="range"
                   min="0"
-                  max="8"
+                  max="16"
                   value={settings.precision}
                   onChange={event => setPrecision(Number(event.target.value))}
                 />

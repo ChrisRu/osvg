@@ -1,83 +1,56 @@
-/**
- * SVGO is a Nodejs-based tool for optimizing SVG vector graphics files.
- *
- * @see https://github.com/svg/svgo
- *
- * @author Kir Belevich <kir@soulshine.in> (https://github.com/deepsweet)
- * @copyright © 2012 Kir Belevich
- * @license MIT https://raw.githubusercontent.com/svg/svgo/master/LICENSE
- */
-const CONFIG = require('./lib/config')
-const SVG2JS = require('./lib/svg2js').default
-const PLUGINS = require('./lib/plugins')
-const JSAPI = require('./lib/jsAPI')
-const encodeSVGDatauri = require('./lib/tools').encodeSVGDatauri
-const JS2SVG = require('./lib/js2svg')
+import SVG2JS from 'svgo/lib/svgo/svg2js'
+import JS2SVG from 'svgo/lib/svgo/js2svg'
+import PLUGINS from 'svgo/lib/svgo/plugins'
+import { plugins as pluginData } from './svgoPlugins'
 
-var SVGO = function(config) {
-  this.config = CONFIG(config)
-}
+function optimizePluginsArray(plugins) {
+  return plugins
+    .map(item => [item])
+    .reduce((arr, item) => {
+      const last = arr[arr.length - 1]
 
-SVGO.prototype.optimize = function(svgstr, info) {
-  return new Promise((resolve, reject) => {
-    if (this.config.error) {
-      reject(this.config.error)
-      return
-    }
-
-    var config = this.config,
-      maxPassCount = config.multipass ? 10 : 1,
-      counter = 0,
-      prevResultSize = Number.POSITIVE_INFINITY,
-      optimizeOnceCallback = svgjs => {
-        if (svgjs.error) {
-          reject(svgjs.error)
-          return
-        }
-
-        if (++counter < maxPassCount && svgjs.data.length < prevResultSize) {
-          prevResultSize = svgjs.data.length
-          this._optimizeOnce(svgjs.data, info, optimizeOnceCallback)
-        } else {
-          if (config.datauri) {
-            svgjs.data = encodeSVGDatauri(svgjs.data, config.datauri)
-          }
-          if (info && info.path) {
-            svgjs.path = info.path
-          }
-          resolve(svgjs)
-        }
+      if (last && item[0].type === last[0].type) {
+        last.push(item[0])
+      } else {
+        arr.push(item)
       }
-
-    this._optimizeOnce(svgstr, info, optimizeOnceCallback)
-  })
+      return arr
+    }, [])
 }
 
-SVGO.prototype._optimizeOnce = function(svgstr, info, callback) {
-  var config = this.config
+export default async function svgo(svgstr, settings) {
+  // activate/deactivate plugins
+  for (const pluginInfo of Object.values(settings.plugins)) {
+    pluginData[pluginInfo.id].active = pluginInfo.value
+  }
 
-  SVG2JS(svgstr, function(svgjs) {
-    if (svgjs.error) {
-      callback(svgjs)
-      return
+  // Set floatPrecision across all the plugins
+  const floatPrecision = Number(settings.floatPrecision) || 3
+  for (const plugin of Object.values(pluginData)) {
+    if (plugin.params && 'floatPrecision' in plugin.params) {
+      if (plugin === pluginData.cleanupNumericValues && floatPrecision === 0) {
+        // 0 almost always breaks images when used on this plugin.
+        // Better to allow 0 for everything else, but switch to 1 for this plugin.
+        plugin.params.floatPrecision = 1
+      } else {
+        plugin.params.floatPrecision = floatPrecision
+      }
     }
+  }
 
-    svgjs = PLUGINS(svgjs, info, config.plugins)
+  const optimisedPluginsData = optimizePluginsArray(Object.values(pluginData))
 
-    callback(JS2SVG(svgjs, config.js2svg))
-  })
+  let i = 0
+  let prevLength = Number.POSITIVE_INFINITY
+  while (++i < (settings.maxMultipass || 10) && svgstr.length < prevLength) {
+    prevLength = svgstr.length
+
+    const svgObj = await new Promise(resolve => SVG2JS(svgstr, resolve))
+
+    const transformedSVG = PLUGINS(svgObj, { input: 'string' }, optimisedPluginsData)
+
+    svgstr = JS2SVG(transformedSVG, { pretty: settings.pretty }).data
+  }
+
+  return svgstr
 }
-
-/**
- * The factory that creates a content item with the helper methods.
- *
- * @param {Object} data which passed to jsAPI constructor
- * @returns {JSAPI} content item
- */
-SVGO.prototype.createContentItem = function(data) {
-  return new JSAPI(data)
-}
-
-SVGO.Config = CONFIG
-
-module.exports.svgo = SVGO
