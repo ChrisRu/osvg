@@ -2,7 +2,12 @@ import { useState, useEffect } from 'react'
 
 const savedThemeKey = 'svgo-online@theme'
 
-interface ITheme {
+export interface ITheme extends IColorTheme {
+  themeName: string
+  toggleTheme: () => void
+}
+
+interface IColorTheme {
   foreground: string
   background: string
   backgroundSecondary: string
@@ -11,7 +16,7 @@ interface ITheme {
 
 type ThemeName = 'dark' | 'light'
 
-const themes: { [key in ThemeName]: ITheme } = {
+const themes: { [key in ThemeName]: IColorTheme } = {
   dark: {
     foreground: '#fff',
     background: '#212123',

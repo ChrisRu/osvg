@@ -126,8 +126,8 @@ interface IProps {
   view: string
   error?: Error
   fileName?: string
-  initialFile: string
-  compressedFile?: string
+  initialSVG: string
+  optimizedSVG?: string
   onChangeView: (view: 'svg' | 'code') => void
   onClose: () => void
   onUpdateFileName: (fileName: string) => void
@@ -138,8 +138,8 @@ export function MenuBar({
   view,
   error,
   fileName,
-  initialFile,
-  compressedFile,
+  initialSVG,
+  optimizedSVG,
   onUpdateFileName,
   onRewriteFileName,
   onChangeView,
@@ -147,11 +147,11 @@ export function MenuBar({
 }: IProps) {
   const [gzip] = useState(true)
 
-  const initialSize = getSize(initialFile, gzip)
-  const compressedSize = getSize(compressedFile || initialFile, gzip)
+  const initialSize = getSize(initialSVG, gzip)
+  const compressedSize = getSize(optimizedSVG || initialSVG, gzip)
 
   const percentage = getPercentage(initialSize, compressedSize)
-  const improvement = compressedFile !== undefined && percentage >= 0
+  const improvement = optimizedSVG !== undefined && percentage >= 0
 
   return (
     <MenuBarWrapper>

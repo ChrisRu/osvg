@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import { MenuBar } from './MenuBar'
 import { Sidebar } from './Sidebar'
-import { ViewOverlay } from './ViewOverlay'
 import { HomeScreen } from './HomeScreen'
 import { SVGRenderer } from './SVGRenderer'
 import { CodeRenderer } from './CodeRenderer'
@@ -98,18 +97,18 @@ export function App() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={{ ...theme, themeName, toggleTheme }}>
       <>
         <MenuBar
           view={view}
           error={error}
           fileName={fileName}
-          initialFile={SVGContent}
-          compressedFile={optimizedSVGContent}
+          initialSVG={SVGContent}
+          optimizedSVG={optimizedSVGContent}
           onUpdateFileName={setFileName}
-          onRewriteFileName={() => {
+          onRewriteFileName={() =>
             setFileName(fileName ? fixFileExtension(fileName, 'svg') : defaultFileName)
-          }}
+          }
           onChangeView={setView}
           onClose={() => setSVGContent(undefined)}
         />
@@ -120,15 +119,10 @@ export function App() {
             setPrecision={setPrecision}
             onSettingsUpdate={updateSetting}
           />
-          <ViewOverlay
-            fileName={fileName || defaultFileName}
-            after={optimizedSVGContent}
-            toggleTheme={toggleTheme}
-          />
           {view === 'svg' ? (
-            <SVGRenderer SVGContent={optimizedSVGContent} />
+            <SVGRenderer SVGContent={optimizedSVGContent} fileName={fileName || defaultFileName} />
           ) : (
-            <CodeRenderer SVGContent={optimizedSVGContent} theme={themeName} />
+            <CodeRenderer SVGContent={optimizedSVGContent} fileName={fileName || defaultFileName} />
           )}
         </Main>
       </>

@@ -1,18 +1,21 @@
-import React from 'react'
-import styled from 'styled-components'
+import React, { useContext } from 'react'
+import styled, { ThemeContext } from 'styled-components'
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
 import darkTheme from '../plugins/prism-themes/atom-dark'
 import lightTheme from '../plugins/prism-themes/atom-light'
 import markup from 'refractor/lang/markup'
+import { ITheme } from '../hooks/useTheme'
+import { ViewOverlay } from './ViewOverlay'
 
 SyntaxHighlighter.registerLanguage('markup', markup)
 
 const Wrapper = styled.div`
+  position: relative;
+  overflow: auto;
+  flex: 1;
+  display: flex;
   background: ${p => p.theme.backgroundTertiary};
   color: ${p => p.theme.foreground};
-  flex: 1;
-  overflow: auto;
-  display: flex;
 `
 
 const Code = styled(SyntaxHighlighter)`
@@ -23,14 +26,17 @@ const Code = styled(SyntaxHighlighter)`
 
 interface IProps {
   SVGContent?: string
-  theme: 'light' | 'dark'
+  fileName: string
 }
 
-export function CodeRenderer({ SVGContent, theme }: IProps) {
+export function CodeRenderer({ SVGContent, fileName }: IProps) {
+  const { themeName } = useContext<ITheme>(ThemeContext)
+
   return (
     <Wrapper>
+      <ViewOverlay optimizedSVG={SVGContent} fileName={fileName} />
       {SVGContent ? (
-        <Code language="markup" style={theme === 'light' ? lightTheme : darkTheme}>
+        <Code language="markup" style={themeName === 'light' ? lightTheme : darkTheme}>
           {SVGContent}
         </Code>
       ) : (

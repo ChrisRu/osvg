@@ -73,7 +73,7 @@ const Title = styled.div`
     opacity: 0.8;
   }
 
-  @media (max-width: 1500px) {
+  @media (max-width: 1100px) {
     text-align: center;
   }
 `
@@ -111,6 +111,8 @@ const OpenFileButton = styled.button`
 `
 
 const OpenFileLabel = styled(OpenFileButton).attrs({ role: 'button', tabIndex: 0 })`
+  white-space: nowrap;
+
   input {
     display: none;
   }
@@ -141,7 +143,7 @@ const Upload = styled.div`
   flex-flow: row nowrap;
   align-items: center;
 
-  @media (max-width: 1500px) {
+  @media (max-width: 1100px) {
     justify-content: center;
   }
 `

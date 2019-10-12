@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { svgToDataUri } from '../services/svgService'
 import { PanAndZoom } from './elements/PanAndZoom'
+import { ViewOverlay } from './ViewOverlay'
 
 function createBackground(color: string, size: number) {
   return svgToDataUri(`<svg fill="none" xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 2 2">
@@ -10,6 +11,7 @@ function createBackground(color: string, size: number) {
 }
 
 const Wrapper = styled.div<{ gridSize: number }>`
+  position: relative;
   flex: 1;
   display: flex;
   overflow: hidden;
@@ -29,12 +31,13 @@ const StyledObject = styled.object<{ hasWidth?: boolean }>`
 interface IProps {
   SVGContent?: string
   gridSize?: number
-  colorPattern?: [string, string]
+  fileName: string
 }
 
-export function SVGRenderer({ SVGContent, gridSize = 50 }: IProps) {
+export function SVGRenderer({ SVGContent, fileName, gridSize = 50 }: IProps) {
   return (
     <Wrapper gridSize={gridSize}>
+      <ViewOverlay optimizedSVG={SVGContent} fileName={fileName} />
       {SVGContent ? (
         <PanAndZoom>
           <StyledObject

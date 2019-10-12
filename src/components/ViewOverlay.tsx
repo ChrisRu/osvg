@@ -1,15 +1,22 @@
-import React from 'react'
-import styled from 'styled-components'
+import React, { useContext } from 'react'
+import styled, { ThemeContext } from 'styled-components'
 import { saveSvg } from '../services/saveSvg'
 import { DownloadIcon, ThemeIcon } from './elements/Icons'
+import { ITheme } from '../hooks/useTheme'
 
 const Wrapper = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
+  left: 0;
   right: 0;
   z-index: 1;
   margin: 1rem;
+  pointer-events: none;
+
+  > * {
+    pointer-events: all;
+  }
 `
 
 const ThemeButton = styled.button`
@@ -23,7 +30,7 @@ const ThemeButton = styled.button`
   margin: 0;
   opacity: 0.7;
   height: 24px;
-  transform: scaleX(${p => (p.theme.foreground === '#fff' ? 1 : -1)});
+  transform: scaleX(${p => (p.theme.themeName === 'light' ? 1 : -1)});
   transition: opacity 0.1s, transform 0.1s;
   color: ${p => p.theme.foreground};
   cursor: pointer;
@@ -67,20 +74,21 @@ const DownloadButton = styled.button`
 
 interface IProps {
   fileName: string
-  after?: string
-  toggleTheme: () => void
+  optimizedSVG?: string
 }
 
-export function ViewOverlay({ fileName, after, toggleTheme }: IProps) {
+export function ViewOverlay({ fileName, optimizedSVG }: IProps) {
+  const { toggleTheme } = useContext<ITheme>(ThemeContext)
+
   return (
     <Wrapper>
       <ThemeButton title="Toggle theme" onClick={toggleTheme}>
         <ThemeIcon />
       </ThemeButton>
-      {after ? (
+      {optimizedSVG ? (
         <DownloadButton
           title="Download the SVG to your local filesystem"
-          onClick={() => saveSvg(after, fileName)}
+          onClick={() => saveSvg(optimizedSVG, fileName)}
         >
           <DownloadIcon />
           <span>Download</span>
