@@ -1,11 +1,4 @@
 import { SVGOWorker } from '../svgo.worker'
-import fs from 'fs'
-import { promisify } from 'util'
-
-async function openFile(location: string) {
-  const fileBuffer = await promisify(fs.readFile)(location)
-  return fileBuffer.toString()
-}
 
 describe('svgo', () => {
   it('should be able to run svgo', async () => {

@@ -1,29 +1,24 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
-import xml from 'react-syntax-highlighter/dist/esm/languages/hljs/xml'
-import lightTheme from 'react-syntax-highlighter/dist/esm/styles/hljs/atom-one-light'
-import darkTheme from 'react-syntax-highlighter/dist/esm/styles/hljs/atom-one-dark'
+import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
+import darkTheme from '../plugins/prism-themes/atom-dark'
+import lightTheme from '../plugins/prism-themes/atom-light'
+import markup from 'refractor/lang/markup'
 
-SyntaxHighlighter.registerLanguage('javascript', xml)
+SyntaxHighlighter.registerLanguage('markup', markup)
 
 const Wrapper = styled.div`
-  background: ${p => p.theme.background};
+  background: ${p => p.theme.backgroundTertiary};
   color: ${p => p.theme.foreground};
   flex: 1;
   overflow: auto;
+  display: flex;
 `
 
 const Code = styled(SyntaxHighlighter)`
   padding: 2rem !important;
-  margin: 0;
+  margin: 0 !important;
   flex: 1;
-  word-wrap: anywhere;
-  white-space: pre-wrap;
-
-  > pre {
-    padding: 2rem;
-  }
 `
 
 interface IProps {
@@ -35,7 +30,7 @@ export function CodeRenderer({ SVGContent, theme }: IProps) {
   return (
     <Wrapper>
       {SVGContent ? (
-        <Code language="xml" style={theme === 'light' ? lightTheme : darkTheme}>
+        <Code language="markup" style={theme === 'light' ? lightTheme : darkTheme}>
           {SVGContent}
         </Code>
       ) : (

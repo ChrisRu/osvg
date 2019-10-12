@@ -6,6 +6,7 @@ interface ITheme {
   foreground: string
   background: string
   backgroundSecondary: string
+  backgroundTertiary: string
 }
 
 type ThemeName = 'dark' | 'light'
@@ -13,13 +14,15 @@ type ThemeName = 'dark' | 'light'
 const themes: { [key in ThemeName]: ITheme } = {
   dark: {
     foreground: '#fff',
-    background: '#222',
-    backgroundSecondary: '#282828',
+    background: '#212123',
+    backgroundSecondary: '#262627',
+    backgroundTertiary: '#212123',
   },
   light: {
     foreground: '#181818',
     background: '#efefef',
     backgroundSecondary: '#fff',
+    backgroundTertiary: '#f9f9fa',
   },
 }
 

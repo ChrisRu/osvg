@@ -23,8 +23,8 @@ const ThemeButton = styled.button`
   margin: 0;
   opacity: 0.7;
   height: 24px;
-  transform: rotate(${p => (p.theme.foreground === '#fff' ? 180 : 0)}deg);
-  transition: opacity 0.1s;
+  transform: scaleX(${p => (p.theme.foreground === '#fff' ? 1 : -1)});
+  transition: opacity 0.1s, transform 0.1s;
   color: ${p => p.theme.foreground};
   cursor: pointer;
 

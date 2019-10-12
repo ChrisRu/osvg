@@ -9,10 +9,12 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "sourceType": "module",
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.json",
+    "createDefaultProgram": true
   },
   "plugins": ["@typescript-eslint", "prettier", "react", "react-hooks", "jest"],
   "extends": [
+    "react-app",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
