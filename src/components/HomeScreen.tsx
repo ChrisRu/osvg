@@ -259,6 +259,7 @@ export function HomeScreen({ loadingError, onLoadSVG, hideError }: IProps) {
 
   function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === 'Enter') {
+      event.preventDefault()
       onLoadSVG((event.target as HTMLInputElement).value)
     }
   }

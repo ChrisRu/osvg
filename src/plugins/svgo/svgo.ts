@@ -35,7 +35,7 @@ function optimizePluginsArray(plugins: ISVGOPlugin[]) {
   }, [])
 }
 
-export default async function svgo(svgstr: string, settings: ISettings) {
+export default async function optimizeSVG(svgstr: string, settings: ISettings) {
   const availablePlugins = Object.entries(pluginData) as [string, ISVGOPlugin][]
 
   // activate/deactivate plugins
@@ -44,15 +44,14 @@ export default async function svgo(svgstr: string, settings: ISettings) {
   }
 
   // Set floatPrecision across all the plugins
-  const floatPrecision = Number(settings.floatPrecision) || 3
   for (const plugin of Object.values(pluginData) as ISVGOPlugin[]) {
     if (plugin.params && 'floatPrecision' in plugin.params) {
-      if (plugin === pluginData.cleanupNumericValues && floatPrecision === 0) {
+      if (plugin === pluginData.cleanupNumericValues && settings.floatPrecision === 0) {
         // 0 almost always breaks images when used on this plugin.
         // Better to allow 0 for everything else, but switch to 1 for this plugin.
         plugin.params.floatPrecision = 1
       } else {
-        plugin.params.floatPrecision = floatPrecision
+        plugin.params.floatPrecision = settings.floatPrecision
       }
     }
   }

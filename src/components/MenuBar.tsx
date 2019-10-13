@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import { getFileSizeGZIP, getFileSize } from '../services/fileSizeService'
 import { getHumanReadableBytes } from '../services/byteService'
@@ -77,20 +77,30 @@ const FileInfo = styled.div`
   display: flex;
   flex-flow: row nowrap;
   margin-left: auto;
-  width: calc(100% - 400px);
+  width: calc(100% - 480px);
   justify-content: center;
   align-items: center;
 `
 
-const FileNameInput = styled.input`
+const FileNameInputSizeCalculator = styled.pre`
+  margin: 0;
+  padding: 0.4rem;
+  font-weight: bold;
+  border: 0;
+  font-family: inherit;
+  visibility: hidden;
+  position: absolute;
+`
+
+const FileNameInput = styled.input<{ width?: number }>`
   font-weight: bold;
   margin-right: 0.5rem;
   padding: 0.4rem;
   background: transparent;
   color: #fff;
-  text-align: center;
   border: 0;
-  width: max-content;
+  text-align: center;
+  width: ${p => (p.width ? p.width + 'px' : 'max-content')};
 
   &:hover {
     background: rgba(255, 255, 255, 0.1);
@@ -124,6 +134,7 @@ function getPercentage(initialSize: number, newSize: number) {
 
 interface IProps {
   view: string
+  loading: boolean
   error?: Error
   fileName?: string
   initialSVG: string
@@ -134,8 +145,19 @@ interface IProps {
   onRewriteFileName: () => void
 }
 
+function getFileInfo(gzip: boolean, initialSize: number, compressedSize?: number) {
+  const title = gzip ? 'gzipped sizes:' : 'file sizes:'
+  const original = ['original\t\t', getHumanReadableBytes(initialSize)].join('')
+  const compressed = compressedSize
+    ? ['optimized\t', getHumanReadableBytes(compressedSize)].join('')
+    : undefined
+
+  return [title, original, compressed].filter(line => line).join('\n')
+}
+
 export function MenuBar({
   view,
+  loading,
   error,
   fileName,
   initialSVG,
@@ -145,13 +167,20 @@ export function MenuBar({
   onChangeView,
   onClose,
 }: IProps) {
+  const inputCalculatorRef = useRef<HTMLInputElement>(null)
+  const [inputWidth, setInputWidth] = useState<number | undefined>(undefined)
   const [gzip] = useState(true)
 
-  const initialSize = getSize(initialSVG, gzip)
-  const compressedSize = getSize(optimizedSVG || initialSVG, gzip)
+  useEffect(() => {
+    const input = inputCalculatorRef.current
+    setInputWidth(input ? input.offsetWidth : undefined)
+  }, [inputCalculatorRef, fileName])
 
-  const percentage = getPercentage(initialSize, compressedSize)
-  const improvement = optimizedSVG !== undefined && percentage >= 0
+  const initialSize = getSize(initialSVG, gzip)
+  const compressedSize = optimizedSVG ? getSize(optimizedSVG, gzip) : undefined
+
+  const percentage = compressedSize ? getPercentage(initialSize, compressedSize) : undefined
+  const improvement = percentage !== undefined && percentage >= 0
 
   return (
     <MenuBarWrapper>
@@ -175,11 +204,15 @@ export function MenuBar({
       {error ? (
         <FileInfo />
       ) : (
-        <FileInfo>
+        <FileInfo title={getFileInfo(gzip, initialSize, compressedSize)}>
+          <FileNameInputSizeCalculator ref={inputCalculatorRef}>
+            {fileName}
+          </FileNameInputSizeCalculator>
           <FileNameInput
             title="Change the filename"
             type="text"
             value={fileName}
+            width={inputWidth}
             onChange={event => onUpdateFileName(event.target.value)}
             onBlur={onRewriteFileName}
             onKeyDown={event => {
@@ -188,15 +221,19 @@ export function MenuBar({
               }
             }}
           />
-          <FileDetails title={gzip ? 'gzipped size' : 'stored size'}>
-            <FileSize>{getHumanReadableBytes(compressedSize)}</FileSize>
-            {percentage === undefined ? null : (
-              <Percentage improvement={improvement}>
-                {improvement ? '-' : '+'}
-                {percentage.toString().replace('-', '')}%
-              </Percentage>
-            )}
-          </FileDetails>
+          {!loading ? (
+            <FileDetails>
+              {compressedSize ? <FileSize>{getHumanReadableBytes(compressedSize)}</FileSize> : null}
+              {percentage === undefined ? null : (
+                <Percentage improvement={improvement}>
+                  {improvement ? '-' : '+'}
+                  {percentage.toString().replace('-', '')}%
+                </Percentage>
+              )}
+            </FileDetails>
+          ) : (
+            <FileDetails />
+          )}
         </FileInfo>
       )}
       <CloseButton title="Close the currently open SVG" onClick={onClose}>

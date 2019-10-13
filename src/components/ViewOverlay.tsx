@@ -2,7 +2,8 @@ import React, { useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import { saveSvg } from '../services/saveSvg'
 import { DownloadIcon, ThemeIcon } from './elements/Icons'
-import { ITheme } from '../hooks/useTheme'
+import { IThemeContext } from '../hooks/useTheme'
+import { defaultFileName } from './App'
 
 const Wrapper = styled.div`
   position: absolute;
@@ -88,27 +89,29 @@ const DownloadButton = styled.button`
 `
 
 interface IProps {
-  fileName: string
+  fileName?: string
   optimizedSVG?: string
   original: boolean
-  onToggleOriginal: () => void
+  onToggleOriginal?: () => void
 }
 
 export function ViewOverlay({ fileName, original, optimizedSVG, onToggleOriginal }: IProps) {
-  const { toggleTheme } = useContext<ITheme>(ThemeContext)
+  const { toggleTheme } = useContext<IThemeContext>(ThemeContext)
 
   return (
     <Wrapper>
-      {/* <OriginalButton onClick={onToggleOriginal}>
-        Show {original ? 'optimized' : 'original'}
-      </OriginalButton> */}
+      {onToggleOriginal ? (
+        <OriginalButton onClick={onToggleOriginal}>
+          Show {original ? 'optimized' : 'original'}
+        </OriginalButton>
+      ) : null}
       <ThemeButton title="Toggle theme" onClick={toggleTheme}>
         <ThemeIcon />
       </ThemeButton>
       {optimizedSVG ? (
         <DownloadButton
           title="Download the SVG to your local filesystem"
-          onClick={() => saveSvg(optimizedSVG, fileName)}
+          onClick={() => saveSvg(optimizedSVG, fileName || defaultFileName)}
         >
           <DownloadIcon />
           <span>Download</span>

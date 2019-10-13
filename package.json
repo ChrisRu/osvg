@@ -1,9 +1,9 @@
 {
-  "name": "svgo-online",
+  "name": "osvg",
   "version": "0.1.0",
   "private": true,
   "license": "Apache-2.0",
-  "homepage": "https://svgo-online.netlify.com",
+  "homepage": "https://osvg.netlify.com",
   "dependencies": {
     "css-select": "^2.0.2",
     "css-tree": "1.0.0-alpha.29",
@@ -49,8 +49,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .tsx,.ts",
-    "deploy": "npm run build",
-    "predeploy": "npm run test"
+    "deploy": "npm run build"
   },
   "browserslist": {
     "production": [

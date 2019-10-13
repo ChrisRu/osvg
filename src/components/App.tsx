@@ -5,13 +5,18 @@ import { Sidebar } from './Sidebar'
 import { HomeScreen } from './HomeScreen'
 import { SVGRenderer } from './SVGRenderer'
 import { CodeRenderer } from './CodeRenderer'
-import { SVGOWorker } from '../services/svgo.worker'
 import { useSettings } from '../hooks/useSettings'
 import { useTheme } from '../hooks/useTheme'
+/* eslint-disable */
+// @ts-ignore
+import * as workerFile from 'workerize-loader!../services/svgo.worker'
+/* eslint-enable */
 import { getSVGTitle } from '../services/svgService'
 import { fixFileExtension } from '../services/stringTransformService'
 import { createOpenFile } from '../services/openFile'
 import { saveSvg } from '../services/saveSvg'
+import { ISettings } from '../services/svgoSettings'
+import { LoadingRenderer } from './LoadingRenderer'
 
 const Main = styled.main`
   position: relative;
@@ -21,10 +26,15 @@ const Main = styled.main`
   overflow: hidden;
 `
 
-const defaultFileName = 'file.svg'
+const worker: {
+  svgo: (svg: string, settings: ISettings) => Promise<string>
+} = workerFile()
+
+export const defaultFileName = 'file.svg'
 
 export function App() {
   const [view, setView] = useState<'svg' | 'code'>('svg')
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error>()
   const [fileName, setFileName] = useState<string>('')
   const [initialSVG, setInitialSVG] = useState<string>()
@@ -68,17 +78,37 @@ export function App() {
 
   useEffect(() => {
     if (initialSVG) {
-      SVGOWorker(initialSVG, settings.plugins, settings.prettify, settings.precision)
-        .then(setOptimizedSVGContent)
-        .catch(error => {
-          console.error(error)
-          setError(error)
-        })
+      let cancel = false
+      ;(async () => {
+        try {
+          setLoading(true)
+
+          const result = await worker.svgo(initialSVG, settings)
+
+          if (!cancel) {
+            setOptimizedSVGContent(result)
+          }
+        } catch (error) {
+          if (!cancel) {
+            console.error('Could not optimize SVG', error)
+            setError(error)
+          }
+        } finally {
+          if (!cancel) {
+            setLoading(false)
+          }
+        }
+      })()
+
+      return () => {
+        cancel = true
+      }
     }
   }, [initialSVG, settings])
 
   function openFile(contents: string, fileName?: string) {
     setInitialSVG(contents)
+    setOptimizedSVGContent(undefined)
     setFileName(fileName ? fileName : getSVGTitle(contents) || defaultFileName)
     setError(undefined)
   }
@@ -90,6 +120,8 @@ export function App() {
         onLoadSVG={openFile}
         hideError={() => {
           setInitialSVG(undefined)
+          setFileName('')
+          setOptimizedSVGContent(undefined)
           setError(undefined)
         }}
       />
@@ -101,6 +133,7 @@ export function App() {
       <>
         <MenuBar
           view={view}
+          loading={loading}
           error={error}
           fileName={fileName}
           initialSVG={initialSVG}
@@ -119,7 +152,9 @@ export function App() {
             togglePrettify={togglePrettify}
             setPrecision={setPrecision}
           />
-          {view === 'svg' ? (
+          {loading ? (
+            <LoadingRenderer />
+          ) : view === 'svg' ? (
             <SVGRenderer
               initialSVG={initialSVG}
               optimizedSVG={optimizedSVG}

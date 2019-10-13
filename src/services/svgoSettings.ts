@@ -28,16 +28,16 @@ export const defaultSettings: ISettings = {
       value: true,
     },
     {
-      description: 'Remove comments',
-      id: 'removeComments',
-      category: 'stripping',
-      value: true,
-    },
-    {
       description: 'Remove XMLNS (used for inline <svg>)',
       id: 'removeXMLNS',
       category: 'stripping',
       value: false,
+    },
+    {
+      description: 'Remove comments',
+      id: 'removeComments',
+      category: 'stripping',
+      value: true,
     },
     {
       description: 'Remove editor namespaces, elements and attributes',
@@ -82,12 +82,6 @@ export const defaultSettings: ISettings = {
       value: true,
     },
     {
-      description: 'Remove empty <text> elements',
-      id: 'removeEmptyText',
-      category: 'stripping',
-      value: true,
-    },
-    {
       description: 'Remove empty attributes',
       id: 'removeEmptyAttrs',
       category: 'stripping',
@@ -96,6 +90,12 @@ export const defaultSettings: ISettings = {
     {
       description: 'Remove empty container elements',
       id: 'removeEmptyContainers',
+      category: 'stripping',
+      value: true,
+    },
+    {
+      description: 'Remove empty <text> elements',
+      id: 'removeEmptyText',
       category: 'stripping',
       value: true,
     },
@@ -142,7 +142,7 @@ export const defaultSettings: ISettings = {
       value: true,
     },
     {
-      description: "Round numeric values to the fixed precision, removes default 'px' units",
+      description: "Round numeric values to the fixed precision (removes default 'px' units)",
       id: 'cleanupNumericValues',
       category: 'rounding',
       value: true,

@@ -18,17 +18,12 @@ function getSavedSettings(): ISettings | undefined {
     const savedSettings: ISettings = JSON.parse(savedSettingsString)
 
     return {
-      prettify: savedSettings.prettify || defaultSettings.prettify,
-      precision: savedSettings.precision || defaultSettings.precision,
-      plugins: savedSettings.plugins
-        ? defaultSettings.plugins.reduce<ISetting[]>((totalPlugins, nextPlugin) => {
-            const savedPlugin = savedSettings.plugins.find(
-              plugin => nextPlugin.description === plugin.description,
-            )
-            totalPlugins.push(savedPlugin ? { ...nextPlugin, ...savedPlugin } : nextPlugin)
-            return totalPlugins
-          }, [])
-        : defaultSettings.plugins,
+      ...defaultSettings,
+      ...savedSettings,
+      plugins: defaultSettings.plugins.map(defaultPlugin => {
+        const savedPlugin = savedSettings.plugins.find(plugin => defaultPlugin.id === plugin.id)
+        return { ...defaultPlugin, value: (savedPlugin || defaultPlugin).value }
+      }),
     }
   } catch (error) {
     console.error('Could not load saved settings', error)

@@ -1,10 +1,10 @@
-import svgo from '../plugins/svgo/svgo'
-import { ISetting } from './svgoSettings'
+import optimizeSVG from '../plugins/svgo/svgo'
+import { ISettings } from './svgoSettings'
 
-export function SVGOWorker(svg: string, plugins: ISetting[], pretty = false, floatPrecision = 3) {
-  return svgo(svg, {
-    floatPrecision,
-    plugins: plugins.map(setting => setting.id),
-    pretty,
+export function svgo(svg: string, settings: ISettings) {
+  return optimizeSVG(svg, {
+    floatPrecision: settings.precision,
+    plugins: settings.plugins.filter(plugin => plugin.value).map(setting => setting.id),
+    pretty: settings.prettify,
   })
 }

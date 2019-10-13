@@ -1,27 +1,34 @@
-import { SVGOWorker } from '../svgo.worker'
+import { svgo } from '../svgo.worker'
 
 describe('svgo', () => {
   it('should be able to run svgo', async () => {
-    expect(await SVGOWorker('', [], false, 3)).toEqual('')
+    expect(await svgo('', { plugins: [], prettify: false, precision: 3 })).toEqual('')
   })
 
   it('should minify svgs', async () => {
     expect(
-      await SVGOWorker('<svg><title id="test" id="what">test</title></svg>', [], false, 3),
+      await svgo('<svg><title id="test" id="what">test</title></svg>', {
+        plugins: [],
+        prettify: false,
+        precision: 3,
+      }),
     ).toEqual('<svg><title id="what">test</title></svg>')
   })
 
   it('should prettify', async () => {
-    expect(await SVGOWorker('<svg><title id="what">test</title></svg>', [], true, 3)).toEqual(
-      '<svg>\n    <title id="what">\n        test\n    </title>\n</svg>\n',
-    )
+    expect(
+      await svgo('<svg><title id="what">test</title></svg>', {
+        plugins: [],
+        prettify: true,
+        precision: 3,
+      }),
+    ).toEqual('<svg>\n    <title id="what">\n        test\n    </title>\n</svg>\n')
   })
 
   it('should do precision', async () => {
     expect(
-      await SVGOWorker(
-        '<svg><path d="M0.00012, 124.24404, 1Z" /></svg>',
-        [
+      await svgo('<svg><path d="M0.00012, 124.24404, 1Z" /></svg>', {
+        plugins: [
           {
             id: 'convertPathData',
             description: '',
@@ -29,17 +36,16 @@ describe('svgo', () => {
             value: true,
           },
         ],
-        false,
-        3,
-      ),
+        prettify: false,
+        precision: 3,
+      }),
     ).toEqual('<svg><path d="M0 124.244l1z"/></svg>')
   })
 
   it('should do precision number', async () => {
     expect(
-      await SVGOWorker(
-        '<svg><path d="M0.00012, 124.24404, 1Z" /></svg>',
-        [
+      await svgo('<svg><path d="M0.00012, 124.24404, 1Z" /></svg>', {
+        plugins: [
           {
             id: 'convertPathData',
             description: '',
@@ -47,9 +53,9 @@ describe('svgo', () => {
             value: true,
           },
         ],
-        false,
-        2,
-      ),
+        prettify: false,
+        precision: 2,
+      }),
     ).toEqual('<svg><path d="M0 124.24l1z"/></svg>')
   })
 })
