@@ -23,7 +23,7 @@ describe('svgo', () => {
         '<svg><path d="M0.00012, 124.24404, 1Z" /></svg>',
         [
           {
-            getConfig: () => ({ convertPathData: true }),
+            id: 'convertPathData',
             description: '',
             category: '',
             value: true,
@@ -41,7 +41,7 @@ describe('svgo', () => {
         '<svg><path d="M0.00012, 124.24404, 1Z" /></svg>',
         [
           {
-            getConfig: () => ({ convertPathData: true }),
+            id: 'convertPathData',
             description: '',
             category: '',
             value: true,

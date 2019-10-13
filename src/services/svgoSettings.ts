@@ -132,10 +132,6 @@ export const defaultSettings: ISettings = {
     {
       description: 'Prefer viewbox over width and height',
       id: 'removeDimensions',
-      // getConfig: value =>
-      //   (({ [value ? 'removeDimensions' : 'removeViewBox']: true } as unknown) as
-      //     | PluginRemoveDimensions
-      //     | PluginRemoveViewBox),
       category: 'stripping',
       value: false,
     },
@@ -145,24 +141,6 @@ export const defaultSettings: ISettings = {
       category: 'stripping',
       value: true,
     },
-    // {
-    //   getConfig: (value) => ({ removeAttributesBySelector: value }),
-    //   description: 'Remove attributes of elements that match a CSS selector',
-    //   category: 'stripping'
-    //   value: []
-    // },
-    // {
-    //   getConfig: (value) => ({ removeElementsByAttr: value }),
-    //   description: 'Remove arbitrary elements by ID or className',
-    //   category: 'stripping'
-    //   value: []
-    // },
-    // {
-    //   getConfig: (value) => ({ removeOffCanvasPaths: value }),
-    //   description: 'Remove elements that are drawn outside of the viewbox',
-    //   category: 'stripping'
-    //   value: []
-    // },
     {
       description: "Round numeric values to the fixed precision, removes default 'px' units",
       id: 'cleanupNumericValues',
@@ -211,12 +189,6 @@ export const defaultSettings: ISettings = {
       category: 'styles',
       value: true,
     },
-    // {
-    //   description: 'Inline styles',
-    //   getConfig: (value) => ({ inlineStyles: value }),
-    //   category: 'styles'
-    //   value: false
-    // },
     {
       description: 'Convert style to attributes',
       id: 'convertStyleToAttrs',
@@ -247,18 +219,9 @@ export const defaultSettings: ISettings = {
       category: 'pretty code',
       value: true,
     },
-    // {
-    //   getConfig: (value) => ({ prefixIds: value }),
-    //   description: 'Prefix IDs',
-    //   category: 'pretty code'
-    // },
     {
       description: 'Prefer attributes on parent group instead of individual elements',
       id: 'moveElemsAttrsToGroup',
-      // getConfig: value =>
-      //   ({
-      //     [value ? 'moveElemsAttrsToGroup' : 'moveGroupAttrsToElems']: true,
-      //   } as unknown),
       category: 'pretty code',
       value: true,
     },
@@ -286,17 +249,5 @@ export const defaultSettings: ISettings = {
       category: 'other',
       value: true,
     },
-    // {
-    //   getConfig: (value) => ({ addClassesToSVGElement: value }),
-    //   description: 'Add classes to <svg> element',
-    //   category: 'other'
-    //   value: []
-    // },
-    // {
-    //   getConfig: (value) => ({ addAttributesToSVGElement: value }),
-    //   description: 'Add attributes to an outer <svg> element',
-    //   category: 'other'
-    //   value: []
-    // },
   ],
 }
