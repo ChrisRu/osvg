@@ -58,7 +58,6 @@ export default async function svgo(svgstr: string, settings: ISettings) {
   }
 
   const optimizedPluginsData = optimizePluginsArray(availablePlugins.map(([_, x]) => x))
-  console.log(optimizedPluginsData.filter(plugins => plugins.some(plugin => plugin.active)))
 
   let i = 0
   let prevLength = Number.POSITIVE_INFINITY
