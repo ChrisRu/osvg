@@ -5,7 +5,7 @@ import { getHumanReadableBytes } from '../services/byteService'
 import { CloseIcon } from './elements/Icons'
 import { Logo } from './elements/Logo'
 
-const MenuBarWrapper = styled.nav`
+const MenubarWrapper = styled.nav`
   background: #181818;
   color: #fff;
   display: flex;
@@ -155,7 +155,7 @@ function getFileInfo(gzip: boolean, initialSize: number, compressedSize?: number
   return [title, original, compressed].filter(line => line).join('\n')
 }
 
-export function MenuBar({
+export function Menubar({
   view,
   loading,
   error,
@@ -183,7 +183,7 @@ export function MenuBar({
   const improvement = percentage !== undefined && percentage >= 0
 
   return (
-    <MenuBarWrapper>
+    <MenubarWrapper>
       <Title title="Close the SVG and go to the home screen" onClick={onClose}>
         <Logo />
       </Title>
@@ -239,6 +239,6 @@ export function MenuBar({
       <CloseButton title="Close the currently open SVG" onClick={onClose}>
         <CloseIcon />
       </CloseButton>
-    </MenuBarWrapper>
+    </MenubarWrapper>
   )
 }

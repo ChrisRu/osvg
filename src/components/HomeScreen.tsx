@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 import styled from 'styled-components'
 import { UploadIcon, ClipboardIcon, PawIcon, WarningIcon } from './elements/Icons'
 import { SVGOTextLogo } from './elements/SVGOTextLogo'
-import { openFile } from '../services/openFile'
+import { openFile } from '../services/fileService'
 import { useSingleTime } from '../hooks/useSingleTime'
 import { Logo } from './elements/Logo'
 

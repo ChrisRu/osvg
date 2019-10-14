@@ -16,7 +16,7 @@ const Wrapper = styled.div`
   }
 `
 
-export function LoadingRenderer() {
+export function LoadingView() {
   return (
     <Wrapper>
       <ViewOverlay original />

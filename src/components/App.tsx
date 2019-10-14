@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
-import { MenuBar } from './MenuBar'
+import { Menubar } from './Menubar'
 import { Sidebar } from './Sidebar'
 import { HomeScreen } from './HomeScreen'
-import { SVGRenderer } from './SVGRenderer'
-import { CodeRenderer } from './CodeRenderer'
+import { ImageView } from './views/ImageView'
+import { CodeView } from './views/CodeView'
+import { LoadingView } from './views/LoadingView'
 import { useSettings } from '../hooks/useSettings'
 import { useTheme } from '../hooks/useTheme'
 /* eslint-disable */
@@ -13,10 +14,9 @@ import * as workerFile from 'workerize-loader!../services/svgo.worker'
 /* eslint-enable */
 import { getSVGTitle } from '../services/svgService'
 import { fixFileExtension } from '../services/stringTransformService'
-import { createOpenFile } from '../services/openFile'
-import { saveSvg } from '../services/saveSvg'
+import { createOpenFile } from '../services/fileService'
+import { saveSvg } from '../services/fileService'
 import { ISettings } from '../services/svgoSettings'
-import { LoadingRenderer } from './LoadingRenderer'
 
 const Main = styled.main`
   position: relative;
@@ -131,7 +131,7 @@ export function App() {
   return (
     <ThemeProvider theme={{ ...theme, themeName, toggleTheme }}>
       <>
-        <MenuBar
+        <Menubar
           view={view}
           loading={loading}
           error={error}
@@ -153,15 +153,15 @@ export function App() {
             setPrecision={setPrecision}
           />
           {loading ? (
-            <LoadingRenderer />
+            <LoadingView />
           ) : view === 'svg' ? (
-            <SVGRenderer
+            <ImageView
               initialSVG={initialSVG}
               optimizedSVG={optimizedSVG}
               fileName={fileName || defaultFileName}
             />
           ) : (
-            <CodeRenderer
+            <CodeView
               initialSVG={initialSVG}
               optimizedSVG={optimizedSVG}
               fileName={fileName || defaultFileName}

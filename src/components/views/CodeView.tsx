@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
-import darkTheme from '../plugins/prism-themes/atom-dark'
-import lightTheme from '../plugins/prism-themes/atom-light'
 import markup from 'refractor/lang/markup'
-import { IThemeContext } from '../hooks/useTheme'
+import darkTheme from '../../plugins/prism-themes/atom-dark'
+import lightTheme from '../../plugins/prism-themes/atom-light'
+import { IThemeContext } from '../../hooks/useTheme'
 import { ViewOverlay } from './ViewOverlay'
 
 SyntaxHighlighter.registerLanguage('markup', markup)
@@ -30,7 +30,7 @@ interface IProps {
   fileName: string
 }
 
-export function CodeRenderer({ initialSVG, optimizedSVG, fileName }: IProps) {
+export function CodeView({ initialSVG, optimizedSVG, fileName }: IProps) {
   const [showOriginal, setShowOriginal] = useState(false)
   const { themeName } = useContext<IThemeContext>(ThemeContext)
 

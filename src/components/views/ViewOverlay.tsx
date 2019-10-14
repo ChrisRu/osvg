@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components'
-import { saveSvg } from '../services/saveSvg'
-import { DownloadIcon, ThemeIcon } from './elements/Icons'
-import { IThemeContext } from '../hooks/useTheme'
-import { defaultFileName } from './App'
+import { saveSvg } from '../../services/fileService'
+import { DownloadIcon, ThemeIcon } from '../elements/Icons'
+import { IThemeContext } from '../../hooks/useTheme'
+import { defaultFileName } from '../App'
 
 const Wrapper = styled.div`
   position: absolute;

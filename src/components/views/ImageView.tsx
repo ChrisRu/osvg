@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { SVGToDataUri } from '../services/svgService'
-import { PanAndZoom } from './elements/PanAndZoom'
+import { SVGToDataUri } from '../../services/svgService'
+import { PanAndZoom } from '../elements/PanAndZoom'
 import { ViewOverlay } from './ViewOverlay'
 
 function createBackground(color: string, size: number) {
@@ -35,7 +35,7 @@ interface IProps {
   fileName: string
 }
 
-export function SVGRenderer({ initialSVG, optimizedSVG, fileName, gridSize = 50 }: IProps) {
+export function ImageView({ initialSVG, optimizedSVG, fileName, gridSize = 50 }: IProps) {
   const [showOriginal, setShowOriginal] = useState(false)
 
   const SVG = showOriginal || !optimizedSVG ? initialSVG : optimizedSVG
