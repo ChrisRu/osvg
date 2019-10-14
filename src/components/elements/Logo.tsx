@@ -14,7 +14,7 @@ export function Logo({ fill }: IProps) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <mask
-        id="mask0"
+        id="osvg-logo-mask"
         mask-type="alpha"
         maskUnits="userSpaceOnUse"
         x="0"
@@ -68,12 +68,12 @@ export function Logo({ fill }: IProps) {
           fill="black"
         />
       </mask>
-      <g mask="url(#mask0)">
-        <circle cx="50" cy="50" r="50" fill={fill ? fill : 'url(#gradient)'} />
+      <g mask="url(#osvg-logo-mask)">
+        <circle cx="50" cy="50" r="50" fill={fill ? fill : 'url(#osvg-logo-gradient)'} />
       </g>
       <defs>
         <linearGradient
-          id="gradient"
+          id="osvg-logo-gradient"
           x1="1.15551e-06"
           y1="-20.4528"
           x2="86.9434"

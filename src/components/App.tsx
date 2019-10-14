@@ -8,6 +8,7 @@ import { CodeView } from './views/CodeView'
 import { LoadingView } from './views/LoadingView'
 import { useSettings } from '../hooks/useSettings'
 import { useTheme } from '../hooks/useTheme'
+// I don't often write comments, but when I do;
 /* eslint-disable */
 // @ts-ignore
 import * as workerFile from 'workerize-loader!../services/svgo.worker'

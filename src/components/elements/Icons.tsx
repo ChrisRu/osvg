@@ -97,13 +97,13 @@ export function ThemeIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs />
-      <mask id="mask1" maskUnits="userSpaceOnUse" x="3" y="3" width="50" height="50">
+      <mask id="osvg-theme-icon-mask" maskUnits="userSpaceOnUse" x="3" y="3" width="50" height="50">
         <path
           d="M28 53c13.807 0 25-11.193 25-25S41.807 3 28 3 3 14.193 3 28s11.193 25 25 25z"
           fill="#fff"
         />
       </mask>
-      <g mask="url(#mask1)">
+      <g mask="url(#osvg-theme-icon-mask)">
         <path d="M28 0h28v56H28V0z" fill="currentColor" />
       </g>
       <path

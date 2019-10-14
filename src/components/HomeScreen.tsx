@@ -1,27 +1,31 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { UploadIcon, ClipboardIcon, PawIcon, WarningIcon } from './elements/Icons'
 import { SVGOTextLogo } from './elements/SVGOTextLogo'
 import { openFile } from '../services/fileService'
 import { useSingleTime } from '../hooks/useSingleTime'
-import { Logo } from './elements/Logo'
-
-const MegaWrapper = styled.div`
-  flex: 1;
-  display: flex;
-  background: #111;
-`
+import { ErrorModal } from './elements/ErrorModal'
 
 const Wrapper = styled.div<{ dragging?: boolean }>`
   position: relative;
-  background: #181818;
+  background: #212123;
   color: #fff;
   flex: 1;
   display: flex;
-  justify-content: center;
+  flex-flow: row nowrap;
   transform: scale(${p => (p.dragging ? 0.9 : 1)});
   transition: transform 0.4s;
 `
+
+const Tip = styled.div`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #282828;
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+`
+
+const Title = styled.div``
 
 const ContentWrapper = styled.div`
   max-width: 1400px;
@@ -34,173 +38,12 @@ const ContentWrapper = styled.div`
   justify-content: center;
 `
 
-const BackgroundText = styled.div<{ shrink?: boolean }>`
+const Gradient = styled.div`
   position: absolute;
-  right: 0;
-  top: 15vh;
-  width: 80vw;
-  pointer-events: none;
-  transform-origin: center right;
-  transition: transform 0.8s;
-  transform: scale(${p => (p.shrink ? 0.9 : 1)});
-
-  svg {
-    width: 100%;
-  }
-`
-
-const Title = styled.div`
-  margin-top: 14rem;
-  margin-bottom: 4rem;
-
-  h1 {
-    font-size: 5rem;
-    margin: 0;
-    margin-bottom: 0.75rem;
-    user-select: none;
-
-    svg {
-      width: 3.2rem;
-      height: 3.2rem;
-      margin-bottom: -0.1rem;
-      margin-right: 0.3rem;
-    }
-  }
-
-  p {
-    margin: 0;
-    font-size: 2rem;
-    opacity: 0.8;
-  }
-
-  @media (max-width: 1100px) {
-    text-align: center;
-  }
-`
-
-const OpenFileButton = styled.button`
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  padding: 0.6rem 1.2rem;
-  margin: 0 0.5rem;
-  background-color: #fff;
-  color: #000;
-  border: 0;
-  transition: background-color 0.1s;
-  outline: none;
-  font-size: 1.2rem;
-
-  &:hover,
-  &:focus {
-    background-color: #ccc;
-  }
-
-  &:first-child {
-    margin-left: 0;
-  }
-
-  &:last-child {
-    margin-right: 0;
-  }
-
-  svg {
-    margin-right: 0.8rem;
-    width: 1.6rem;
-  }
-`
-
-const OpenFileLabel = styled(OpenFileButton).attrs({ role: 'button', tabIndex: 0 })`
-  white-space: nowrap;
-
-  input {
-    display: none;
-  }
-`
-
-const MarkupInputWrapper = styled.div`
-  position: relative;
-  margin: 0 0.5rem;
-
-  svg {
-    color: #888;
-    position: absolute;
-    top: 0.6rem;
-    left: 1.2rem;
-    pointer-events: none;
-  }
-`
-
-const MarkupInput = styled.input`
-  padding: 0.6rem 1.2rem 0.6rem 3.8rem;
-  font-size: 1.2rem;
-  border: 0;
-  line-height: initial;
-`
-
-const Upload = styled.div`
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-
-  @media (max-width: 1100px) {
-    justify-content: center;
-  }
-`
-
-const Tip = styled.div`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: #282828;
-  padding: 0.5rem 1rem;
-  font-size: 1.2rem;
-`
-
-const Overlay = styled.div`
-  z-index: 2;
-  position: absolute;
-  background: rgba(0, 0, 0, 0.8);
-  top: 0;
-  right: 0;
-  bottom: 0;
   left: 0;
-`
-
-const ErrorMessage = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 30rem;
-  background: #222;
-  color: #fff;
-
-  p {
-    font-size: 1.2rem;
-    margin: 0;
-    padding: 1rem;
-  }
-`
-
-const ErrorTitle = styled.div`
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  justify-content: center;
-  background: #282828;
-  padding: 1rem;
-
-  h1 {
-    font-size: 1.8rem;
-    margin: 0;
-  }
-
-  svg {
-    width: 1.8rem;
-    height: 1.8rem;
-    margin-right: 1rem;
-  }
+  width: 25%;
+  height: 100%;
+  background: linear-gradient(120deg, #d55be4, #61379f);
 `
 
 interface IProps {
@@ -213,8 +56,6 @@ export function HomeScreen({ loadingError, onLoadSVG, hideError }: IProps) {
   // Dragging is a number, because drag leave events are triggered
   // when hovering over a transitioning element.
   const [dragging, setDragging] = useState(0)
-
-  const inputFileRef = useRef<HTMLInputElement>(null)
 
   const [tipShown, hideTip] = useSingleTime('tip:drag-drop')
 
@@ -272,73 +113,25 @@ export function HomeScreen({ loadingError, onLoadSVG, hideError }: IProps) {
   }
 
   return (
-    <MegaWrapper
-      onDragEnter={() => setDragging(d => d + 1)}
-      onDragLeave={() => setDragging(d => d - 1)}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-      onPaste={onPaste}
-    >
-      <Wrapper dragging={dragging > 0}>
-        <BackgroundText shrink={dragging > 0}>
-          <SVGOTextLogo />
-        </BackgroundText>
-        {loadingError ? (
-          <Overlay onClick={hideError}>
-            <ErrorMessage>
-              <ErrorTitle>
-                <WarningIcon />
-                <h1>oops!</h1>
-              </ErrorTitle>
-              <p>
-                Could not load the file. Please check if the file you uploaded is an SVG and whether
-                it&apos;s valid by W3 standards.
-              </p>
-            </ErrorMessage>
-          </Overlay>
-        ) : null}
-        <ContentWrapper>
-          {tipShown ? null : (
-            <Tip onClick={hideTip}>
-              <strong>TIP: </strong>
-              <span>You can also drop your files in here right from your file explorer</span>
-            </Tip>
-          )}
-          <Title>
-            <h1 aria-label="oSVG">
-              <Logo fill="#fff" />
-              <span>SVG</span>
-            </h1>
-            <p>Optimize SVGs right in your web browser</p>
-          </Title>
-          <Upload>
-            <OpenFileLabel title="Open an SVG from your filesystem" as="label">
-              <UploadIcon />
-              <span>Open file</span>
-              <input
-                type="file"
-                id="upload-file"
-                accept=".svg"
-                onChange={onOpenFile}
-                ref={inputFileRef}
-              />
-            </OpenFileLabel>
-            <MarkupInputWrapper>
-              <ClipboardIcon />
-              <MarkupInput
-                title="Paste your SVG's markup in here"
-                placeholder="Paste markup"
-                onPaste={onPaste}
-                onKeyDown={onKeyDown}
-              />
-            </MarkupInputWrapper>
-            <OpenFileButton title="Open an example file" onClick={onDemo}>
-              <PawIcon />
-              <span>Demo</span>
-            </OpenFileButton>
-          </Upload>
-        </ContentWrapper>
-      </Wrapper>
-    </MegaWrapper>
+    <Wrapper dragging={dragging > 0}>
+      <Gradient />
+      {loadingError ? (
+        <ErrorModal
+          title="oops!"
+          description="Could not load the file. Please check if the file you uploaded is an SVG and whether it's valid by W3 standards."
+          onClose={hideError}
+        />
+      ) : null}
+      {tipShown ? null : (
+        <Tip onClick={hideTip}>
+          <strong>TIP: </strong>
+          <span>You can also drop your files in here right from your file explorer</span>
+        </Tip>
+      )}
+      <Title>
+        <SVGOTextLogo />
+        <p>Optimize SVGs right in your web browser</p>
+      </Title>
+    </Wrapper>
   )
 }
