@@ -138,17 +138,17 @@ const Gradient = styled.div<{ fullWidth: boolean }>`
   background: linear-gradient(120deg, #d55be4, #61379f);
 `
 
-const Loading = styled.div<{ show: boolean }>`
+const Loading = styled.div<{ show: boolean; transition: boolean }>`
   position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-  display: flex;
   justify-content: center;
   align-items: center;
   transition: opacity 0.3s;
   transition-delay: 1s;
+  display: ${p => (p.transition ? 'flex' : 'none')};
   opacity: ${p => (p.show ? 1 : 0)};
   pointer-events: none;
 
@@ -210,9 +210,21 @@ export function HomeScreen({ onPreloadSVG, onLoadSVG }: IProps) {
   return (
     <>
       <Gradient fullWidth={loading} />
-      <Loading show={loading}>
+      <Loading show={loading} transition={!loadingError}>
         <LoadingIcon />
       </Loading>
+      {loadingError ? (
+        <ErrorModal
+          title="oops!"
+          onClose={() => {
+            setLoadingError(undefined)
+            setLoading(false)
+          }}
+        >
+          Could not load the file. Please check if the file you uploaded is an SVG and whether
+          it&apos;s valid by W3 standards.
+        </ErrorModal>
+      ) : null}
       <HomeWrapper
         fade={loading}
         onDragOver={onDragOver}
@@ -222,12 +234,6 @@ export function HomeScreen({ onPreloadSVG, onLoadSVG }: IProps) {
         onDrop={loadSVGWith(loadSVGWithAnimation, onDrop)}
       >
         <TopPageWrapper>
-          {loadingError ? (
-            <ErrorModal title="oops!" onClose={() => setLoadingError(undefined)}>
-              Could not load the file. Please check if the file you uploaded is an SVG and whether
-              it&apos;s valid by W3 standards.
-            </ErrorModal>
-          ) : null}
           {tipShown ? null : (
             <Tip onClick={hideTip}>
               You can also paste the content of your SVG right in this page.
