@@ -1,6 +1,6 @@
 export interface IFileDetails {
   contents: string
-  name: string
+  name?: string
 }
 
 export async function createOpenFile() {
@@ -63,4 +63,74 @@ export function saveSvg(image: string, imageName: string) {
   downloadLink.click()
 
   document.body.removeChild(downloadLink)
+}
+
+export function onDragOver(event: React.DragEvent<HTMLDivElement>) {
+  event.preventDefault()
+
+  event.dataTransfer.dropEffect = 'copy'
+}
+
+export async function onOpenFile(
+  event: React.ChangeEvent<HTMLInputElement>,
+): Promise<IFileDetails | undefined> {
+  event.preventDefault()
+
+  if (event.target.files && event.target.files[0]) {
+    return openFile(event.target.files)
+  }
+}
+
+export async function onDrop(
+  event: React.DragEvent<HTMLDivElement>,
+): Promise<IFileDetails | undefined> {
+  event.preventDefault()
+
+  if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+    return openFile(event.dataTransfer.files)
+  }
+}
+
+export async function onPaste(
+  event: React.ClipboardEvent<HTMLInputElement>,
+): Promise<IFileDetails | undefined> {
+  event.preventDefault()
+
+  if (event.clipboardData.files && event.clipboardData.files[0]) {
+    return openFile(event.clipboardData.files)
+  } else {
+    const text = event.clipboardData.getData('text')
+    if (text) {
+      return {
+        contents: text,
+      }
+    }
+  }
+}
+
+export function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>): IFileDetails | undefined {
+  if (event.key === 'Enter') {
+    event.preventDefault()
+
+    return {
+      contents: (event.target as HTMLInputElement).value,
+    }
+  }
+}
+
+export async function onDemo(location: string): Promise<IFileDetails> {
+  const response = await fetch(location)
+  const contents = await response.text()
+
+  return {
+    contents,
+    name: 'doggo.svg',
+  }
+}
+
+export function loadSVGWith<T>(
+  onLoadSVG: (file: IFileDetails | undefined) => void,
+  fn: (_: T) => Promise<IFileDetails | undefined>,
+) {
+  return async (event: T) => onLoadSVG(await fn(event))
 }

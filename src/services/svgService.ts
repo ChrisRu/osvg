@@ -1,12 +1,15 @@
 export function getSVGTitle(contents: string) {
-  const parser = new DOMParser()
-  const document = parser.parseFromString(contents, 'text/xml')
-  const titles = document.getElementsByTagName('title')
-  if (titles[0]) {
-    return titles[0].textContent + '.svg'
-  }
+  try {
+    const parser = new DOMParser()
+    const document = parser.parseFromString(contents, 'text/xml')
+    const titles = document.getElementsByTagName('title')
 
-  return undefined
+    if (titles[0]) {
+      return titles[0].textContent + '.svg'
+    }
+  } catch (error) {
+    console.warn('Could not get title from SVG', error)
+  }
 }
 
 const svgDataType = 'data:image/svg+xml'

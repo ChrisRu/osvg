@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import { Menubar } from './Menubar'
 import { Sidebar } from './Sidebar'
@@ -13,9 +13,8 @@ import { useTheme } from '../hooks/useTheme'
 // @ts-ignore
 import * as workerFile from 'workerize-loader!../services/svgo.worker'
 /* eslint-enable */
-import { getSVGTitle } from '../services/svgService'
 import { fixFileExtension } from '../services/stringTransformService'
-import { createOpenFile } from '../services/fileService'
+import { IFileDetails } from '../services/fileService'
 import { saveSvg } from '../services/fileService'
 import { ISettings } from '../services/svgoSettings'
 
@@ -39,33 +38,73 @@ export function App() {
   const [error, setError] = useState<Error>()
   const [fileName, setFileName] = useState<string>('')
   const [initialSVG, setInitialSVG] = useState<string>()
-  const [optimizedSVG, setOptimizedSVGContent] = useState<string>()
+  const [optimizedSVG, setOptimizedSVG] = useState<string>()
 
-  const { settings, updateSetting, togglePrettify, setPrecision } = useSettings()
+  const { prettify, precision, plugins, updatePlugin, togglePrettify, setPrecision } = useSettings()
   const { theme, toggleTheme, themeName } = useTheme()
+
+  const loadSVG = useCallback(
+    async (file: IFileDetails | undefined) => {
+      if (!file) {
+        throw new Error('No file supplied')
+      }
+
+      return worker.svgo(file.contents, {
+        prettify,
+        precision,
+        plugins,
+      })
+    },
+    [plugins, precision, prettify],
+  )
+
+  useEffect(() => {
+    if (initialSVG) {
+      let cancelled = false
+      ;(async () => {
+        try {
+          setLoading(true)
+
+          const result = await worker.svgo(initialSVG, {
+            prettify,
+            precision,
+            plugins,
+          })
+          if (!cancelled) {
+            setOptimizedSVG(result)
+          }
+        } catch (error) {
+          console.error('Could not optimize SVG', error)
+          if (!cancelled) {
+            setError(error)
+          }
+        } finally {
+          if (!cancelled) {
+            setLoading(false)
+          }
+        }
+      })()
+
+      return () => {
+        cancelled = true
+      }
+    }
+  }, [initialSVG, plugins, precision, prettify])
 
   useEffect(() => {
     if (!initialSVG || !fileName) {
-      document.title = 'oSVG | Optimize your SVGs'
+      document.title = 'osvg | Optimize your SVGs'
     } else {
-      document.title = `${fileName || defaultFileName} | oSVG`
+      document.title = `${fileName || defaultFileName} | osvg`
     }
   }, [initialSVG, fileName])
 
   useEffect(() => {
-    async function keydown(event: KeyboardEvent) {
-      if (event.ctrlKey) {
-        if (event.key === 'o') {
+    function keydown(event: KeyboardEvent) {
+      if (event.ctrlKey && event.key === 's') {
+        if (optimizedSVG) {
           event.preventDefault()
-          const details = await createOpenFile()
-          openFile(details.contents, details.name)
-        }
-
-        if (event.key === 's') {
-          if (optimizedSVG) {
-            event.preventDefault()
-            saveSvg(optimizedSVG, fileName || defaultFileName)
-          }
+          saveSvg(optimizedSVG, fileName || defaultFileName)
         }
       }
     }
@@ -75,101 +114,62 @@ export function App() {
     return function() {
       window.removeEventListener('keydown', keydown)
     }
-  }, [optimizedSVG, fileName])
-
-  useEffect(() => {
-    if (initialSVG) {
-      let cancel = false
-      ;(async () => {
-        try {
-          setLoading(true)
-
-          const result = await worker.svgo(initialSVG, settings)
-
-          if (!cancel) {
-            setOptimizedSVGContent(result)
-          }
-        } catch (error) {
-          if (!cancel) {
-            console.error('Could not optimize SVG', error)
-            setError(error)
-          }
-        } finally {
-          if (!cancel) {
-            setLoading(false)
-          }
-        }
-      })()
-
-      return () => {
-        cancel = true
-      }
-    }
-  }, [initialSVG, settings])
-
-  function openFile(contents: string, fileName?: string) {
-    setInitialSVG(contents)
-    setOptimizedSVGContent(undefined)
-    setFileName(fileName ? fileName : getSVGTitle(contents) || defaultFileName)
-    setError(undefined)
-  }
-
-  if (!initialSVG || error) {
-    return (
-      <HomeScreen
-        loadingError={error}
-        onLoadSVG={openFile}
-        hideError={() => {
-          setInitialSVG(undefined)
-          setFileName('')
-          setOptimizedSVGContent(undefined)
-          setError(undefined)
-        }}
-      />
-    )
-  }
+  }, [optimizedSVG, fileName, loadSVG])
 
   return (
     <ThemeProvider theme={{ ...theme, themeName, toggleTheme }}>
-      <>
-        <Menubar
-          view={view}
-          loading={loading}
-          error={error}
-          fileName={fileName}
-          initialSVG={initialSVG}
-          optimizedSVG={optimizedSVG}
-          onUpdateFileName={setFileName}
-          onRewriteFileName={() =>
-            setFileName(fileName ? fixFileExtension(fileName, 'svg') : defaultFileName)
-          }
-          onChangeView={setView}
-          onClose={() => setInitialSVG(undefined)}
+      {!initialSVG || error ? (
+        <HomeScreen
+          onPreloadSVG={loadSVG}
+          onLoadSVG={(initialSVG, optimizedSVG, fileName) => {
+            setInitialSVG(initialSVG)
+            setOptimizedSVG(optimizedSVG)
+            setFileName(fileName || defaultFileName)
+          }}
         />
-        <Main>
-          <Sidebar
-            settings={settings}
-            onSettingsUpdate={updateSetting}
-            togglePrettify={togglePrettify}
-            setPrecision={setPrecision}
+      ) : (
+        <>
+          <Menubar
+            view={view}
+            loading={loading}
+            error={error}
+            fileName={fileName}
+            initialSVG={initialSVG}
+            optimizedSVG={optimizedSVG}
+            onUpdateFileName={setFileName}
+            onRewriteFileName={() =>
+              setFileName(fileName ? fixFileExtension(fileName, 'svg') : defaultFileName)
+            }
+            onChangeView={setView}
+            onClose={() => setInitialSVG(undefined)}
           />
-          {loading ? (
-            <LoadingView />
-          ) : view === 'svg' ? (
-            <ImageView
-              initialSVG={initialSVG}
-              optimizedSVG={optimizedSVG}
-              fileName={fileName || defaultFileName}
+          <Main>
+            <Sidebar
+              plugins={plugins}
+              prettify={prettify}
+              precision={precision}
+              onUpdatePlugin={updatePlugin}
+              togglePrettify={togglePrettify}
+              setPrecision={setPrecision}
             />
-          ) : (
-            <CodeView
-              initialSVG={initialSVG}
-              optimizedSVG={optimizedSVG}
-              fileName={fileName || defaultFileName}
-            />
-          )}
-        </Main>
-      </>
+            {loading ? (
+              <LoadingView />
+            ) : view === 'svg' ? (
+              <ImageView
+                initialSVG={initialSVG}
+                optimizedSVG={optimizedSVG}
+                fileName={fileName || defaultFileName}
+              />
+            ) : (
+              <CodeView
+                initialSVG={initialSVG}
+                optimizedSVG={optimizedSVG}
+                fileName={fileName || defaultFileName}
+              />
+            )}
+          </Main>
+        </>
+      )}
     </ThemeProvider>
   )
 }

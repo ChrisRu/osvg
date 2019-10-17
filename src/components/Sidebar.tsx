@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import * as R from 'ramda'
-import { ISetting, ISettings } from '../services/svgoSettings'
+import { ISetting } from '../services/svgoSettings'
 import { capitalize } from '../services/stringTransformService'
 import { Checkbox } from './elements/Checkbox'
 
@@ -72,24 +71,30 @@ const OptionRangeValue = styled.span`
 `
 
 interface IProps {
-  settings: ISettings
-  onSettingsUpdate: (setting: ISetting) => void
+  plugins: ISetting[]
+  precision: number
+  prettify: boolean
+  onUpdatePlugin: (setting: ISetting) => void
   togglePrettify: () => void
   setPrecision: (value: number) => void
 }
 
-export function Sidebar({ settings, togglePrettify, setPrecision, onSettingsUpdate }: IProps) {
-  const groupedSettings = settings.plugins.reduce<{ [key: string]: ISetting[] }>(
-    (total, setting) => {
-      if (setting.category in total) {
-        total[setting.category].push(setting)
-      } else {
-        total[setting.category] = [setting]
-      }
-      return total
-    },
-    {},
-  )
+export function Sidebar({
+  plugins,
+  prettify,
+  precision,
+  togglePrettify,
+  setPrecision,
+  onUpdatePlugin,
+}: IProps) {
+  const groupedSettings = plugins.reduce<{ [key: string]: ISetting[] }>((total, setting) => {
+    if (setting.category in total) {
+      total[setting.category].push(setting)
+    } else {
+      total[setting.category] = [setting]
+    }
+    return total
+  }, {})
 
   return (
     <SidebarWrapper>
@@ -109,17 +114,17 @@ export function Sidebar({ settings, togglePrettify, setPrecision, onSettingsUpda
                   type="range"
                   min="0"
                   max="16"
-                  value={settings.precision}
+                  value={precision}
                   onChange={event => setPrecision(Number(event.target.value))}
                 />
-                <OptionRangeValue>{settings.precision}</OptionRangeValue>
+                <OptionRangeValue>{precision}</OptionRangeValue>
               </OptionRange>
             </>
           ) : null}
           {header === 'pretty code' ? (
             <OptionGroupOptions>
               <Option>
-                <Checkbox checked={settings.prettify} onChange={togglePrettify} />
+                <Checkbox checked={prettify} onChange={togglePrettify} />
                 <span>Prettify</span>
               </Option>
             </OptionGroupOptions>
@@ -128,9 +133,7 @@ export function Sidebar({ settings, togglePrettify, setPrecision, onSettingsUpda
             {plugins.map(plugin => (
               <Option key={plugin.description}>
                 <Checkbox
-                  onChange={() =>
-                    onSettingsUpdate(R.set(R.lensProp('value'), !plugin.value, plugin))
-                  }
+                  onChange={() => onUpdatePlugin({ ...plugin, value: !plugin.value })}
                   checked={plugin.value}
                 />
                 <span>{plugin.description}</span>

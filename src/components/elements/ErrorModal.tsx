@@ -3,23 +3,24 @@ import styled from 'styled-components'
 import { WarningIcon } from './Icons'
 
 const Overlay = styled.div`
-  z-index: 2;
-  position: absolute;
+  z-index: 4;
+  position: fixed;
   background: rgba(0, 0, 0, 0.8);
   top: 0;
   right: 0;
-  bottom: 0;
   left: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `
 
 const ErrorMessage = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   max-width: 30rem;
   background: #222;
   color: #fff;
+  display: flex;
+  flex-flow: column nowrap;
 
   p {
     font-size: 1.2rem;
@@ -48,21 +49,40 @@ const ErrorTitle = styled.div`
   }
 `
 
+const ErrorCloseButton = styled.button`
+  background: transparent;
+  border: 0;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.7);
+  padding: 0.4rem 1rem;
+  align-self: flex-end;
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+
+  &:hover,
+  &:focus {
+    background: rgba(255, 255, 255, 0.9);
+  }
+`
+
 interface IProps {
   title: string
-  description: string
+  children: React.ReactNode
   onClose: () => void
 }
 
-export function ErrorModal({ title, description, onClose }: IProps) {
+export function ErrorModal({ title, children, onClose }: IProps) {
   return (
-    <Overlay onClick={onClose}>
+    <Overlay>
       <ErrorMessage>
         <ErrorTitle>
           <WarningIcon />
           <h1>{title}</h1>
         </ErrorTitle>
-        <p>{description}</p>
+        <p>{children}</p>
+        <ErrorCloseButton title="Hide error message" onClick={onClose}>
+          Ok
+        </ErrorCloseButton>
       </ErrorMessage>
     </Overlay>
   )

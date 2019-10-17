@@ -1,6 +1,6 @@
-# oSVG
+# osvg
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/c373035d-35a7-4991-a8cd-8773860b675d/deploy-status)](https://app.netlify.com/sites/oSVG/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/c373035d-35a7-4991-a8cd-8773860b675d/deploy-status)](https://app.netlify.com/sites/osvg/deploys)
 
 A GUI for optimizing your SVGs online using [SVGO](https://github.com/svg/svgo).
 

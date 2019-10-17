@@ -3,11 +3,13 @@ import ReactDOM from 'react-dom'
 import { createGlobalStyle } from 'styled-components'
 import { Normalize } from 'styled-normalize'
 import { App } from './components/App'
+import * as serviceWorker from './services/serviceWorker'
 
 const GlobalStyle = createGlobalStyle`
   html, body {
     height: 100%;
     font-family: 'Rubik', sans-serif;
+    background: #212123;
   }
 
   #root {
@@ -26,3 +28,5 @@ ReactDOM.render(
   </>,
   document.getElementById('root'),
 )
+
+serviceWorker.register()

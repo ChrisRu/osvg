@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import * as R from 'ramda'
 import { defaultSettings, ISetting, ISettings } from '../services/svgoSettings'
+import { update } from '../util/immutableHelperMethods'
 
 const savedSettingsKey = 'svgo-online@settings'
 
@@ -33,50 +33,38 @@ function getSavedSettings(): ISettings | undefined {
 }
 
 export function useSettings() {
-  const [settings, setSettings] = useState<ISettings>({
-    plugins: [],
-    precision: 3,
-    prettify: false,
-  })
+  const [plugins, setPlugins] = useState<ISetting[]>([])
+  const [precision, setPrecision] = useState(3)
+  const [prettify, setPrettify] = useState(false)
 
-  function updateSetting(setting: ISetting) {
-    const settingLens = R.lensIndex(
-      R.findIndex(R.propEq('description', setting.description))(settings.plugins),
-    )
-    setSettings(settings => ({
-      precision: settings.precision,
-      prettify: settings.prettify,
-      plugins: R.set(settingLens, setting, settings.plugins),
-    }))
+  function updatePlugin(newPlugin: ISetting) {
+    setPlugins(plugins => {
+      const pluginIndex = plugins.findIndex(plugin => plugin.id === newPlugin.id)
+      return update(pluginIndex, newPlugin, plugins)
+    })
   }
 
   function togglePrettify() {
-    setSettings(prevState => ({
-      ...prevState,
-      prettify: !prevState.prettify,
-    }))
-  }
-
-  function setPrecision(precision: number) {
-    setSettings(prevState => ({
-      ...prevState,
-      precision,
-    }))
+    setPrettify(prettify => !prettify)
   }
 
   useEffect(() => {
-    const savedSettings = getSavedSettings()
-    setSettings(savedSettings || defaultSettings)
+    const { plugins, prettify, precision } = getSavedSettings() || defaultSettings
+    setPlugins(plugins)
+    setPrettify(prettify)
+    setPrecision(precision)
   }, [])
 
   useEffect(() => {
-    saveSettings(settings)
-  }, [settings])
+    saveSettings({ plugins, precision, prettify })
+  }, [plugins, precision, prettify])
 
   return {
-    settings,
-    updateSetting,
+    plugins,
+    precision,
+    prettify,
     togglePrettify,
+    updatePlugin,
     setPrecision,
   }
 }

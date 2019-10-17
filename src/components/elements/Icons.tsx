@@ -20,6 +20,27 @@ export function UploadIcon() {
   )
 }
 
+export function UploadCloadIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="16 16 12 12 8 16" />
+      <line x1="12" y1="12" x2="12" y2="21" />
+      <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
+      <polyline points="16 16 12 12 8 16" />
+    </svg>
+  )
+}
+
 export function DownloadIcon() {
   return (
     <svg
@@ -141,6 +162,109 @@ export function CloseIcon() {
     >
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  )
+}
+
+export function ChevronDownIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  )
+}
+
+export function LoadingIcon() {
+  return (
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 30">
+      <rect x="0" y="10" width="4" height="10" fill="currentColor" opacity="0.2">
+        <animate
+          attributeName="opacity"
+          attributeType="XML"
+          values="0.2; 1; .2"
+          begin="0s"
+          dur="0.6s"
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="height"
+          attributeType="XML"
+          values="10; 20; 10"
+          begin="0s"
+          dur="0.6s"
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="y"
+          attributeType="XML"
+          values="10; 5; 10"
+          begin="0s"
+          dur="0.6s"
+          repeatCount="indefinite"
+        />
+      </rect>
+      <rect x="8" y="10" width="4" height="10" fill="currentColor" opacity="0.2">
+        <animate
+          attributeName="opacity"
+          attributeType="XML"
+          values="0.2; 1; .2"
+          begin="0.15s"
+          dur="0.6s"
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="height"
+          attributeType="XML"
+          values="10; 20; 10"
+          begin="0.15s"
+          dur="0.6s"
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="y"
+          attributeType="XML"
+          values="10; 5; 10"
+          begin="0.15s"
+          dur="0.6s"
+          repeatCount="indefinite"
+        />
+      </rect>
+      <rect x="16" y="10" width="4" height="10" fill="currentColor" opacity="0.2">
+        <animate
+          attributeName="opacity"
+          attributeType="XML"
+          values="0.2; 1; .2"
+          begin="0.3s"
+          dur="0.6s"
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="height"
+          attributeType="XML"
+          values="10; 20; 10"
+          begin="0.3s"
+          dur="0.6s"
+          repeatCount="indefinite"
+        />
+        <animate
+          attributeName="y"
+          attributeType="XML"
+          values="10; 5; 10"
+          begin="0.3s"
+          dur="0.6s"
+          repeatCount="indefinite"
+        />
+      </rect>
     </svg>
   )
 }
