@@ -4,6 +4,13 @@ import { getFileSizeGZIP, getFileSize } from '../services/fileSizeService'
 import { getHumanReadableBytes } from '../services/byteService'
 import { CloseIcon } from './elements/Icons'
 import { Logo } from './elements/Logo'
+import { FileSizePopup as FileSizePopupFunction } from './elements/FileSizePopup'
+
+const FileSizePopup = styled(FileSizePopupFunction)`
+  z-index: 2;
+  display: none;
+  margin-top: 2rem;
+`
 
 const MenubarWrapper = styled.nav`
   background: #181818;
@@ -116,6 +123,13 @@ const FileNameInput = styled.input<{ width?: number }>`
 
 const FileDetails = styled.span`
   white-space: nowrap;
+  position: relative;
+
+  &:hover {
+    ${FileSizePopup} {
+      display: table;
+    }
+  }
 `
 
 const FileSize = styled.span`
@@ -148,16 +162,6 @@ interface IProps {
   onRewriteFileName: () => void
 }
 
-function getFileInfo(gzip: boolean, initialSize: number, compressedSize?: number) {
-  const title = gzip ? 'gzipped sizes:' : 'file sizes:'
-  const original = ['original\t\t', getHumanReadableBytes(initialSize)].join('')
-  const compressed = compressedSize
-    ? ['optimized\t', getHumanReadableBytes(compressedSize)].join('')
-    : undefined
-
-  return [title, original, compressed].filter(line => line).join('\n')
-}
-
 export function Menubar({
   view,
   loading,
@@ -172,17 +176,18 @@ export function Menubar({
 }: IProps) {
   const inputCalculatorRef = useRef<HTMLInputElement>(null)
   const [inputWidth, setInputWidth] = useState<number | undefined>(undefined)
-  const [gzip] = useState(true)
 
   useEffect(() => {
     const input = inputCalculatorRef.current
     setInputWidth(input ? input.offsetWidth : undefined)
   }, [inputCalculatorRef, fileName])
 
-  const initialSize = getSize(initialSVG, gzip)
-  const compressedSize = optimizedSVG ? getSize(optimizedSVG, gzip) : undefined
+  const gzipSizeBefore = getSize(initialSVG, true)
+  const gzipSizeAfter = optimizedSVG ? getSize(optimizedSVG, true) : undefined
+  const nonGzipSizeBefore = getSize(initialSVG, false)
+  const nonGzipSizeAfter = optimizedSVG ? getSize(optimizedSVG, false) : undefined
 
-  const percentage = compressedSize ? getPercentage(initialSize, compressedSize) : undefined
+  const percentage = gzipSizeAfter ? getPercentage(gzipSizeBefore, gzipSizeAfter) : undefined
   const improvement = percentage !== undefined && percentage >= 0
 
   return (
@@ -207,7 +212,7 @@ export function Menubar({
       {error ? (
         <FileInfo />
       ) : (
-        <FileInfo title={getFileInfo(gzip, initialSize, compressedSize)}>
+        <FileInfo>
           <FileNameInputSizeCalculator ref={inputCalculatorRef}>
             {fileName}
           </FileNameInputSizeCalculator>
@@ -226,7 +231,13 @@ export function Menubar({
           />
           {!loading ? (
             <FileDetails>
-              {compressedSize ? <FileSize>{getHumanReadableBytes(compressedSize)}</FileSize> : null}
+              <FileSizePopup
+                gzipBefore={gzipSizeBefore}
+                gzipAfter={gzipSizeAfter}
+                nonGzipBefore={nonGzipSizeBefore}
+                nonGzipAfter={nonGzipSizeAfter}
+              />
+              {gzipSizeAfter ? <FileSize>{getHumanReadableBytes(gzipSizeAfter)}</FileSize> : null}
               {percentage === undefined ? null : (
                 <Percentage improvement={improvement}>
                   {improvement ? '-' : '+'}
