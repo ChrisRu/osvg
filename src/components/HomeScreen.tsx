@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { SVGOTextLogo } from './elements/SVGOTextLogo'
 import { useSingleTime } from '../hooks/useSingleTime'
 import { ErrorModal } from './elements/ErrorModal'
@@ -128,14 +128,33 @@ const ContentWrapper = styled.div`
   align-items: center;
 `
 
+const GradientAnimation = keyframes`
+0% {
+  width: 20%;
+}
+
+70% {
+  width: 100%;
+  opacity: 1;
+}
+
+100% {
+  width: 100%;
+  opacity: 0;
+}
+`
+
 const Gradient = styled.div<{ fullWidth: boolean }>`
   position: fixed;
   left: 0;
   bottom: 0;
-  width: ${p => (p.fullWidth ? 100 : 20)}%;
-  transition: width 0.7s ease;
+  width: 20%;
   height: 100%;
   background: linear-gradient(120deg, #d55be4, #61379f);
+  animation-name: ${p => (p.fullWidth ? GradientAnimation : undefined)};
+  animation-duration: 700ms;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease;
 `
 
 const Loading = styled.div<{ show: boolean; transition: boolean }>`

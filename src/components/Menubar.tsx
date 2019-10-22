@@ -15,13 +15,15 @@ const MenubarWrapper = styled.nav`
 `
 
 const Title = styled.span`
-  display: block;
-  padding: 0.3rem 1.5rem;
+  display: flex;
+  padding: 0.42rem 1.5rem;
   cursor: pointer;
+  align-items: center;
 
-  svg {
+  > svg {
     width: 2.2rem;
     height: 2.2rem;
+    /* vertical-align: middle; */
     transition: transform 0.2s;
   }
 
@@ -41,6 +43,7 @@ const CloseButton = styled.button`
   opacity: 0.7;
   color: #fff;
   background: transparent;
+  transition: opacity 0.1s, background 0.1s;
 
   &:hover {
     opacity: 1;
@@ -58,7 +61,7 @@ const MenuButton = styled.button<{ active: boolean }>`
   border: 0;
   color: #fff;
   padding-top: calc(0.7rem + 3px);
-
+  transition: background 0.1s;
   border-width: 3px;
   border-bottom-style: solid;
   border-color: ${p => (p.active ? '#fff' : 'transparent')};

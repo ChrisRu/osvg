@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import styled, { ThemeContext } from 'styled-components'
+import styled, { ThemeContext, css } from 'styled-components'
 import { saveSvg } from '../../services/fileService'
 import { DownloadIcon, ThemeIcon } from '../elements/Icons'
 import { IThemeContext } from '../../hooks/useTheme'
@@ -43,18 +43,34 @@ const ThemeButton = styled.button`
 `
 
 const OriginalButton = styled.button`
-  background: rgba(255, 255, 255, 0.4);
-  color: rgba(0, 0, 0, 0.6);
+  ${p =>
+    p.theme.themeName === 'light'
+      ? css`
+          background: rgba(255, 255, 255, 0.6);
+          color: rgba(0, 0, 0, 1);
+          opacity: 0.7;
+        `
+      : css`
+          background: rgba(0, 0, 0, 0.2);
+          color: rgba(255, 255, 255, 0.8);
+          opacity: 0.7;
+        `}
   border: 0;
-  padding: 0.3rem 0.5rem;
+  padding: 0.3rem 0.8rem;
   margin: 0;
   text-transform: uppercase;
   position: absolute;
   bottom: 0;
   left: 0;
   font-weight: bold;
-  border-radius: 0.5rem;
+  border-radius: 2rem;
   letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: opacity 0.1s;
+
+  &:hover {
+    opacity: 1;
+  }
 `
 
 const DownloadButton = styled.button`
@@ -69,6 +85,7 @@ const DownloadButton = styled.button`
   flex-flow: row nowrap;
   align-items: center;
   outline: none;
+  transition: background-color 0.1s;
 
   svg {
     margin-right: 0.5rem;

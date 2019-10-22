@@ -8,6 +8,7 @@ const SidebarWrapper = styled.div`
   background: #181818;
   color: #efefef;
   max-width: 400px;
+  min-width: 200px;
   padding: 1rem;
   max-height: 100%;
   overflow-y: auto;

@@ -58,6 +58,7 @@ const ErrorCloseButton = styled.button`
   align-self: flex-end;
   margin-bottom: 1rem;
   margin-right: 1rem;
+  transition: background 0.1s;
 
   &:hover,
   &:focus {
