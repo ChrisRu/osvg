@@ -44,7 +44,7 @@ export function App() {
   const { theme, toggleTheme, themeName } = useTheme()
 
   const loadSVG = useCallback(
-    async (file: IFileDetails | undefined) => {
+    async (file?: IFileDetails) => {
       if (!file) {
         throw new Error('No file supplied')
       }

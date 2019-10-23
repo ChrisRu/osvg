@@ -1,9 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import { getHumanReadableBytes } from '../../services/byteService'
+import { ArrowRightIcon } from './Icons'
 
 const Wrapper = styled.table`
-  padding: 1rem;
+  padding: 0.5rem;
   border-radius: 1rem;
   font-size: 1.1rem;
   position: absolute;
@@ -14,50 +15,65 @@ const Wrapper = styled.table`
   top: 100%;
   left: 0;
   right: 0;
+`
 
-  th,
-  td {
-    text-align: right;
-    padding: 0.5rem;
-    opacity: 0.6;
-  }
+const Cell = styled.td<{ faded?: boolean; alignRight?: boolean }>`
+  padding: 0.5rem;
+  opacity: ${p => (p.faded ? 0.6 : 1)};
+  text-align: ${p => (p.alignRight ? 'right' : 'left')};
+  font-size: ${p => (p.faded ? 0.9 : 1)}em;
+  line-height: 1.2rem;
 
-  td:not(:first-child) {
-    opacity: 1;
+  svg {
+    height: 1.2rem;
+    width: 1.2rem;
+    vertical-align: middle;
+    display: inline-block;
   }
 `
 
 interface IProps {
   className?: string
-  gzipBefore: number
-  gzipAfter?: number
-  nonGzipBefore: number
-  nonGzipAfter?: number
+  gzipInitialSize: number
+  gzipOptimizedSize?: number
+  diskInitialSize: number
+  diskOptimizedSize?: number
 }
 
 export function FileSizePopup({
   className,
-  gzipBefore,
-  gzipAfter,
-  nonGzipBefore,
-  nonGzipAfter,
+  gzipInitialSize,
+  gzipOptimizedSize,
+  diskInitialSize,
+  diskOptimizedSize,
 }: IProps) {
   return (
     <Wrapper className={className}>
       <thead>
-        <th></th>
-        <th>Non GZIP</th>
-        <th>GZIP</th>
+        <Cell as="th" />
+        <Cell as="th" faded alignRight>
+          original
+        </Cell>
+        <Cell as="th" />
+        <Cell as="th" faded>
+          optimized
+        </Cell>
       </thead>
       <tr>
-        <td>original</td>
-        <td>{getHumanReadableBytes(nonGzipBefore)}</td>
-        <td>{nonGzipAfter ? getHumanReadableBytes(nonGzipAfter) : '-'}</td>
+        <Cell faded>disk</Cell>
+        <Cell alignRight>{getHumanReadableBytes(diskInitialSize)}</Cell>
+        <Cell faded>
+          <ArrowRightIcon />
+        </Cell>
+        <Cell>{diskOptimizedSize ? getHumanReadableBytes(diskOptimizedSize) : '-'}</Cell>
       </tr>
       <tr>
-        <td>optimized</td>
-        <td>{getHumanReadableBytes(gzipBefore)}</td>
-        <td>{gzipAfter ? getHumanReadableBytes(gzipAfter) : '-'}</td>
+        <Cell faded>GZIP</Cell>
+        <Cell alignRight>{getHumanReadableBytes(gzipInitialSize)}</Cell>
+        <Cell faded>
+          <ArrowRightIcon />
+        </Cell>
+        <Cell>{gzipOptimizedSize ? getHumanReadableBytes(gzipOptimizedSize) : '-'}</Cell>
       </tr>
     </Wrapper>
   )

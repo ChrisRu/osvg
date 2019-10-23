@@ -141,12 +141,16 @@ const Percentage = styled.span<{ improvement: boolean }>`
   color: ${p => (p.improvement ? '#63e163' : '#ff7171')};
 `
 
-function getSize(contents: string, gzip: boolean) {
+function getSize<T>(contents: string | undefined, gzip: boolean, defaultValue: T) {
+  if (!contents) {
+    return defaultValue
+  }
+
   return gzip ? getFileSizeGZIP(contents) : getFileSize(contents)
 }
 
-function getPercentage(initialSize: number, newSize: number) {
-  return Math.round(((initialSize - newSize) / initialSize) * 10000) / 100
+function getDifferencePercentage(initialSize: number, optimizedSize: number) {
+  return Math.round(((initialSize - optimizedSize) / initialSize) * 10000) / 100
 }
 
 interface IProps {
@@ -175,20 +179,23 @@ export function Menubar({
   onClose,
 }: IProps) {
   const inputCalculatorRef = useRef<HTMLInputElement>(null)
-  const [inputWidth, setInputWidth] = useState<number | undefined>(undefined)
+  const [inputElementWidth, setInputElementWidth] = useState<number>()
 
   useEffect(() => {
-    const input = inputCalculatorRef.current
-    setInputWidth(input ? input.offsetWidth : undefined)
+    const inputElement = inputCalculatorRef.current
+    setInputElementWidth(inputElement ? inputElement.offsetWidth : undefined)
   }, [inputCalculatorRef, fileName])
 
-  const gzipSizeBefore = getSize(initialSVG, true)
-  const gzipSizeAfter = optimizedSVG ? getSize(optimizedSVG, true) : undefined
-  const nonGzipSizeBefore = getSize(initialSVG, false)
-  const nonGzipSizeAfter = optimizedSVG ? getSize(optimizedSVG, false) : undefined
+  const gzipInitialSize = getSize(initialSVG, true, 0)
+  const gzipOptimizedSize = getSize(optimizedSVG, true, undefined)
+  const diskInitialSize = getSize(initialSVG, false, 0)
+  const diskOptimizedSize = getSize(optimizedSVG, false, undefined)
 
-  const percentage = gzipSizeAfter ? getPercentage(gzipSizeBefore, gzipSizeAfter) : undefined
-  const improvement = percentage !== undefined && percentage >= 0
+  const gzipDifferencePercentage = gzipOptimizedSize
+    ? getDifferencePercentage(gzipInitialSize, gzipOptimizedSize)
+    : undefined
+  const fileSizeImprovement =
+    gzipDifferencePercentage !== undefined && gzipDifferencePercentage >= 0
 
   return (
     <MenubarWrapper>
@@ -220,7 +227,7 @@ export function Menubar({
             title="Change the filename"
             type="text"
             value={fileName}
-            width={inputWidth}
+            width={inputElementWidth}
             onChange={event => onUpdateFileName(event.target.value)}
             onBlur={onRewriteFileName}
             onKeyDown={event => {
@@ -232,16 +239,18 @@ export function Menubar({
           {!loading ? (
             <FileDetails>
               <FileSizePopup
-                gzipBefore={gzipSizeBefore}
-                gzipAfter={gzipSizeAfter}
-                nonGzipBefore={nonGzipSizeBefore}
-                nonGzipAfter={nonGzipSizeAfter}
+                gzipInitialSize={gzipInitialSize}
+                gzipOptimizedSize={gzipOptimizedSize}
+                diskInitialSize={diskInitialSize}
+                diskOptimizedSize={diskOptimizedSize}
               />
-              {gzipSizeAfter ? <FileSize>{getHumanReadableBytes(gzipSizeAfter)}</FileSize> : null}
-              {percentage === undefined ? null : (
-                <Percentage improvement={improvement}>
-                  {improvement ? '-' : '+'}
-                  {percentage.toString().replace('-', '')}%
+              {gzipOptimizedSize ? (
+                <FileSize>{getHumanReadableBytes(gzipOptimizedSize)}</FileSize>
+              ) : null}
+              {gzipDifferencePercentage === undefined ? null : (
+                <Percentage improvement={fileSizeImprovement}>
+                  {fileSizeImprovement ? '-' : '+'}
+                  {gzipDifferencePercentage.toString().replace('-', '')}%
                 </Percentage>
               )}
             </FileDetails>

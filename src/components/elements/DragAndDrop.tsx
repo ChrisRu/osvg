@@ -68,7 +68,7 @@ const DemoButton = styled.span.attrs({ role: 'button', tabIndex: 0 })`
 
 interface IProps {
   dragging: boolean
-  onLoadSVG: (file: IFileDetails | undefined) => void
+  onLoadSVG: (file?: IFileDetails) => void
 }
 
 const demoLocation = '/dog.svg'

@@ -179,7 +179,7 @@ const Loading = styled.div<{ show: boolean; transition: boolean }>`
 `
 
 interface IProps {
-  onPreloadSVG: (file: IFileDetails | undefined) => Promise<string>
+  onPreloadSVG: (file?: IFileDetails) => Promise<string>
   onLoadSVG: (initialSVG: string, optimizedSVG: string, fileName?: string) => void
 }
 
@@ -192,7 +192,7 @@ export function HomeScreen({ onPreloadSVG, onLoadSVG }: IProps) {
   const [tipShown, hideTip] = useSingleTime('tip:drag-drop')
 
   const loadSVGWithAnimation = useCallback(
-    async (file: IFileDetails | undefined) => {
+    async (file?: IFileDetails) => {
       if (!file || loading) {
         return
       }
