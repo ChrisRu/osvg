@@ -247,7 +247,7 @@ export const defaultSettings: ISettings = {
       description: 'Replace duplicate elements with <use> elements',
       id: 'reusePaths',
       category: 'other',
-      value: true,
+      value: false,
     },
   ],
 }
