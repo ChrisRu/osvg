@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import { getFileSizeGZIP, getFileSize } from '../services/fileSizeService'
 import { getHumanReadableBytes } from '../services/byteService'
@@ -141,15 +141,11 @@ const Percentage = styled.span<{ improvement: boolean }>`
   color: ${p => (p.improvement ? '#63e163' : '#ff7171')};
 `
 
-function getSize<T>(contents: string | undefined, gzip: boolean, defaultValue: T) {
-  if (!contents) {
-    return defaultValue
+function getDifferencePercentage(initialSize: number, optimizedSize: number | undefined) {
+  if (!optimizedSize) {
+    return undefined
   }
 
-  return gzip ? getFileSizeGZIP(contents) : getFileSize(contents)
-}
-
-function getDifferencePercentage(initialSize: number, optimizedSize: number) {
   return Math.round(((initialSize - optimizedSize) / initialSize) * 10000) / 100
 }
 
@@ -182,18 +178,19 @@ export function Menubar({
   const [inputElementWidth, setInputElementWidth] = useState<number>()
 
   useEffect(() => {
-    const inputElement = inputCalculatorRef.current
-    setInputElementWidth(inputElement ? inputElement.offsetWidth : undefined)
+    setInputElementWidth(inputCalculatorRef.current?.offsetWidth)
   }, [inputCalculatorRef, fileName])
 
-  const gzipInitialSize = getSize(initialSVG, true, 0)
-  const gzipOptimizedSize = getSize(optimizedSVG, true, undefined)
-  const diskInitialSize = getSize(initialSVG, false, 0)
-  const diskOptimizedSize = getSize(optimizedSVG, false, undefined)
+  const [diskInitialSize, gzipInitialSize] = useMemo(
+    () => [getFileSize(initialSVG), getFileSizeGZIP(initialSVG)],
+    [initialSVG],
+  )
+  const [diskOptimizedSize, gzipOptimizedSize] = useMemo(
+    () => (optimizedSVG ? [getFileSize(optimizedSVG), getFileSizeGZIP(optimizedSVG)] : [0, 0]),
+    [optimizedSVG],
+  )
 
-  const gzipDifferencePercentage = gzipOptimizedSize
-    ? getDifferencePercentage(gzipInitialSize, gzipOptimizedSize)
-    : undefined
+  const gzipDifferencePercentage = getDifferencePercentage(gzipInitialSize, gzipOptimizedSize)
   const fileSizeImprovement =
     gzipDifferencePercentage !== undefined && gzipDifferencePercentage >= 0
 

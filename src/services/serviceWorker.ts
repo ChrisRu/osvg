@@ -78,7 +78,7 @@ function registerValidSW(swUrl: string, config?: Config) {
               )
 
               // Execute callback
-              if (config && config.onUpdate) {
+              if (config?.onUpdate) {
                 config.onUpdate(registration)
               }
             } else {
@@ -88,7 +88,7 @@ function registerValidSW(swUrl: string, config?: Config) {
               console.log('Content is cached for offline use.')
 
               // Execute callback
-              if (config && config.onSuccess) {
+              if (config?.onSuccess) {
                 config.onSuccess(registration)
               }
             }
@@ -107,10 +107,7 @@ function checkValidServiceWorker(swUrl: string, config?: Config) {
     .then(response => {
       // Ensure service worker exists, and that we really are getting a JS file.
       const contentType = response.headers.get('content-type')
-      if (
-        response.status === 404 ||
-        (contentType != null && contentType.indexOf('javascript') === -1)
-      ) {
+      if (response.status === 404 || contentType?.indexOf('javascript') === -1) {
         // No service worker found. Probably a different app. Reload the page.
         navigator.serviceWorker.ready.then(registration => {
           registration.unregister().then(() => {

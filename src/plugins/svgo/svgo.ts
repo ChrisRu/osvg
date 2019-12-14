@@ -25,7 +25,7 @@ function optimizePluginsArray(plugins: ISVGOPlugin[]) {
   return plugins.reduce<ISVGOPlugin[][]>((total, nextPlugin) => {
     const last = total[total.length - 1]
 
-    if (last && nextPlugin.type === last[0].type) {
+    if (nextPlugin.type === last?.[0].type) {
       last.push(nextPlugin)
     } else {
       total.push([nextPlugin])

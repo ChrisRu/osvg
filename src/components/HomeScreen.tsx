@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { SVGOTextLogo } from './elements/SVGOTextLogo'
-import { useSingleTime } from '../hooks/useSingleTime'
 import { ErrorModal } from './elements/ErrorModal'
 import { DragAndDrop } from './elements/DragAndDrop'
 import {
@@ -15,6 +14,7 @@ import {
 import { ChevronDownIcon, LoadingIcon } from './elements/Icons'
 import { sleep } from '../util/sleep'
 import { getSVGTitle } from '../services/svgService'
+import { getRandomTip } from '../util/tips'
 
 const HomeWrapper = styled.div<{ fade: boolean }>`
   color: #fff;
@@ -189,7 +189,7 @@ export function HomeScreen({ onPreloadSVG, onLoadSVG }: IProps) {
   const [dragging, setDragging] = useState(0)
   const [loadingError, setLoadingError] = useState<unknown>()
   const [loading, setLoading] = useState(false)
-  const [tipShown, hideTip] = useSingleTime('tip:drag-drop')
+  const tip = useMemo(() => getRandomTip(), [])
 
   const loadSVGWithAnimation = useCallback(
     async (file?: IFileDetails) => {
@@ -200,7 +200,7 @@ export function HomeScreen({ onPreloadSVG, onLoadSVG }: IProps) {
       try {
         setLoading(true)
 
-        const [result] = await Promise.all([onPreloadSVG(file), sleep(700)])
+        const [result] = await Promise.all<string, unknown>([onPreloadSVG(file), sleep(700)])
 
         const fileName = file.name || getSVGTitle(file.contents)
         onLoadSVG(file.contents, result, fileName)
@@ -215,7 +215,7 @@ export function HomeScreen({ onPreloadSVG, onLoadSVG }: IProps) {
     async function keydown(event: KeyboardEvent) {
       if (event.ctrlKey && event.key === 'o') {
         event.preventDefault()
-        loadSVGWith(loadSVGWithAnimation, createOpenFile)
+        loadSVGWith(loadSVGWithAnimation, createOpenFile)(undefined)
       }
     }
 
@@ -253,11 +253,7 @@ export function HomeScreen({ onPreloadSVG, onLoadSVG }: IProps) {
         onDrop={loadSVGWith(loadSVGWithAnimation, onDrop)}
       >
         <TopPageWrapper>
-          {tipShown ? null : (
-            <Tip onClick={hideTip}>
-              You can also paste the content of your SVG right in this page.
-            </Tip>
-          )}
+          <Tip>{tip}</Tip>
           <ContentWrapper>
             <DragAndDrop dragging={dragging > 0} onLoadSVG={loadSVGWithAnimation} />
             <Title>

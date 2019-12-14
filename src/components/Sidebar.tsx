@@ -24,9 +24,7 @@ const OptionGroupTitle = styled.h2`
   color: #fff;
 `
 
-const OptionGroupOptions = styled.div``
-
-const Option = styled.label`
+const Option = styled.label<{ opaque?: boolean }>`
   display: block;
   padding: 0.4rem 0.5rem;
   display: flex;
@@ -34,6 +32,14 @@ const Option = styled.label`
 
   &:hover {
     background: rgba(255, 255, 255, 0.1);
+
+    span {
+      opacity: 1;
+    }
+  }
+
+  span {
+    opacity: ${p => (p.opaque ? 0.7 : 1)};
   }
 
   input {
@@ -123,16 +129,16 @@ export function Sidebar({
             </>
           ) : null}
           {header === 'pretty code' ? (
-            <OptionGroupOptions>
-              <Option>
+            <div>
+              <Option opaque={!prettify}>
                 <Checkbox checked={prettify} onChange={togglePrettify} />
                 <span>Prettify</span>
               </Option>
-            </OptionGroupOptions>
+            </div>
           ) : null}
-          <OptionGroupOptions>
+          <div>
             {plugins.map(plugin => (
-              <Option key={plugin.description}>
+              <Option opaque={!plugin.value} key={plugin.description}>
                 <Checkbox
                   onChange={() => onUpdatePlugin({ ...plugin, value: !plugin.value })}
                   checked={plugin.value}
@@ -140,7 +146,7 @@ export function Sidebar({
                 <span>{plugin.description}</span>
               </Option>
             ))}
-          </OptionGroupOptions>
+          </div>
         </OptionGroup>
       ))}
     </SidebarWrapper>

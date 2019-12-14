@@ -25,12 +25,12 @@ const StyledCheckbox = styled.div<{ checked: boolean }>`
   display: inline-block;
   width: 16px;
   height: 16px;
-  background: ${props => (props.checked ? 'hsl(252, 60%, 74%)' : '#fff')};
+  background: ${props => (props.checked ? 'hsl(252, 62%, 66%)' : '#fff')};
   border-radius: 3px;
   transition: all 150ms;
 
   ${HiddenCheckbox}:focus + & {
-    box-shadow: 0 0 0 3px hsl(252, 20%, 44%);
+    box-shadow: 0 0 0 3px hsl(252, 20%, 42%);
   }
 
   svg {

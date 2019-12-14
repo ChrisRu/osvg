@@ -50,31 +50,35 @@ export function FileSizePopup({
   return (
     <Wrapper className={className}>
       <thead>
-        <Cell as="th" />
-        <Cell as="th" faded alignRight>
-          original
-        </Cell>
-        <Cell as="th" />
-        <Cell as="th" faded>
-          optimized
-        </Cell>
+        <tr>
+          <Cell as="th" />
+          <Cell as="th" faded alignRight>
+            original
+          </Cell>
+          <Cell as="th" />
+          <Cell as="th" faded>
+            optimized
+          </Cell>
+        </tr>
       </thead>
-      <tr>
-        <Cell faded>disk</Cell>
-        <Cell alignRight>{getHumanReadableBytes(diskInitialSize)}</Cell>
-        <Cell faded>
-          <ArrowRightIcon />
-        </Cell>
-        <Cell>{diskOptimizedSize ? getHumanReadableBytes(diskOptimizedSize) : '-'}</Cell>
-      </tr>
-      <tr>
-        <Cell faded>GZIP</Cell>
-        <Cell alignRight>{getHumanReadableBytes(gzipInitialSize)}</Cell>
-        <Cell faded>
-          <ArrowRightIcon />
-        </Cell>
-        <Cell>{gzipOptimizedSize ? getHumanReadableBytes(gzipOptimizedSize) : '-'}</Cell>
-      </tr>
+      <tbody>
+        <tr>
+          <Cell faded>disk</Cell>
+          <Cell alignRight>{getHumanReadableBytes(diskInitialSize)}</Cell>
+          <Cell faded>
+            <ArrowRightIcon />
+          </Cell>
+          <Cell>{diskOptimizedSize ? getHumanReadableBytes(diskOptimizedSize) : '-'}</Cell>
+        </tr>
+        <tr>
+          <Cell faded>GZIP</Cell>
+          <Cell alignRight>{getHumanReadableBytes(gzipInitialSize)}</Cell>
+          <Cell faded>
+            <ArrowRightIcon />
+          </Cell>
+          <Cell>{gzipOptimizedSize ? getHumanReadableBytes(gzipOptimizedSize) : '-'}</Cell>
+        </tr>
+      </tbody>
     </Wrapper>
   )
 }

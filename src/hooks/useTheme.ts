@@ -36,7 +36,7 @@ export function useTheme() {
 
   useEffect(() => {
     const storedThemeName = localStorage.getItem(savedThemeKey)
-    if (storedThemeName && storedThemeName in themes) {
+    if (storedThemeName !== null && storedThemeName in themes) {
       setThemeName(storedThemeName as ThemeName)
     }
   }, [])

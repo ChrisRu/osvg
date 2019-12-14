@@ -76,7 +76,7 @@ export async function onOpenFile(
 ): Promise<IFileDetails | undefined> {
   event.preventDefault()
 
-  if (event.target.files && event.target.files[0]) {
+  if (event.target.files?.[0]) {
     return openFile(event.target.files)
   }
 }
@@ -86,7 +86,7 @@ export async function onDrop(
 ): Promise<IFileDetails | undefined> {
   event.preventDefault()
 
-  if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+  if (event.dataTransfer.files?.[0]) {
     return openFile(event.dataTransfer.files)
   }
 }
@@ -96,7 +96,7 @@ export async function onPaste(
 ): Promise<IFileDetails | undefined> {
   event.preventDefault()
 
-  if (event.clipboardData.files && event.clipboardData.files[0]) {
+  if (event.clipboardData.files?.[0]) {
     return openFile(event.clipboardData.files)
   } else {
     const text = event.clipboardData.getData('text')
