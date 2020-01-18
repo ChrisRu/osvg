@@ -205,6 +205,7 @@ export function HomeScreen({ onPreloadSVG, onLoadSVG }: IProps) {
         const fileName = file.name || getSVGTitle(file.contents)
         onLoadSVG(file.contents, result, fileName)
       } catch (error) {
+        console.error('Could not load file', error)
         setLoadingError(error)
       }
     },
