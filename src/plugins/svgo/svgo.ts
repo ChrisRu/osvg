@@ -60,7 +60,7 @@ export default async function optimizeSVG(svgInput: string, settings: ISettings)
 
   let i = 0
   let prevLength = Number.POSITIVE_INFINITY
-  let svgObj = SVG2JS(svgInput)
+  let svgObj = await new Promise(resolve => SVG2JS(svgInput, resolve))
   let svgStr = JS2SVG(svgObj, { pretty: settings.pretty }).data
   while (++i < (settings.maxMultipass || 10) && svgStr.length < prevLength) {
     prevLength = svgStr.length
