@@ -35,7 +35,7 @@ function optimizePluginsArray(plugins: ISVGOPlugin[]) {
   }, [])
 }
 
-export default async function optimizeSVG(svgstr: string, settings: ISettings) {
+export default async function optimizeSVG(svgInput: string, settings: ISettings) {
   const availablePlugins = Object.entries(pluginData) as [string, ISVGOPlugin][]
 
   // activate/deactivate plugins
@@ -60,19 +60,13 @@ export default async function optimizeSVG(svgstr: string, settings: ISettings) {
 
   let i = 0
   let prevLength = Number.POSITIVE_INFINITY
-  while (++i < (settings.maxMultipass || 10) && svgstr.length < prevLength) {
-    prevLength = svgstr.length
-
-    const svgObj = await transformSvgToObj(svgstr)
-
-    const transformedSVG = PLUGINS(svgObj, { input: 'string' }, optimizedPluginsData)
-
-    svgstr = JS2SVG(transformedSVG, { pretty: settings.pretty }).data
+  let svgObj = SVG2JS(svgInput)
+  let svgStr = JS2SVG(svgObj, { pretty: settings.pretty }).data
+  while (++i < (settings.maxMultipass || 10) && svgStr.length < prevLength) {
+    prevLength = svgStr.length
+    svgObj = PLUGINS(svgObj, { input: 'string' }, optimizedPluginsData)
+    svgStr = JS2SVG(svgObj, { pretty: settings.pretty }).data
   }
 
-  return svgstr
-}
-
-function transformSvgToObj(svgstr: string) {
-  return new Promise(resolve => SVG2JS(svgstr, resolve))
+  return svgStr
 }
