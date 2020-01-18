@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const savedThemeKey = 'svgo-online@theme'
+const SAVED_THEME_KEY = 'osvg@theme'
 
 export interface IThemeContext extends ITheme {
   themeName: string
@@ -35,14 +35,14 @@ export function useTheme() {
   const [themeName, setThemeName] = useState<ThemeName>('dark')
 
   useEffect(() => {
-    const storedThemeName = localStorage.getItem(savedThemeKey)
+    const storedThemeName = localStorage.getItem(SAVED_THEME_KEY)
     if (storedThemeName !== null && storedThemeName in themes) {
       setThemeName(storedThemeName as ThemeName)
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem(savedThemeKey, themeName)
+    localStorage.setItem(SAVED_THEME_KEY, themeName)
   }, [themeName])
 
   function toggleTheme() {

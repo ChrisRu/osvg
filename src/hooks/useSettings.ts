@@ -33,9 +33,9 @@ function getSavedSettings(): ISettings | undefined {
 }
 
 export function useSettings() {
-  const [plugins, setPlugins] = useState<ISetting[]>([])
-  const [precision, setPrecision] = useState(3)
-  const [prettify, setPrettify] = useState(false)
+  const [plugins, setPlugins] = useState<ISetting[]>(defaultSettings.plugins)
+  const [precision, setPrecision] = useState(defaultSettings.precision)
+  const [prettify, setPrettify] = useState(defaultSettings.prettify)
 
   function updatePlugin(newPlugin: ISetting) {
     setPlugins(plugins => {
