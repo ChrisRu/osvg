@@ -58,14 +58,19 @@ export default async function optimizeSVG(svgInput: string, settings: ISettings)
 
   const optimizedPluginsData = optimizePluginsArray(availablePlugins.map(([_, x]) => x))
 
+  const stringToSVGObj = (svgStr: string): Promise<object> => new Promise(r => SVG2JS(svgStr, r))
+  const SVGObjToString = (obj: object, pretty: boolean): string => JS2SVG(obj, { pretty }).data
+  const optimizeSVGObj = (obj: object) => PLUGINS(obj, { input: 'string' }, optimizedPluginsData)
+
   let i = 0
   let prevLength = Number.POSITIVE_INFINITY
-  let svgObj = await new Promise(resolve => SVG2JS(svgInput, resolve))
-  let svgStr = JS2SVG(svgObj, { pretty: settings.pretty }).data
+  let svgStr = svgInput
+  let svgObj: object
   while (++i < (settings.maxMultipass || 10) && svgStr.length < prevLength) {
     prevLength = svgStr.length
-    svgObj = PLUGINS(svgObj, { input: 'string' }, optimizedPluginsData)
-    svgStr = JS2SVG(svgObj, { pretty: settings.pretty }).data
+    svgObj = await stringToSVGObj(svgStr)
+    svgObj = optimizeSVGObj(svgObj)
+    svgStr = SVGObjToString(svgObj, settings.pretty)
   }
 
   return svgStr
