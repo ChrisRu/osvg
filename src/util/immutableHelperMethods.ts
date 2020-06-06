@@ -5,7 +5,7 @@
  * @param value Value to replace at index
  * @param array Array to replace value in
  */
-export function update<T>(index: number, value: T, array: T[]) {
+export function updateAtIndex<T>(index: number, value: T, array: T[]) {
   if (index === -1) {
     return array
   }

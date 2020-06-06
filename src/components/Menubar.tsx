@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { getFileSizeGZIP, getFileSize } from '../services/fileSizeService'
 import { getHumanReadableBytes } from '../services/byteService'
 import { CloseIcon } from './elements/Icons'
@@ -7,7 +7,7 @@ import { Logo } from './elements/Logo'
 import { FileSizePopup as FileSizePopupFunction } from './elements/FileSizePopup'
 
 const FileSizePopup = styled(FileSizePopupFunction)`
-  z-index: 2;
+  z-index: 1;
   display: none;
   margin-top: 2rem;
 `
@@ -30,7 +30,6 @@ const Title = styled.span`
   > svg {
     width: 2.2rem;
     height: 2.2rem;
-    /* vertical-align: middle; */
     transition: transform 0.2s;
   }
 
@@ -71,12 +70,13 @@ const MenuButton = styled.button<{ active: boolean }>`
   transition: background 0.1s;
   border-width: 3px;
   border-bottom-style: solid;
-  border-color: ${p => (p.active ? '#fff' : 'transparent')};
+  border-color: ${(p) => (p.active ? '#fff' : 'transparent')};
 
   &:focus {
     background: rgba(255, 255, 255, 0.1);
   }
 
+  &:focus,
   &:hover {
     background: rgba(255, 255, 255, 0.1);
   }
@@ -110,7 +110,7 @@ const FileNameInput = styled.input<{ width?: number }>`
   color: #fff;
   border: 0;
   text-align: center;
-  width: ${p => (p.width ? p.width + 'px' : 'max-content')};
+  width: ${(p) => (p.width ? p.width + 'px' : 'max-content')};
 
   &:hover {
     background: rgba(255, 255, 255, 0.1);
@@ -138,7 +138,7 @@ const FileSize = styled.span`
 
 const Percentage = styled.span<{ improvement: boolean }>`
   margin-left: 0.5rem;
-  color: ${p => (p.improvement ? '#63e163' : '#ff7171')};
+  color: ${(p) => (p.improvement ? '#63e163' : '#ff7171')};
 `
 
 function getDifferencePercentage(initialSize: number, optimizedSize: number | undefined) {
@@ -186,7 +186,10 @@ export function Menubar({
     [initialSVG],
   )
   const [diskOptimizedSize, gzipOptimizedSize] = useMemo(
-    () => (optimizedSVG ? [getFileSize(optimizedSVG), getFileSizeGZIP(optimizedSVG)] : [0, 0]),
+    () =>
+      optimizedSVG
+        ? [getFileSize(optimizedSVG), getFileSizeGZIP(optimizedSVG)]
+        : [undefined, undefined],
     [optimizedSVG],
   )
 
@@ -225,11 +228,12 @@ export function Menubar({
             type="text"
             value={fileName}
             width={inputElementWidth}
-            onChange={event => onUpdateFileName(event.target.value)}
+            onChange={(event) => onUpdateFileName(event.target.value)}
             onBlur={onRewriteFileName}
-            onKeyDown={event => {
+            onKeyDown={(event) => {
               if (event.key === 'Escape' || event.key === 'Enter') {
-                ;(event.target as HTMLInputElement).blur()
+                const target = event.target as HTMLInputElement
+                target.blur()
               }
             }}
           />
@@ -251,9 +255,7 @@ export function Menubar({
                 </Percentage>
               )}
             </FileDetails>
-          ) : (
-            <FileDetails />
-          )}
+          ) : null}
         </FileInfo>
       )}
       <CloseButton title="Close the currently open SVG" onClick={onClose}>

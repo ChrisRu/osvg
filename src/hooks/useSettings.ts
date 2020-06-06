@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { defaultSettings, ISetting, ISettings } from '../services/svgoSettings'
-import { update } from '../util/immutableHelperMethods'
+import { updateAtIndex } from '../util/immutableHelperMethods'
 
-const savedSettingsKey = 'svgo-online@settings'
+const savedSettingsKey = 'osvg@settings'
 
 function saveSettings(settings?: ISettings) {
   localStorage.setItem(savedSettingsKey, JSON.stringify(settings))
@@ -20,8 +20,8 @@ function getSavedSettings(): ISettings | undefined {
     return {
       ...defaultSettings,
       ...savedSettings,
-      plugins: defaultSettings.plugins.map(defaultPlugin => {
-        const savedPlugin = savedSettings.plugins.find(plugin => defaultPlugin.id === plugin.id)
+      plugins: defaultSettings.plugins.map((defaultPlugin) => {
+        const savedPlugin = savedSettings.plugins.find((plugin) => defaultPlugin.id === plugin.id)
         return { ...defaultPlugin, value: (savedPlugin || defaultPlugin).value }
       }),
     }
@@ -38,14 +38,14 @@ export function useSettings() {
   const [prettify, setPrettify] = useState(defaultSettings.prettify)
 
   function updatePlugin(newPlugin: ISetting) {
-    setPlugins(plugins => {
-      const pluginIndex = plugins.findIndex(plugin => plugin.id === newPlugin.id)
-      return update(pluginIndex, newPlugin, plugins)
+    setPlugins((plugins) => {
+      const pluginIndex = plugins.findIndex((plugin) => plugin.id === newPlugin.id)
+      return updateAtIndex(pluginIndex, newPlugin, plugins)
     })
   }
 
   function togglePrettify() {
-    setPrettify(prettify => !prettify)
+    setPrettify((prettify) => !prettify)
   }
 
   useEffect(() => {

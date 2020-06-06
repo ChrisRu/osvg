@@ -1,21 +1,21 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { ISetting } from '../services/svgoSettings'
 import { capitalize } from '../services/stringTransformService'
 import { Checkbox } from './elements/Checkbox'
 
 const SidebarWrapper = styled.div`
-  background: #181818;
-  color: #efefef;
-  max-width: 400px;
-  min-width: 200px;
+  position: relative;
+  box-sizing: border-box;
+  width: 420px;
   padding: 1rem;
-  max-height: 100%;
+  color: #efefef;
+  background: #181818;
   overflow-y: auto;
 `
 
 const OptionGroup = styled.div`
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 `
 
 const OptionGroupTitle = styled.h2`
@@ -39,7 +39,7 @@ const Option = styled.label<{ opaque?: boolean }>`
   }
 
   span {
-    opacity: ${p => (p.opaque ? 0.7 : 1)};
+    opacity: ${(p) => (p.opaque ? 0.7 : 1)};
   }
 
   input {
@@ -107,12 +107,7 @@ export function Sidebar({
     <SidebarWrapper>
       {Object.entries(groupedSettings).map(([header, plugins]) => (
         <OptionGroup key={header}>
-          <OptionGroupTitle>
-            {header
-              .split(' ')
-              .map(capitalize)
-              .join(' ')}
-          </OptionGroupTitle>
+          <OptionGroupTitle>{header.split(' ').map(capitalize).join(' ')}</OptionGroupTitle>
           {header === 'rounding' ? (
             <>
               <OptionTitle>Precision</OptionTitle>
@@ -122,7 +117,7 @@ export function Sidebar({
                   min="0"
                   max="16"
                   value={precision}
-                  onChange={event => setPrecision(Number(event.target.value))}
+                  onChange={(event) => setPrecision(Number(event.target.value))}
                 />
                 <OptionRangeValue>{precision}</OptionRangeValue>
               </OptionRange>
@@ -137,8 +132,8 @@ export function Sidebar({
             </div>
           ) : null}
           <div>
-            {plugins.map(plugin => (
-              <Option opaque={!plugin.value} key={plugin.description}>
+            {plugins.map((plugin) => (
+              <Option opaque={!plugin.value} key={plugin.description} title={plugin.id}>
                 <Checkbox
                   onChange={() => onUpdatePlugin({ ...plugin, value: !plugin.value })}
                   checked={plugin.value}

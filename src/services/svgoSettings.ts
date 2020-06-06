@@ -16,6 +16,30 @@ export const defaultSettings: ISettings = {
   prettify: false,
   plugins: [
     {
+      description: 'Sort attributes',
+      id: 'sortAttrs',
+      category: 'pretty code',
+      value: true,
+    },
+    {
+      description: 'Sort children of <defs> to improve compression',
+      id: 'sortDefsChildren',
+      category: 'pretty code',
+      value: true,
+    },
+    {
+      description: 'Cleanup attributes from newlines, trailing and repeating spaces',
+      id: 'cleanupAttrs',
+      category: 'pretty code',
+      value: true,
+    },
+    {
+      description: 'Prefer attributes on parent group instead of individual elements',
+      id: 'moveElemsAttrsToGroup',
+      category: 'pretty code',
+      value: true,
+    },
+    {
       description: 'Remove doctype declaration',
       id: 'removeDoctype',
       category: 'stripping',
@@ -142,6 +166,18 @@ export const defaultSettings: ISettings = {
       value: true,
     },
     {
+      description: 'Cleanup enable-background',
+      id: 'cleanupEnableBackground',
+      category: 'stripping',
+      value: true,
+    },
+    {
+      description: 'Collapse useless groups',
+      id: 'collapseGroups',
+      category: 'stripping',
+      value: true,
+    },
+    {
       description: "Round numeric values to the fixed precision (removes default 'px' units)",
       id: 'cleanupNumericValues',
       category: 'rounding',
@@ -166,6 +202,12 @@ export const defaultSettings: ISettings = {
       value: true,
     },
     {
+      description: 'Replace duplicate elements with <use> elements',
+      id: 'reusePaths',
+      category: 'rounding',
+      value: false,
+    },
+    {
       description: 'Convert non-eccentric <ellipse> elements to <circle> elements',
       id: 'convertEllipseToCircle',
       category: 'shapes',
@@ -176,6 +218,12 @@ export const defaultSettings: ISettings = {
       id: 'convertShapeToPath',
       category: 'shapes',
       value: true,
+    },
+    {
+      description: 'Merge multiple paths into one',
+      id: 'mergePaths',
+      category: 'shapes',
+      value: false,
     },
     {
       description: 'Minify styles and remove unused styles based on usage',
@@ -200,54 +248,6 @@ export const defaultSettings: ISettings = {
       id: 'cleanupIDs',
       category: 'styles',
       value: true,
-    },
-    {
-      description: 'Sort attributes',
-      id: 'sortAttrs',
-      category: 'pretty code',
-      value: true,
-    },
-    {
-      description: 'Sort children of <defs> to improve compression',
-      id: 'sortDefsChildren',
-      category: 'pretty code',
-      value: true,
-    },
-    {
-      description: 'Cleanup attributes from newlines, trailing and repeating spaces',
-      id: 'cleanupAttrs',
-      category: 'pretty code',
-      value: true,
-    },
-    {
-      description: 'Prefer attributes on parent group instead of individual elements',
-      id: 'moveElemsAttrsToGroup',
-      category: 'pretty code',
-      value: true,
-    },
-    {
-      description: 'Cleanup enable-background',
-      id: 'cleanupEnableBackground',
-      category: 'other',
-      value: true,
-    },
-    {
-      description: 'Collapse useless groups',
-      id: 'collapseGroups',
-      category: 'other',
-      value: true,
-    },
-    {
-      description: 'Merge multiple paths into one',
-      id: 'mergePaths',
-      category: 'other',
-      value: true,
-    },
-    {
-      description: 'Replace duplicate elements with <use> elements',
-      id: 'reusePaths',
-      category: 'other',
-      value: false,
     },
   ],
 }

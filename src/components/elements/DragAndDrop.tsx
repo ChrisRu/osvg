@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { IFileDetails, createOpenFile, onDemo, loadSVGWith } from '../../services/fileService'
 import { UploadCloadIcon } from './Icons'
 
@@ -11,15 +11,22 @@ const Wrapper = styled.div<{ dragging: boolean }>`
   width: 550px;
   background: rgba(0, 0, 0, 0.2);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  transform: scale(${p => (p.dragging ? 1.1 : 1)});
+  transform: scale(${(p) => (p.dragging ? 1.1 : 1)});
   transition: transform 0.1s;
+
+  @media (max-width: 700px) {
+    min-height: calc(3 * 60px);
+    min-width: calc(5.5 * 60px);
+    width: 80vw;
+    height: calc((3 / 5.5) * 80vw);
+  }
 `
 
 const UploadRow = styled.div<{ reverse?: boolean }>`
   padding: 1rem;
   display: flex;
   flex-flow: row nowrap;
-  justify-content: ${p => (p.reverse ? 'flex-end' : 'flex-start')};
+  justify-content: ${(p) => (p.reverse ? 'flex-end' : 'flex-start')};
 
   svg {
     opacity: 0.7;
@@ -68,19 +75,20 @@ const DemoButton = styled.span.attrs({ role: 'button', tabIndex: 0 })`
 
 interface IProps {
   dragging: boolean
+  title?: string
   onLoadSVG: (file?: IFileDetails) => void
 }
 
 const demoLocation = '/dog.svg'
 
-export function DragAndDrop({ onLoadSVG, dragging }: IProps) {
+export function DragAndDrop({ onLoadSVG, dragging, title = 'Drag & Drop' }: IProps) {
   return (
     <Wrapper dragging={dragging}>
       <UploadRow>
         <UploadCloadIcon />
       </UploadRow>
       <UploadText>
-        <h1>Drag & Drop</h1>
+        <h1>{title}</h1>
         <p>
           or{' '}
           <BrowseButton

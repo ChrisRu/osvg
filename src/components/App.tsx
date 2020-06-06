@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import styled, { ThemeProvider } from 'styled-components'
+import styled, { ThemeProvider } from 'styled-components/macro'
 import { Menubar } from './Menubar'
 import { Sidebar } from './Sidebar'
 import { HomeScreen } from './HomeScreen'
@@ -11,12 +11,13 @@ import { useTheme } from '../hooks/useTheme'
 // I don't often write comments, but when I do;
 /* eslint-disable */
 // @ts-ignore
-import * as workerFile from 'workerize-loader!../services/svgo.worker'
+import * as svgoWorkerFile from 'workerize-loader!../services/svgo.worker'
 /* eslint-enable */
 import { fixFileExtension } from '../services/stringTransformService'
-import { IFileDetails } from '../services/fileService'
+import { IFileDetails, loadSVGWith, createOpenFile } from '../services/fileService'
 import { saveSvg } from '../services/fileService'
 import { ISettings } from '../services/svgoSettings'
+import { getSVGTitle } from '../services/svgService'
 
 const Main = styled.main`
   position: relative;
@@ -26,20 +27,19 @@ const Main = styled.main`
   overflow: hidden;
 `
 
-const worker: {
-  svgo: (svg: string, settings: ISettings) => Promise<string>
-} = workerFile()
-
 export const defaultFileName = 'file.svg'
+
+const svgoWorker: {
+  svgo: (svg: string, settings: ISettings) => Promise<string>
+} = svgoWorkerFile()
 
 export function App() {
   const [view, setView] = useState<'svg' | 'code'>('svg')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<Error>()
-  const [fileName, setFileName] = useState<string>('')
+  const [fileName, setFileName] = useState<string>()
   const [initialSVG, setInitialSVG] = useState<string>()
   const [optimizedSVG, setOptimizedSVG] = useState<string>()
-
   const { prettify, precision, plugins, updatePlugin, togglePrettify, setPrecision } = useSettings()
   const { theme, toggleTheme, themeName } = useTheme()
 
@@ -49,7 +49,7 @@ export function App() {
         throw new Error('No file supplied')
       }
 
-      return worker.svgo(file.contents, {
+      return svgoWorker.svgo(file.contents, {
         prettify,
         precision,
         plugins,
@@ -65,7 +65,7 @@ export function App() {
         try {
           setLoading(true)
 
-          const result = await worker.svgo(initialSVG, {
+          const result = await svgoWorker.svgo(initialSVG, {
             prettify,
             precision,
             plugins,
@@ -95,23 +95,46 @@ export function App() {
     if (!initialSVG || !fileName) {
       document.title = 'osvg | Optimize your SVGs'
     } else {
-      document.title = `${fileName || defaultFileName} | osvg`
+      document.title = `${fileName} | osvg`
     }
   }, [initialSVG, fileName])
 
   useEffect(() => {
+    let cancel = false
+
     function keydown(event: KeyboardEvent) {
       if (event.ctrlKey && event.key === 's') {
         if (optimizedSVG) {
           event.preventDefault()
           saveSvg(optimizedSVG, fileName || defaultFileName)
         }
+
+        return
+      }
+
+      if (event.ctrlKey && event.key === 'o') {
+        event.preventDefault()
+        loadSVGWith(async (file) => {
+          if (!file) {
+            return
+          }
+
+          const result = await loadSVG(file)
+
+          if (!cancel) {
+            const fileName = file.name || getSVGTitle(file.contents)
+            setInitialSVG(file?.contents)
+            setOptimizedSVG(result)
+            setFileName(fileName)
+          }
+        }, createOpenFile)(undefined)
       }
     }
 
     window.addEventListener('keydown', keydown)
 
-    return function() {
+    return function () {
+      cancel = true
       window.removeEventListener('keydown', keydown)
     }
   }, [optimizedSVG, fileName, loadSVG])
@@ -124,7 +147,7 @@ export function App() {
           onLoadSVG={(initialSVG, optimizedSVG, fileName) => {
             setInitialSVG(initialSVG)
             setOptimizedSVG(optimizedSVG)
-            setFileName(fileName || defaultFileName)
+            setFileName(fileName)
           }}
         />
       ) : (
@@ -134,14 +157,18 @@ export function App() {
             loading={loading}
             error={error}
             fileName={fileName}
-            initialSVG={initialSVG}
+            initialSVG={initialSVG || ''}
             optimizedSVG={optimizedSVG}
             onUpdateFileName={setFileName}
             onRewriteFileName={() =>
               setFileName(fileName ? fixFileExtension(fileName, 'svg') : defaultFileName)
             }
             onChangeView={setView}
-            onClose={() => setInitialSVG(undefined)}
+            onClose={() => {
+              setInitialSVG(undefined)
+              setFileName(undefined)
+              setOptimizedSVG(undefined)
+            }}
           />
           <Main>
             <Sidebar
@@ -155,17 +182,9 @@ export function App() {
             {loading ? (
               <LoadingView />
             ) : view === 'svg' ? (
-              <ImageView
-                initialSVG={initialSVG}
-                optimizedSVG={optimizedSVG}
-                fileName={fileName || defaultFileName}
-              />
+              <ImageView optimizedSVG={optimizedSVG} fileName={fileName} />
             ) : (
-              <CodeView
-                initialSVG={initialSVG}
-                optimizedSVG={optimizedSVG}
-                fileName={fileName || defaultFileName}
-              />
+              <CodeView optimizedSVG={optimizedSVG} fileName={fileName} />
             )}
           </Main>
         </>

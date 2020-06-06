@@ -4,7 +4,7 @@ import { ISettings } from './svgoSettings'
 const cache = new Map<string, string>()
 
 export async function svgo(svg: string, settings: ISettings) {
-  const pluginIds = settings.plugins.filter(plugin => plugin.value).map(setting => setting.id)
+  const pluginIds = settings.plugins.filter((plugin) => plugin.value).map((setting) => setting.id)
   const key = `${svg}:${settings.prettify}:${settings.precision}:${pluginIds.join(',')}`
 
   if (cache.has(key)) {

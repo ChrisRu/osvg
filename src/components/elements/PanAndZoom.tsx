@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 
 type Coordinates = [number, number]
 
@@ -58,8 +58,8 @@ export function PanAndZoom({ children }: IProps) {
 
       const scaleDiff = delta / 500 + 1
 
-      setDScale(scale => scale / scaleDiff)
-      setDScale(scale => (scale <= 0.1 ? 0.1 : scale))
+      setDScale((scale) => scale / scaleDiff)
+      setDScale((scale) => (scale <= 0.1 ? 0.1 : scale))
       if (boundingRect) {
         const up = event.deltaY < 0
         const { pageX, pageY } = event
@@ -68,11 +68,11 @@ export function PanAndZoom({ children }: IProps) {
         const diff = scaleDiff - 1
 
         if (up) {
-          setDX(dX => dX - (pageX - left) * diff - ((left - right) / 2) * diff)
-          setDY(dY => dY - (pageY - top) * diff - ((top - bottom) / 2) * diff)
+          setDX((dX) => dX - (pageX - left) * diff - ((left - right) / 2) * diff)
+          setDY((dY) => dY - (pageY - top) * diff - ((top - bottom) / 2) * diff)
         } else {
-          setDX(dX => dX + (pageX - left) * diff + ((left - right) / 2) * diff)
-          setDY(dY => dY + (pageY - top) * diff + ((top - bottom) / 2) * diff)
+          setDX((dX) => dX + (pageX - left) * diff + ((left - right) / 2) * diff)
+          setDY((dY) => dY + (pageY - top) * diff + ((top - bottom) / 2) * diff)
         }
       }
     }
@@ -98,8 +98,8 @@ export function PanAndZoom({ children }: IProps) {
       const averagePoint = points.reduce(getMidpoint)
       const averageLastPoint = lastPoints.reduce(getMidpoint)
 
-      setDX(dX => dX + averagePoint[0] - averageLastPoint[0])
-      setDY(dY => dY + averagePoint[1] - averageLastPoint[1])
+      setDX((dX) => dX + averagePoint[0] - averageLastPoint[0])
+      setDY((dY) => dY + averagePoint[1] - averageLastPoint[1])
 
       lastPoints = points
     }
@@ -115,7 +115,7 @@ export function PanAndZoom({ children }: IProps) {
     wrapper.addEventListener('mousedown', mousedown)
     wrapper.addEventListener('mousemove', mousemove)
 
-    return function() {
+    return function () {
       wrapper.removeEventListener('dblclick', doubleclick)
       wrapper.removeEventListener('wheel', wheel)
       wrapper.removeEventListener('mousedown', mousedown)

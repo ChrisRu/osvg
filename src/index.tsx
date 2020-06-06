@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { createGlobalStyle } from 'styled-components'
+import { createGlobalStyle } from 'styled-components/macro'
 import { Normalize } from 'styled-normalize'
 import { App } from './components/App'
 import * as serviceWorker from './services/serviceWorker'

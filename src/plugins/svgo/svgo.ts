@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-ignore
 import SVG2JS from 'svgo/lib/svgo/svg2js'
 // @ts-ignore
@@ -58,7 +59,7 @@ export default async function optimizeSVG(svgInput: string, settings: ISettings)
 
   const optimizedPluginsData = optimizePluginsArray(availablePlugins.map(([_, x]) => x))
 
-  const stringToSVGObj = (svgStr: string): Promise<object> => new Promise(r => SVG2JS(svgStr, r))
+  const stringToSVGObj = (svgStr: string): Promise<object> => new Promise((r) => SVG2JS(svgStr, r))
   const SVGObjToString = (obj: object, pretty: boolean): string => JS2SVG(obj, { pretty }).data
   const optimizeSVGObj = (obj: object) => PLUGINS(obj, { input: 'string' }, optimizedPluginsData)
 

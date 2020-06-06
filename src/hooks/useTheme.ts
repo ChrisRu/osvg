@@ -8,9 +8,9 @@ export interface IThemeContext extends ITheme {
 }
 
 interface ITheme {
-  foreground: string
+  text: string
   background: string
-  backgroundSecondary: string
+  backgroundOffset: string
   backgroundTertiary: string
 }
 
@@ -18,15 +18,15 @@ type ThemeName = 'dark' | 'light'
 
 const themes: { [key in ThemeName]: ITheme } = {
   dark: {
-    foreground: '#ffffff',
+    text: '#efefef',
     background: '#212123',
-    backgroundSecondary: '#262629',
+    backgroundOffset: '#262629',
     backgroundTertiary: '#212123',
   },
   light: {
-    foreground: '#181818',
+    text: '#181818',
     background: '#efefef',
-    backgroundSecondary: '#fff',
+    backgroundOffset: '#ffffff',
     backgroundTertiary: '#f9f9fa',
   },
 }
@@ -46,7 +46,7 @@ export function useTheme() {
   }, [themeName])
 
   function toggleTheme() {
-    setThemeName(theme => (theme === 'light' ? 'dark' : 'light'))
+    setThemeName((theme) => (theme === 'light' ? 'dark' : 'light'))
   }
 
   return { theme: themes[themeName], toggleTheme, themeName }

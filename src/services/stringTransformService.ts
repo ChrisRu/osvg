@@ -12,12 +12,7 @@ export function fixFileExtension(fileName: string, extension: string) {
     return value + '.' + extension
   }
 
-  const lastDotIndex =
-    value.length -
-    value
-      .split('')
-      .reverse()
-      .indexOf('.')
+  const lastDotIndex = value.length - value.split('').reverse().indexOf('.')
   const lastPart = value.slice(lastDotIndex)
   if (lastPart.length > 4) {
     return value + '.' + extension

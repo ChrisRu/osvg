@@ -1,9 +1,9 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { WarningIcon } from './Icons'
 
 const Overlay = styled.div`
-  z-index: 4;
+  z-index: 3;
   position: fixed;
   background: rgba(0, 0, 0, 0.8);
   top: 0;

@@ -4,12 +4,12 @@ export interface IFileDetails {
 }
 
 export async function createOpenFile() {
-  const files = await new Promise<FileList | null>(resolve => {
+  const files = await new Promise<FileList | null>((resolve) => {
     const fileInput = document.createElement('input')
     fileInput.type = 'file'
     fileInput.accept = '.svg'
     fileInput.style.display = 'none'
-    fileInput.onchange = data => {
+    fileInput.onchange = (data) => {
       resolve(data.target ? (data.target as HTMLInputElement).files : null)
       document.body.removeChild(fileInput)
     }
@@ -29,7 +29,7 @@ export function openFile(files: FileList | null) {
     }
 
     const reader = new FileReader()
-    reader.onload = event => {
+    reader.onload = (event) => {
       const { name } = file
 
       const contents = event.target ? event.target.result : undefined

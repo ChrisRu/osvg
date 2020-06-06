@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import styled, { ThemeContext, css } from 'styled-components'
+import styled, { ThemeContext } from 'styled-components/macro'
 import { saveSvg } from '../../services/fileService'
 import { DownloadIcon, ThemeIcon } from '../elements/Icons'
 import { IThemeContext } from '../../hooks/useTheme'
@@ -7,11 +7,12 @@ import { defaultFileName } from '../App'
 
 const Wrapper = styled.div`
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
   z-index: 1;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: block;
   margin: 1rem;
   pointer-events: none;
 
@@ -31,44 +32,13 @@ const ThemeButton = styled.button`
   margin: 0;
   opacity: 0.7;
   height: 24px;
-  transform: scaleX(${p => (p.theme.themeName === 'light' ? 1 : -1)});
+  transform: scaleX(${(p) => (p.theme.themeName === 'light' ? 1 : -1)});
   transition: opacity 0.1s, transform 0.1s;
-  color: ${p => p.theme.foreground};
+  color: ${(p) => p.theme.text};
   cursor: pointer;
 
   &:hover,
   &:focus {
-    opacity: 1;
-  }
-`
-
-const OriginalButton = styled.button`
-  ${p =>
-    p.theme.themeName === 'light'
-      ? css`
-          background: rgba(255, 255, 255, 0.6);
-          color: rgba(0, 0, 0, 1);
-          opacity: 0.7;
-        `
-      : css`
-          background: rgba(0, 0, 0, 0.2);
-          color: rgba(255, 255, 255, 0.8);
-          opacity: 0.7;
-        `}
-  border: 0;
-  padding: 0.3rem 0.8rem;
-  margin: 0;
-  text-transform: uppercase;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  font-weight: bold;
-  border-radius: 2rem;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: opacity 0.1s;
-
-  &:hover {
     opacity: 1;
   }
 `
@@ -108,20 +78,13 @@ const DownloadButton = styled.button`
 interface IProps {
   fileName?: string
   optimizedSVG?: string
-  original: boolean
-  onToggleOriginal?: () => void
 }
 
-export function ViewOverlay({ fileName, original, optimizedSVG, onToggleOriginal }: IProps) {
+export function ViewOverlay({ fileName, optimizedSVG }: IProps) {
   const { toggleTheme } = useContext<IThemeContext>(ThemeContext)
 
   return (
     <Wrapper>
-      {onToggleOriginal ? (
-        <OriginalButton onClick={onToggleOriginal}>
-          Show {original ? 'optimized' : 'original'}
-        </OriginalButton>
-      ) : null}
       <ThemeButton title="Toggle theme" onClick={toggleTheme}>
         <ThemeIcon />
       </ThemeButton>

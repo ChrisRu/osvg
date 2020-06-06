@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { ViewOverlay } from './ViewOverlay'
 import { LoadingIcon } from '../elements/Icons'
 
@@ -9,8 +9,8 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: ${props => props.theme.backgroundTertiary};
-  color: ${props => props.theme.foreground}30;
+  background-color: ${(props) => props.theme.backgroundTertiary};
+  color: ${(props) => props.theme.text}30;
 
   > svg {
     width: 3rem;
@@ -20,7 +20,7 @@ const Wrapper = styled.div`
 export function LoadingView() {
   return (
     <Wrapper>
-      <ViewOverlay original />
+      <ViewOverlay />
       <LoadingIcon />
     </Wrapper>
   )

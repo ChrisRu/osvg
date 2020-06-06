@@ -1,11 +1,10 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { getHumanReadableBytes } from '../../services/byteService'
 import { ArrowRightIcon } from './Icons'
 
 const Wrapper = styled.table`
   padding: 0.5rem;
-  border-radius: 1rem;
   font-size: 1.1rem;
   position: absolute;
   background: #181818;
@@ -19,9 +18,9 @@ const Wrapper = styled.table`
 
 const Cell = styled.td<{ faded?: boolean; alignRight?: boolean }>`
   padding: 0.5rem;
-  opacity: ${p => (p.faded ? 0.6 : 1)};
-  text-align: ${p => (p.alignRight ? 'right' : 'left')};
-  font-size: ${p => (p.faded ? 0.9 : 1)}em;
+  opacity: ${(p) => (p.faded ? 0.6 : 1)};
+  text-align: ${(p) => (p.alignRight ? 'right' : 'left')};
+  font-size: ${(p) => (p.faded ? 0.9 : 1)}em;
   line-height: 1.2rem;
 
   svg {

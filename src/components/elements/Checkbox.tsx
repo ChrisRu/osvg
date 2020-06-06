@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from 'styled-components/macro'
 import { CheckMarkIcon } from './Icons'
 
 const CheckboxContainer = styled.div`
@@ -10,8 +10,7 @@ const CheckboxContainer = styled.div`
 
 const HiddenCheckbox = styled.input.attrs({ type: 'checkbox' })`
   border: 0;
-  clip: rect(0 0 0 0);
-  clippath: inset(50%);
+  clip-path: inset(50%);
   height: 1px;
   margin: -1px;
   overflow: hidden;
@@ -25,7 +24,7 @@ const StyledCheckbox = styled.div<{ checked: boolean }>`
   display: inline-block;
   width: 16px;
   height: 16px;
-  background: ${props => (props.checked ? 'hsl(252, 62%, 66%)' : '#fff')};
+  background: ${(props) => (props.checked ? 'hsl(252, 62%, 66%)' : '#fff')};
   border-radius: 3px;
   transition: all 150ms;
 
@@ -34,7 +33,7 @@ const StyledCheckbox = styled.div<{ checked: boolean }>`
   }
 
   svg {
-    visibility: ${props => (props.checked ? 'visible' : 'hidden')};
+    visibility: ${(props) => (props.checked ? 'visible' : 'hidden')};
   }
 `
 

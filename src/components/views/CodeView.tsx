@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react'
-import styled, { ThemeContext } from 'styled-components'
+import React, { useContext, useRef } from 'react'
+import styled, { ThemeContext } from 'styled-components/macro'
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
 import markup from 'refractor/lang/markup'
 import darkTheme from '../../plugins/prism-themes/atom-dark'
@@ -14,8 +14,8 @@ const Wrapper = styled.div`
   overflow: auto;
   flex: 1;
   display: flex;
-  background: ${p => p.theme.backgroundTertiary};
-  color: ${p => p.theme.foreground};
+  background: ${(p) => p.theme.backgroundTertiary};
+  color: ${(p) => p.theme.text};
 `
 
 const Code = styled(SyntaxHighlighter)`
@@ -25,27 +25,33 @@ const Code = styled(SyntaxHighlighter)`
 `
 
 interface IProps {
-  initialSVG: string
   optimizedSVG?: string
-  fileName: string
+  fileName?: string
 }
 
-export function CodeView({ initialSVG, optimizedSVG, fileName }: IProps) {
-  const [showOriginal, setShowOriginal] = useState(false)
+export function CodeView({ optimizedSVG, fileName }: IProps) {
+  const codeRef = useRef<any>()
   const { themeName } = useContext<IThemeContext>(ThemeContext)
 
-  const SVG = showOriginal || !optimizedSVG ? initialSVG : optimizedSVG
-
   return (
-    <Wrapper>
-      <ViewOverlay
-        optimizedSVG={optimizedSVG}
-        fileName={fileName}
-        original={showOriginal}
-        onToggleOriginal={() => setShowOriginal(v => !v)}
-      />
+    <Wrapper
+      ref={codeRef}
+      onClick={(event) => {
+        if (((event as unknown) as MouseEvent).detail === 3 && codeRef.current) {
+          const range = document.createRange()
+          range.selectNodeContents(codeRef.current)
+
+          const selection = window.getSelection()
+          if (selection) {
+            selection.removeAllRanges()
+            selection.addRange(range)
+          }
+        }
+      }}
+    >
+      <ViewOverlay optimizedSVG={optimizedSVG} fileName={fileName} />
       <Code language="markup" style={themeName === 'light' ? lightTheme : darkTheme}>
-        {SVG}
+        {optimizedSVG || ''}
       </Code>
     </Wrapper>
   )
