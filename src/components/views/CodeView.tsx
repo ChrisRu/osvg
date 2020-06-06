@@ -1,13 +1,11 @@
 import React, { useContext, useRef } from 'react'
 import styled, { ThemeContext } from 'styled-components/macro'
-import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light'
 import markup from 'refractor/lang/markup'
 import darkTheme from '../../plugins/prism-themes/atom-dark'
 import lightTheme from '../../plugins/prism-themes/atom-light'
 import { IThemeContext } from '../../hooks/useTheme'
 import { ViewOverlay } from './ViewOverlay'
-
-SyntaxHighlighter.registerLanguage('markup', markup)
 
 const Wrapper = styled.div`
   position: relative;
@@ -23,6 +21,8 @@ const Code = styled(SyntaxHighlighter)`
   margin: 0 !important;
   flex: 1;
 `
+
+SyntaxHighlighter.registerLanguage('markup', markup)
 
 interface IProps {
   optimizedSVG?: string

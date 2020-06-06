@@ -1,10 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-ignore
-import SVG2JS from 'svgo/lib/svgo/svg2js'
-// @ts-ignore
-import JS2SVG from 'svgo/lib/svgo/js2svg'
-// @ts-ignore
-import PLUGINS from 'svgo/lib/svgo/plugins'
 import { plugins as pluginData } from './svgoPlugins'
 
 interface ISettings {
@@ -37,6 +31,17 @@ function optimizePluginsArray(plugins: ISVGOPlugin[]) {
 }
 
 export default async function optimizeSVG(svgInput: string, settings: ISettings) {
+  const [SVG2JS, JS2SVG, PLUGINS] = (
+    await Promise.all([
+      // @ts-ignore
+      import('svgo/lib/svgo/svg2js'),
+      // @ts-ignore
+      import('svgo/lib/svgo/js2svg'),
+      // @ts-ignore
+      import('svgo/lib/svgo/plugins'),
+    ])
+  ).map((x) => x.default)
+
   const availablePlugins = Object.entries(pluginData) as [string, ISVGOPlugin][]
 
   // activate/deactivate plugins
