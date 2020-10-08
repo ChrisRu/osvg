@@ -226,7 +226,7 @@ export function Menubar({
           <FileNameInput
             title="Change the filename"
             type="text"
-            value={fileName}
+            defaultValue={fileName}
             width={inputElementWidth}
             onChange={(event) => onUpdateFileName(event.target.value)}
             onBlur={onRewriteFileName}

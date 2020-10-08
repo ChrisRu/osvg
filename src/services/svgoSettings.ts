@@ -1,14 +1,14 @@
-export interface ISettings {
-  plugins: ISetting[]
-  precision: number
-  prettify: boolean
-}
-
 export interface ISetting {
   description: string
   id: string
   category: string
-  value: boolean
+  value: number | boolean
+}
+
+export interface ISettings {
+  plugins: ISetting[]
+  precision: number
+  prettify: boolean
 }
 
 export const defaultSettings: ISettings = {
