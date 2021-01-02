@@ -21,11 +21,11 @@ const GlobalStyle = createGlobalStyle`
 `
 
 ReactDOM.render(
-  <>
+  <React.StrictMode>
     <Normalize />
     <GlobalStyle />
     <App />
-  </>,
+  </React.StrictMode>,
   document.getElementById('root'),
 )
 

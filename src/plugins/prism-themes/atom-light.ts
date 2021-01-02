@@ -1,4 +1,4 @@
-export default {
+const theme = {
   'code[class*="language-"]': {},
   'pre[class*="language-"]': {
     color: '#797c7b',
@@ -126,3 +126,5 @@ export default {
     fontStyle: 'italic',
   },
 }
+
+export default theme
