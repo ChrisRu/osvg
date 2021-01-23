@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import { plugins as pluginData } from './svgoPlugins'
+import { plugins } from './svgoPlugins'
 
 interface ISettings {
   plugins: string[]
@@ -16,22 +15,8 @@ interface ISVGOPlugin {
   fn: (...any: any[]) => any
 }
 
-function optimizePluginsArray(plugins: ISVGOPlugin[]) {
-  return plugins.reduce<ISVGOPlugin[][]>((total, nextPlugin) => {
-    const last = total[total.length - 1]
-
-    if (nextPlugin.type === last?.[0].type) {
-      last.push(nextPlugin)
-    } else {
-      total.push([nextPlugin])
-    }
-
-    return total
-  }, [])
-}
-
-export default async function optimizeSVG(svgInput: string, settings: ISettings) {
-  const [SVG2JS, JS2SVG, PLUGINS] = (
+async function optimize(svg: string, plugins: ISVGOPlugin[][], pretty: boolean) {
+  const [convertSVGToObject, convertObjectToSVG, applySVGOPlugins] = (
     await Promise.all([
       // @ts-ignore
       import('svgo/lib/svgo/svg2js'),
@@ -42,17 +27,26 @@ export default async function optimizeSVG(svgInput: string, settings: ISettings)
     ])
   ).map((x) => x.default)
 
-  const availablePlugins = Object.entries(pluginData) as [string, ISVGOPlugin][]
+  const stringToSVGObj = (svg: string): Promise<object> =>
+    new Promise((r) => convertSVGToObject(svg, r))
+  const optimizeSVGObj = (svg: object) => applySVGOPlugins(svg, { input: 'string' }, plugins)
+  const SVGObjToString = (svg: object, pretty: boolean): string =>
+    convertObjectToSVG(svg, { pretty }).data
 
-  // activate/deactivate plugins
+  return SVGObjToString(optimizeSVGObj(await stringToSVGObj(svg)), pretty)
+}
+
+export default async function optimizeSVG(svgInput: string, settings: ISettings) {
+  const activePlugins = new Set(settings.plugins)
+  const availablePlugins = Object.entries(plugins) as [string, ISVGOPlugin][]
+  const optimizedPluginsData: ISVGOPlugin[][] = []
   for (const [name, plugin] of availablePlugins) {
-    plugin.active = settings.plugins.includes(name)
-  }
+    // activate/deactivate plugins
+    plugin.active = activePlugins.has(name)
 
-  // Set floatPrecision across all the plugins
-  for (const plugin of Object.values(pluginData) as ISVGOPlugin[]) {
+    // Set floatPrecision across all the plugins
     if (plugin.params && 'floatPrecision' in plugin.params) {
-      if (plugin === pluginData.cleanupNumericValues && settings.floatPrecision === 0) {
+      if (plugin === plugins.cleanupNumericValues && settings.floatPrecision === 0) {
         // 0 almost always breaks images when used on this plugin.
         // Better to allow 0 for everything else, but switch to 1 for this plugin.
         plugin.params.floatPrecision = 1
@@ -60,23 +54,22 @@ export default async function optimizeSVG(svgInput: string, settings: ISettings)
         plugin.params.floatPrecision = settings.floatPrecision
       }
     }
+
+    // Organizing data structure for SVGO
+    const previousPlugin = optimizedPluginsData[optimizedPluginsData.length - 1]
+    if (previousPlugin && plugin.type === previousPlugin[0].type) {
+      previousPlugin.push(plugin)
+    } else {
+      optimizedPluginsData.push([plugin])
+    }
   }
-
-  const optimizedPluginsData = optimizePluginsArray(availablePlugins.map(([_, x]) => x))
-
-  const stringToSVGObj = (svgStr: string): Promise<object> => new Promise((r) => SVG2JS(svgStr, r))
-  const SVGObjToString = (obj: object, pretty: boolean): string => JS2SVG(obj, { pretty }).data
-  const optimizeSVGObj = (obj: object) => PLUGINS(obj, { input: 'string' }, optimizedPluginsData)
 
   let i = 0
   let prevLength = Number.POSITIVE_INFINITY
   let svgStr = svgInput
-  let svgObj: object
   while (++i < (settings.maxMultipass || 10) && svgStr.length < prevLength) {
     prevLength = svgStr.length
-    svgObj = await stringToSVGObj(svgStr)
-    svgObj = optimizeSVGObj(svgObj)
-    svgStr = SVGObjToString(svgObj, settings.pretty)
+    svgStr = await optimize(svgStr, optimizedPluginsData, settings.pretty)
   }
 
   return svgStr

@@ -1,4 +1,4 @@
-// @ts-expect-error only need gzip from package
+// @ts-ignore
 import { gzip } from 'pako/lib/deflate'
 
 export function getFileSize(contents: string) {

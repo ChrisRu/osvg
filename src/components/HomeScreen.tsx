@@ -164,16 +164,16 @@ const WaveSVGBackground = styled.svg<{ fade?: boolean }>`
 `
 
 interface IProps {
-  onPreloadSVG: (file?: IFileDetails) => Promise<string>
-  onLoadSVG: (initialSVG: string, optimizedSVG: string, fileName?: string) => void
+  loading: boolean
+  error: Error | undefined
+  onPreloadSVG: (file?: IFileDetails) => void
+  onReset: () => void
 }
 
-export function HomeScreen({ onPreloadSVG, onLoadSVG }: IProps) {
+export function HomeScreen({ loading, error, onPreloadSVG, onReset }: IProps) {
   // Dragging is a number, because drag leave events are triggered
   // when hovering over a transitioning element.
   const [dragging, setDragging] = useState(0)
-  const [loadingError, setLoadingError] = useState<unknown>()
-  const [loading, setLoading] = useState(false)
   const tip = useMemo(() => getRandomTip(), [])
 
   const loadSVGWithAnimation = useCallback(
@@ -182,19 +182,9 @@ export function HomeScreen({ onPreloadSVG, onLoadSVG }: IProps) {
         return
       }
 
-      try {
-        setLoading(true)
-
-        const result = await onPreloadSVG(file)
-
-        const fileName = file.name || getSVGTitle(file.contents)
-        onLoadSVG(file.contents, result, fileName)
-      } catch (error) {
-        console.error('Could not load file', error)
-        setLoadingError(error)
-      }
+      onPreloadSVG(file)
     },
-    [onPreloadSVG, onLoadSVG, loading],
+    [onPreloadSVG, loading],
   )
 
   useEffect(() => {
@@ -215,17 +205,11 @@ export function HomeScreen({ onPreloadSVG, onLoadSVG }: IProps) {
   return (
     <>
       <GradientBackground fade={loading} />
-      <LoadingWrapper show={loading} transition={!loadingError}>
+      <LoadingWrapper show={loading} transition={!error}>
         <LoadingIcon />
       </LoadingWrapper>
-      {loadingError ? (
-        <ErrorModal
-          title="oops!"
-          onClose={() => {
-            setLoadingError(undefined)
-            setLoading(false)
-          }}
-        >
+      {error ? (
+        <ErrorModal title="oops!" onClose={onReset}>
           Could not load the file. Please check if the file you uploaded is an SVG and whether
           it&apos;s valid by W3 standards.
         </ErrorModal>

@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useReducer } from 'react'
 import styled, { ThemeProvider } from 'styled-components/macro'
 import { Menubar } from './Menubar'
 import { Sidebar } from './Sidebar'
 import { HomeScreen } from './HomeScreen'
 import { ImageView } from './views/ImageView'
 import { CodeView } from './views/CodeView'
-import { LoadingView } from './views/LoadingView'
 import { useSettings } from '../hooks/useSettings'
 import { useTheme } from '../hooks/useTheme'
 // I don't often write comments, but when I do;
@@ -13,7 +12,6 @@ import { useTheme } from '../hooks/useTheme'
 // @ts-ignore
 import * as svgoWorkerFile from 'workerize-loader!../services/svgo.worker'
 /* eslint-enable */
-import { fixFileExtension } from '../services/stringTransformService'
 import { IFileDetails, loadSVGWith, createOpenFile } from '../services/fileService'
 import { saveSvg } from '../services/fileService'
 import { ISettings } from '../services/svgoSettings'
@@ -33,80 +31,141 @@ const svgoWorker: {
   svgo: (svg: string, settings: ISettings) => Promise<string>
 } = svgoWorkerFile()
 
+interface AppState {
+  optimizedOnce: boolean
+  optimizing: boolean
+  error: Error | undefined
+  fileName: string | undefined
+  initialSVG: string | undefined
+  optimizedSVG: string | undefined
+}
+
+type AppStateAction =
+  | { type: 'initial' }
+  | { type: 'optimizing' }
+  | { type: 'optimized'; payload: string }
+  | { type: 'optimize-error'; payload: Error }
+  | { type: 'load-file'; payload: { fileName: string; initialSVG: string } }
+  | { type: 'update-file'; payload: { fileName: string } }
+
 export function App() {
   const [view, setView] = useState<'svg' | 'code'>('svg')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<Error>()
-  const [fileName, setFileName] = useState<string>()
-  const [initialSVG, setInitialSVG] = useState<string>()
-  const [optimizedSVG, setOptimizedSVG] = useState<string>()
-  const { prettify, precision, plugins, updatePlugin, togglePrettify, setPrecision } = useSettings()
-  const { theme, toggleTheme, themeName } = useTheme()
 
-  const loadSVG = useCallback(
-    async (file?: IFileDetails) => {
-      if (!file) {
-        throw new Error('No file supplied')
+  const [state, dispatch] = useReducer(
+    (state: AppState, action: AppStateAction): AppState => {
+      switch (action.type) {
+        case 'initial':
+          return {
+            optimizedOnce: false,
+            optimizing: false,
+            error: undefined,
+            fileName: undefined,
+            initialSVG: undefined,
+            optimizedSVG: undefined,
+          }
+        case 'load-file':
+          return {
+            ...state,
+            optimizedOnce: false,
+            optimizing: false,
+            error: undefined,
+            fileName: action.payload.fileName,
+            initialSVG: action.payload.initialSVG,
+            optimizedSVG: undefined,
+          }
+        case 'update-file':
+          return {
+            ...state,
+            fileName: action.payload.fileName,
+          }
+        case 'optimizing':
+          return {
+            ...state,
+            error: undefined,
+            optimizing: true,
+          }
+        case 'optimized':
+          return {
+            ...state,
+            optimizedOnce: true,
+            optimizing: false,
+            optimizedSVG: action.payload,
+          }
+        case 'optimize-error':
+          return {
+            error: action.payload,
+            optimizedOnce: false,
+            optimizing: false,
+            fileName: undefined,
+            initialSVG: undefined,
+            optimizedSVG: undefined,
+          }
       }
-
-      return svgoWorker.svgo(file.contents, {
-        prettify,
-        precision,
-        plugins,
-      })
     },
-    [plugins, precision, prettify],
+    {
+      optimizedOnce: false,
+      optimizing: false,
+      error: undefined,
+      fileName: undefined,
+      initialSVG: undefined,
+      optimizedSVG: undefined,
+    },
   )
 
+  const { prettify, precision, plugins, updatePlugin, togglePrettify, setPrecision } = useSettings()
+  const theme = useTheme()
+
   useEffect(() => {
-    if (initialSVG) {
-      let cancelled = false
-      ;(async () => {
-        try {
-          setLoading(true)
+    let cancelled = false
 
-          const result = await svgoWorker.svgo(initialSVG, {
-            prettify,
-            precision,
-            plugins,
-          })
-          if (!cancelled) {
-            setOptimizedSVG(result)
-          }
-        } catch (error) {
-          console.error('Could not optimize SVG', error)
-          if (!cancelled) {
-            setError(error)
-          }
-        } finally {
-          if (!cancelled) {
-            setLoading(false)
-          }
+    async function compressSVG() {
+      try {
+        if (!state.initialSVG) {
+          return
         }
-      })()
 
-      return () => {
-        cancelled = true
+        dispatch({ type: 'optimizing' })
+
+        const result = await svgoWorker.svgo(state.initialSVG, {
+          prettify,
+          precision,
+          plugins,
+        })
+
+        if (!cancelled) {
+          dispatch({ type: 'optimized', payload: result })
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Could not optimize SVG', error)
+          dispatch({ type: 'optimize-error', payload: error })
+        }
       }
     }
-  }, [initialSVG, plugins, precision, prettify])
+
+    compressSVG()
+
+    return () => {
+      cancelled = true
+    }
+  }, [state.initialSVG, plugins, precision, prettify])
 
   useEffect(() => {
-    if (!initialSVG || !fileName) {
+    if (!state.initialSVG || !state.fileName) {
       document.title = 'osvg | Optimize your SVGs'
     } else {
-      document.title = `${fileName} | osvg`
+      document.title = `${state.fileName} | osvg`
     }
-  }, [initialSVG, fileName])
+  }, [state.initialSVG, state.fileName])
 
   useEffect(() => {
     let cancel = false
 
     function keydown(event: KeyboardEvent) {
       if (event.ctrlKey && event.key === 's') {
-        if (optimizedSVG) {
+        if (state.optimizedSVG) {
           event.preventDefault()
-          saveSvg(optimizedSVG, fileName || defaultFileName)
+          saveSvg(state.optimizedSVG, state.fileName || defaultFileName)
         }
 
         return
@@ -119,13 +178,12 @@ export function App() {
             return
           }
 
-          const result = await loadSVG(file)
-
           if (!cancel) {
-            const fileName = file.name || getSVGTitle(file.contents)
-            setInitialSVG(file?.contents)
-            setOptimizedSVG(result)
-            setFileName(fileName)
+            const fileName = file.name || getSVGTitle(file.contents) || defaultFileName
+            dispatch({
+              type: 'load-file',
+              payload: { fileName, initialSVG: file.contents },
+            })
           }
         }, createOpenFile)(undefined)
       }
@@ -137,38 +195,54 @@ export function App() {
       cancel = true
       window.removeEventListener('keydown', keydown)
     }
-  }, [optimizedSVG, fileName, loadSVG])
+  }, [state.fileName, state.optimizedSVG])
+
+  const preloadSvg = useCallback((fileDetails: IFileDetails | undefined) => {
+    if (fileDetails) {
+      dispatch({
+        type: 'load-file',
+        payload: {
+          fileName: fileDetails.name || defaultFileName,
+          initialSVG: fileDetails.contents,
+        },
+      })
+    }
+  }, [])
+
+  const reset = useCallback(() => {
+    dispatch({ type: 'initial' })
+  }, [])
+
+  const updateFileName = useCallback((fileName: string) => {
+    dispatch({
+      type: 'update-file',
+      payload: {
+        fileName: fileName || defaultFileName,
+      },
+    })
+  }, [])
 
   return (
-    <ThemeProvider theme={{ ...theme, themeName, toggleTheme }}>
-      {!initialSVG || error ? (
+    <ThemeProvider theme={theme}>
+      {!state.optimizedOnce || !state.initialSVG || state.error ? (
         <HomeScreen
-          onPreloadSVG={loadSVG}
-          onLoadSVG={(initialSVG, optimizedSVG, fileName) => {
-            setInitialSVG(initialSVG)
-            setOptimizedSVG(optimizedSVG)
-            setFileName(fileName)
-          }}
+          loading={state.optimizing}
+          error={state.error}
+          onPreloadSVG={preloadSvg}
+          onReset={reset}
         />
       ) : (
         <>
           <Menubar
             view={view}
-            loading={loading}
-            error={error}
-            fileName={fileName}
-            initialSVG={initialSVG || ''}
-            optimizedSVG={optimizedSVG}
-            onUpdateFileName={setFileName}
-            onRewriteFileName={() =>
-              setFileName(fileName ? fixFileExtension(fileName, 'svg') : defaultFileName)
-            }
+            loading={state.optimizing}
+            error={state.error}
+            fileName={state.fileName}
+            initialSVG={state.initialSVG}
+            optimizedSVG={state.optimizedSVG}
+            onUpdateFileName={updateFileName}
             onChangeView={setView}
-            onClose={() => {
-              setInitialSVG(undefined)
-              setFileName(undefined)
-              setOptimizedSVG(undefined)
-            }}
+            onClose={reset}
           />
           <Main>
             <Sidebar
@@ -179,12 +253,18 @@ export function App() {
               togglePrettify={togglePrettify}
               setPrecision={setPrecision}
             />
-            {loading ? (
-              <LoadingView />
-            ) : view === 'svg' ? (
-              <ImageView optimizedSVG={optimizedSVG} fileName={fileName} />
+            {view === 'svg' ? (
+              <ImageView
+                optimizing={state.optimizing}
+                optimizedSVG={state.optimizedSVG}
+                fileName={state.fileName}
+              />
             ) : (
-              <CodeView optimizedSVG={optimizedSVG} fileName={fileName} />
+              <CodeView
+                optimizing={state.optimizing}
+                optimizedSVG={state.optimizedSVG}
+                fileName={state.fileName}
+              />
             )}
           </Main>
         </>

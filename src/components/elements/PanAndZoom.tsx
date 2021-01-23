@@ -26,13 +26,12 @@ const Wrapper = styled.div`
   align-items: center;
 `
 
-let lastPoints: Coordinates[] = []
-
 interface IProps {
   children: React.ReactNode
 }
 
 export function PanAndZoom({ children }: IProps) {
+  const lastPoints = useRef<Coordinates[]>([])
   const wrapperRef = useRef<HTMLDivElement>(null)
   const itemRef = useRef<HTMLDivElement>(null)
 
@@ -47,6 +46,10 @@ export function PanAndZoom({ children }: IProps) {
     }
 
     function wheel(event: WheelEvent) {
+      if (event.ctrlKey) {
+        return
+      }
+
       event.preventDefault()
 
       const boundingRect = itemRef.current ? itemRef.current.getBoundingClientRect() : undefined
@@ -78,13 +81,13 @@ export function PanAndZoom({ children }: IProps) {
     }
 
     function mousedown(event: MouseEvent) {
-      if (event.which !== 1) {
+      if (event.button !== 0) {
         return
       }
 
       event.preventDefault()
 
-      lastPoints = getPoints(event)
+      lastPoints.current = getPoints(event)
     }
 
     function mousemove(event: MouseEvent) {
@@ -96,12 +99,12 @@ export function PanAndZoom({ children }: IProps) {
 
       const points = getPoints(event)
       const averagePoint = points.reduce(getMidpoint)
-      const averageLastPoint = lastPoints.reduce(getMidpoint)
+      const averageLastPoint = lastPoints.current.reduce(getMidpoint)
 
       setDX((dX) => dX + averagePoint[0] - averageLastPoint[0])
       setDY((dY) => dY + averagePoint[1] - averageLastPoint[1])
 
-      lastPoints = points
+      lastPoints.current = points
     }
 
     function doubleclick() {

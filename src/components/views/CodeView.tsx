@@ -17,6 +17,7 @@ const Wrapper = styled.div`
 `
 
 interface IProps {
+  optimizing: boolean
   optimizedSVG?: string
   fileName?: string
 }

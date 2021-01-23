@@ -2,6 +2,7 @@ import styled from 'styled-components/macro'
 import { SVGToDataUri } from '../../services/svgService'
 import { PanAndZoom } from '../elements/PanAndZoom'
 import { ViewOverlay } from './ViewOverlay'
+import { LoadingView } from './LoadingView'
 
 function createBackground(color: string, size: number) {
   return SVGToDataUri(`<svg fill="none" xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 2 2">
@@ -28,15 +29,17 @@ const StyledObject = styled.object<{ hasWidth?: boolean }>`
 `
 
 interface IProps {
+  optimizing: boolean
   optimizedSVG?: string
   gridSize?: number
   fileName?: string
 }
 
-export function ImageView({ optimizedSVG, fileName, gridSize = 50 }: IProps) {
+export function ImageView({ optimizing, optimizedSVG, fileName, gridSize = 50 }: IProps) {
   return (
     <Wrapper gridSize={gridSize}>
       <ViewOverlay optimizedSVG={optimizedSVG} fileName={fileName} />
+      {optimizing ? <LoadingView /> : null}
       <PanAndZoom>
         {optimizedSVG ? (
           <StyledObject

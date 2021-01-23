@@ -39,7 +39,10 @@ const SearchInput = styled.input<{ hasValue?: boolean }>`
   box-sizing: border-box;
   transition: background 0.1s;
 
-  &:hover,
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
   &:focus {
     background: rgba(255, 255, 255, 0.2);
   }

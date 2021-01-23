@@ -32,10 +32,12 @@ function getSavedSettings(): ISettings | undefined {
   }
 }
 
+const savedSettings = getSavedSettings() || defaultSettings
+
 export function useSettings() {
-  const [plugins, setPlugins] = useState<ISetting[]>(defaultSettings.plugins)
-  const [precision, setPrecision] = useState(defaultSettings.precision)
-  const [prettify, setPrettify] = useState(defaultSettings.prettify)
+  const [plugins, setPlugins] = useState<ISetting[]>(() => savedSettings.plugins)
+  const [precision, setPrecision] = useState(() => savedSettings.precision)
+  const [prettify, setPrettify] = useState(() => savedSettings.prettify)
 
   const updatePlugin = useCallback((newPlugin: ISetting) => {
     setPlugins((plugins) => {
@@ -49,14 +51,13 @@ export function useSettings() {
   }, [])
 
   useEffect(() => {
-    const { plugins, prettify, precision } = getSavedSettings() || defaultSettings
-    setPlugins(plugins)
-    setPrettify(prettify)
-    setPrecision(precision)
-  }, [])
-
-  useEffect(() => {
-    saveSettings({ plugins, precision, prettify })
+    if (
+      savedSettings.plugins !== plugins ||
+      savedSettings.precision !== precision ||
+      savedSettings.prettify !== prettify
+    ) {
+      saveSettings({ plugins, precision, prettify })
+    }
   }, [plugins, precision, prettify])
 
   return {

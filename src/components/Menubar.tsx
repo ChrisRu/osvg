@@ -5,6 +5,7 @@ import { getHumanReadableBytes } from '../services/byteService'
 import { CloseIcon } from './elements/Icons'
 import { Logo } from './elements/Logo'
 import { FileSizePopup as FileSizePopupFunction } from './elements/FileSizePopup'
+import { fixFileExtension } from '../services/stringTransformService'
 
 const FileSizePopup = styled(FileSizePopupFunction)`
   z-index: 1;
@@ -50,6 +51,11 @@ const CloseButton = styled.button`
   color: #fff;
   background: transparent;
   transition: opacity 0.1s, background 0.1s;
+
+  &:focus {
+    opacity: 0.85;
+    background: rgba(255, 255, 255, 0.1);
+  }
 
   &:hover {
     opacity: 1;
@@ -159,7 +165,6 @@ interface IProps {
   onChangeView: (view: 'svg' | 'code') => void
   onClose: () => void
   onUpdateFileName: (fileName: string) => void
-  onRewriteFileName: () => void
 }
 
 export function Menubar({
@@ -170,16 +175,20 @@ export function Menubar({
   initialSVG,
   optimizedSVG,
   onUpdateFileName,
-  onRewriteFileName,
   onChangeView,
   onClose,
 }: IProps) {
   const inputCalculatorRef = useRef<HTMLInputElement>(null)
   const [inputElementWidth, setInputElementWidth] = useState<number>()
+  const [liveFileName, setLiveFileName] = useState(fileName)
+
+  useEffect(() => {
+    setLiveFileName(fileName)
+  }, [fileName])
 
   useEffect(() => {
     setInputElementWidth(inputCalculatorRef.current?.offsetWidth)
-  }, [inputCalculatorRef, fileName])
+  }, [inputCalculatorRef, liveFileName])
 
   const [diskInitialSize, gzipInitialSize] = useMemo(
     () => [getFileSize(initialSVG), getFileSizeGZIP(initialSVG)],
@@ -221,15 +230,16 @@ export function Menubar({
       ) : (
         <FileInfo>
           <FileNameInputSizeCalculator ref={inputCalculatorRef}>
-            {fileName}
+            {liveFileName}
           </FileNameInputSizeCalculator>
           <FileNameInput
+            maxLength={50}
             title="Change the filename"
             type="text"
-            defaultValue={fileName}
+            value={liveFileName}
             width={inputElementWidth}
-            onChange={(event) => onUpdateFileName(event.target.value)}
-            onBlur={onRewriteFileName}
+            onBlur={(event) => onUpdateFileName(fixFileExtension(event.target.value, 'svg'))}
+            onChange={(event) => setLiveFileName(event.currentTarget.value)}
             onKeyDown={(event) => {
               if (event.key === 'Escape' || event.key === 'Enter') {
                 const target = event.target as HTMLInputElement
