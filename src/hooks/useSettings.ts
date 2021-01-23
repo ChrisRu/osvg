@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { defaultSettings, ISetting, ISettings } from '../services/svgoSettings'
 import { updateAtIndex } from '../util/immutableHelperMethods'
 
@@ -37,16 +37,16 @@ export function useSettings() {
   const [precision, setPrecision] = useState(defaultSettings.precision)
   const [prettify, setPrettify] = useState(defaultSettings.prettify)
 
-  function updatePlugin(newPlugin: ISetting) {
+  const updatePlugin = useCallback((newPlugin: ISetting) => {
     setPlugins((plugins) => {
       const pluginIndex = plugins.findIndex((plugin) => plugin.id === newPlugin.id)
       return updateAtIndex(pluginIndex, newPlugin, plugins)
     })
-  }
+  }, [])
 
-  function togglePrettify() {
+  const togglePrettify = useCallback(() => {
     setPrettify((prettify) => !prettify)
-  }
+  }, [])
 
   useEffect(() => {
     const { plugins, prettify, precision } = getSavedSettings() || defaultSettings

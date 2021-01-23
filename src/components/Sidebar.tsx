@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react'
+import { useState, Fragment } from 'react'
 import styled from 'styled-components/macro'
 import { ISetting } from '../services/svgoSettings'
 import { capitalize } from '../services/stringTransformService'

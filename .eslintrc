@@ -27,6 +27,7 @@
     "prettier/prettier": "warn",
     "react/display-name": "off",
     "no-restricted-globals": "off",
+    "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-use-before-define": "off",
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/explicit-function-return-type": "off",

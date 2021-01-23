@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 const SAVED_THEME_KEY = 'osvg@theme'
 
@@ -45,9 +45,9 @@ export function useTheme() {
     localStorage.setItem(SAVED_THEME_KEY, themeName)
   }, [themeName])
 
-  function toggleTheme() {
+  const toggleTheme = useCallback(() => {
     setThemeName((theme) => (theme === 'light' ? 'dark' : 'light'))
-  }
+  }, [])
 
   return { theme: themes[themeName], toggleTheme, themeName }
 }

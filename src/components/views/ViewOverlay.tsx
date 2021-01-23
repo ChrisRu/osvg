@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components/macro'
 import { saveSvg } from '../../services/fileService'
 import { DownloadIcon, ThemeIcon } from '../elements/Icons'

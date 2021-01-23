@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components/macro'
 import { ViewOverlay } from './ViewOverlay'
 import { LoadingIcon } from '../elements/Icons'

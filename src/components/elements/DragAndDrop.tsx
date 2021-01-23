@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components/macro'
 import { IFileDetails, createOpenFile, onDemo, loadSVGWith } from '../../services/fileService'
 import { UploadCloadIcon } from './Icons'

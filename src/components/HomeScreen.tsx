@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import styled from 'styled-components/macro'
 import { SVGOTextLogo } from './elements/SVGOTextLogo'
 import { ErrorModal } from './elements/ErrorModal'

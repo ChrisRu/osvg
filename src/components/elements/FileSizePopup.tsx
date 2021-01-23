@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components/macro'
 import { getHumanReadableBytes } from '../../services/byteService'
 import { ArrowRightIcon } from './Icons'

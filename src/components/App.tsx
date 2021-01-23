@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import styled, { ThemeProvider } from 'styled-components/macro'
 import { Menubar } from './Menubar'
 import { Sidebar } from './Sidebar'

@@ -1,5 +1,3 @@
-import React from 'react'
-
 export function SVGOTextLogo() {
   return (
     <svg

@@ -1,11 +1,11 @@
-import React, { useContext, useRef } from 'react'
+import { lazy, Suspense, useContext, useRef } from 'react'
 import styled, { ThemeContext } from 'styled-components/macro'
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light'
 import markup from 'refractor/lang/markup'
 import darkTheme from '../../plugins/prism-themes/atom-dark'
 import lightTheme from '../../plugins/prism-themes/atom-light'
 import { IThemeContext } from '../../hooks/useTheme'
 import { ViewOverlay } from './ViewOverlay'
+import { LoadingIcon } from '../elements/Icons'
 
 const Wrapper = styled.div`
   position: relative;
@@ -16,21 +16,40 @@ const Wrapper = styled.div`
   color: ${(p) => p.theme.text};
 `
 
-const Code = styled(SyntaxHighlighter)`
-  padding: 2rem !important;
-  margin: 0 !important;
-  flex: 1;
-`
-
-SyntaxHighlighter.registerLanguage('markup', markup)
-
 interface IProps {
   optimizedSVG?: string
   fileName?: string
 }
 
+const SyntaxHighlighter = styled(
+  lazy(() =>
+    import('react-syntax-highlighter/dist/esm/prism-light').then(async (x) => {
+      x.default.registerLanguage('markup', markup)
+      return x
+    }),
+  ),
+)`
+  padding: 2rem !important;
+  margin: 0 !important;
+  flex: 1;
+`
+
+const LoadingSyntaxHighlighter = styled.div`
+  padding: 2rem;
+  font-family: monospace;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    width: 60px;
+    height: 60px;
+  }
+`
+
 export function CodeView({ optimizedSVG, fileName }: IProps) {
-  const codeRef = useRef<any>()
+  const codeRef = useRef<HTMLDivElement>(null)
   const { themeName } = useContext<IThemeContext>(ThemeContext)
 
   return (
@@ -50,9 +69,17 @@ export function CodeView({ optimizedSVG, fileName }: IProps) {
       }}
     >
       <ViewOverlay optimizedSVG={optimizedSVG} fileName={fileName} />
-      <Code language="markup" style={themeName === 'light' ? lightTheme : darkTheme}>
-        {optimizedSVG || ''}
-      </Code>
+      <Suspense
+        fallback={
+          <LoadingSyntaxHighlighter>
+            <LoadingIcon />
+          </LoadingSyntaxHighlighter>
+        }
+      >
+        <SyntaxHighlighter language="markup" style={themeName === 'light' ? lightTheme : darkTheme}>
+          {optimizedSVG || ''}
+        </SyntaxHighlighter>
+      </Suspense>
     </Wrapper>
   )
 }

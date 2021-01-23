@@ -1,4 +1,4 @@
-import React from 'react'
+import { StrictMode } from 'react'
 import ReactDOM from 'react-dom'
 import { createGlobalStyle } from 'styled-components/macro'
 import { Normalize } from 'styled-normalize'
@@ -21,11 +21,11 @@ const GlobalStyle = createGlobalStyle`
 `
 
 ReactDOM.render(
-  <React.StrictMode>
+  <StrictMode>
     <Normalize />
     <GlobalStyle />
     <App />
-  </React.StrictMode>,
+  </StrictMode>,
   document.getElementById('root'),
 )
 

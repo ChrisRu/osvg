@@ -1,5 +1,3 @@
-import React from 'react'
-
 interface IProps {
   fill?: string
 }
@@ -69,7 +67,7 @@ export function Logo({ fill }: IProps) {
         />
       </mask>
       <g mask="url(#osvg-logo-mask)">
-        <circle cx="50" cy="50" r="50" fill={fill ? fill : 'url(#osvg-logo-gradient)'} />
+        <circle cx="50" cy="50" r="50" fill={fill || 'url(#osvg-logo-gradient)'} />
       </g>
       <defs>
         <linearGradient

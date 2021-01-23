@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components/macro'
 import { SVGToDataUri } from '../../services/svgService'
 import { PanAndZoom } from '../elements/PanAndZoom'
