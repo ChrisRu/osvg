@@ -12,7 +12,6 @@ import {
   createOpenFile,
 } from '../services/fileService'
 import { LoadingIcon } from './elements/Icons'
-import { getSVGTitle } from '../services/svgService'
 import { getRandomTip } from '../util/tips'
 
 const HomeWrapper = styled.div<{ fade: boolean }>`

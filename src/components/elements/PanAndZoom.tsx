@@ -31,7 +31,7 @@ interface IProps {
 }
 
 export function PanAndZoom({ children }: IProps) {
-  const lastPoints = useRef<Coordinates[]>([])
+  const lastPoints = useRef<Coordinates[]>()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const itemRef = useRef<HTMLDivElement>(null)
 
@@ -99,7 +99,10 @@ export function PanAndZoom({ children }: IProps) {
 
       const points = getPoints(event)
       const averagePoint = points.reduce(getMidpoint)
-      const averageLastPoint = lastPoints.current.reduce(getMidpoint)
+      const averageLastPoint =
+        lastPoints.current === undefined
+          ? [averagePoint[0] - dX, averagePoint[1] - dY]
+          : lastPoints.current.reduce(getMidpoint)
 
       setDX((dX) => dX + averagePoint[0] - averageLastPoint[0])
       setDY((dY) => dY + averagePoint[1] - averageLastPoint[1])
