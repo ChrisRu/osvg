@@ -101,7 +101,7 @@ export function PanAndZoom({ children }: IProps) {
       const averagePoint = points.reduce(getMidpoint)
       const averageLastPoint =
         lastPoints.current === undefined
-          ? [averagePoint[0] - dX, averagePoint[1] - dY]
+          ? [averagePoint[0], averagePoint[1]]
           : lastPoints.current.reduce(getMidpoint)
 
       setDX((dX) => dX + averagePoint[0] - averageLastPoint[0])
