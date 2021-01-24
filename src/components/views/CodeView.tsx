@@ -1,9 +1,8 @@
 import { lazy, Suspense, useContext, useRef } from 'react'
 import styled, { ThemeContext } from 'styled-components/macro'
-import markup from 'refractor/lang/markup'
 import darkTheme from '../../plugins/prism-themes/atom-dark'
 import lightTheme from '../../plugins/prism-themes/atom-light'
-import { IThemeContext } from '../../hooks/useTheme'
+import type { IThemeContext } from '../../hooks/useTheme'
 import { ViewOverlay } from './ViewOverlay'
 import { LoadingIcon } from '../elements/Icons'
 
@@ -22,14 +21,7 @@ interface IProps {
   fileName?: string
 }
 
-const SyntaxHighlighter = styled(
-  lazy(() =>
-    import('react-syntax-highlighter/dist/esm/prism-light').then(async (x) => {
-      x.default.registerLanguage('markup', markup)
-      return x
-    }),
-  ),
-)`
+const SyntaxHighlighter = styled(lazy(() => import('../elements/MarkupHighlighter')))`
   padding: 2rem !important;
   margin: 0 !important;
   flex: 1;
@@ -77,7 +69,7 @@ export function CodeView({ optimizedSVG, fileName }: IProps) {
           </LoadingSyntaxHighlighter>
         }
       >
-        <SyntaxHighlighter language="markup" style={themeName === 'light' ? lightTheme : darkTheme}>
+        <SyntaxHighlighter style={themeName === 'light' ? lightTheme : darkTheme}>
           {optimizedSVG || ''}
         </SyntaxHighlighter>
       </Suspense>

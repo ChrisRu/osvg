@@ -1,10 +1,15 @@
-import { useContext } from 'react'
-import styled, { ThemeContext } from 'styled-components/macro'
-import { saveSvg } from '../../services/fileService'
-import { ClipboardIcon, DownloadIcon, ThemeIcon } from '../elements/Icons'
-import { IThemeContext } from '../../hooks/useTheme'
+import { useCallback, useContext, useReducer } from 'react'
+import styled, { css, ThemeContext } from 'styled-components/macro'
+import { saveSVG } from '../../services/fileService'
+import {
+  CheckMarkIcon,
+  ClipboardIcon,
+  DownloadIcon,
+  LoadingIcon,
+  ThemeIcon,
+} from '../elements/Icons'
+import type { IThemeContext } from '../../hooks/useTheme'
 import { defaultFileName } from '../App'
-import { convertHtmlToJSX } from '../../services/htmlToJSXService'
 
 const Wrapper = styled.div`
   position: absolute;
@@ -52,10 +57,12 @@ const ExportButtons = styled.div`
   flex-direction: column;
 `
 
-const ExportButton = styled.button`
+const ExportButton = styled.button<{ success?: boolean }>`
+  position: relative;
   background: #3a3a3a;
   padding: 0.5rem 1rem;
   margin-top: 0.5rem;
+  height: 40px;
   color: #fff;
   border: 0;
   display: flex;
@@ -81,6 +88,31 @@ const ExportButton = styled.button`
   &:hover {
     background-color: #565656;
   }
+
+  &:before {
+    opacity: 0;
+    transition: opacity 0.1s;
+    content: '';
+    display: block;
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    left: 1px;
+    right: 1px;
+    border: 2px solid #51b851;
+  }
+
+  ${(props) =>
+    props.success &&
+    css`
+      svg {
+        color: #4dd14d;
+      }
+
+      &:before {
+        opacity: 1;
+      }
+    `}
 `
 
 interface IProps {
@@ -97,18 +129,80 @@ function copyToClipboard(content: string) {
   document.body.removeChild(textArea)
 }
 
-async function copySvg(content: string, jsx = false) {
-  if (jsx) {
-    copyToClipboard(await convertHtmlToJSX(content))
-  } else {
-    copyToClipboard(content)
+interface CopyingState {
+  copying: boolean
+  done: boolean
+}
+
+function copyReducer(state: CopyingState, action: 'copying' | 'done' | 'clear'): CopyingState {
+  switch (action) {
+    case 'copying':
+      return {
+        copying: true,
+        done: false,
+      }
+    case 'done':
+      if (state.copying && !state.done) {
+        return {
+          copying: false,
+          done: true,
+        }
+      }
+      break
+    case 'clear':
+      if (!state.copying) {
+        return {
+          copying: false,
+          done: false,
+        }
+      }
   }
 
-  alert(`Copied ${jsx ? 'JSX' : 'SVG'} to clipboard`)
+  return state
 }
+
+const getInitialCopyState = (): CopyingState => ({ copying: false, done: false })
 
 export function ViewOverlay({ fileName, optimizedSVG }: IProps) {
   const { toggleTheme } = useContext<IThemeContext>(ThemeContext)
+  const [copyingSVG, dispatchCopyingSVG] = useReducer(copyReducer, getInitialCopyState())
+  const [copyingJSX, dispatchCopyingJSX] = useReducer(copyReducer, getInitialCopyState())
+
+  const copyJSX = useCallback(async function (content: string) {
+    try {
+      dispatchCopyingJSX('copying')
+
+      await new Promise((r) => setTimeout(r, 1000))
+      const service = await import('../../services/htmlToJSXService')
+      const jsx = service.convertHtmlToJSX(content)
+      copyToClipboard(jsx)
+
+      dispatchCopyingJSX('done')
+
+      setTimeout(() => {
+        dispatchCopyingJSX('clear')
+      }, 1500)
+    } catch (error) {
+      console.error('Failed copying JSX to clipboard', error)
+      dispatchCopyingJSX('clear')
+    }
+  }, [])
+
+  const copySVG = useCallback(async function (content: string) {
+    try {
+      dispatchCopyingSVG('copying')
+      copyToClipboard(content)
+
+      dispatchCopyingSVG('done')
+
+      setTimeout(() => {
+        dispatchCopyingSVG('clear')
+      }, 1500)
+    } catch (error) {
+      console.error('Failed copying SVG to clipboard', error)
+      dispatchCopyingSVG('clear')
+    }
+  }, [])
 
   return (
     <Wrapper>
@@ -119,21 +213,35 @@ export function ViewOverlay({ fileName, optimizedSVG }: IProps) {
         <ExportButtons>
           <ExportButton
             title="Copy content of the SVG to your clipboard"
-            onClick={() => copySvg(optimizedSVG)}
+            success={copyingSVG.done}
+            onClick={() => copySVG(optimizedSVG)}
           >
-            <ClipboardIcon />
+            {copyingSVG.copying ? (
+              <LoadingIcon />
+            ) : copyingSVG.done ? (
+              <CheckMarkIcon />
+            ) : (
+              <ClipboardIcon />
+            )}
             <span>Copy SVG</span>
           </ExportButton>
           <ExportButton
             title="Copy content of the SVG as JSX to your clipboard"
-            onClick={() => copySvg(optimizedSVG, true)}
+            success={copyingJSX.done}
+            onClick={() => copyJSX(optimizedSVG)}
           >
-            <ClipboardIcon />
+            {copyingJSX.copying ? (
+              <LoadingIcon />
+            ) : copyingJSX.done ? (
+              <CheckMarkIcon />
+            ) : (
+              <ClipboardIcon />
+            )}
             <span>Copy JSX</span>
           </ExportButton>
           <ExportButton
             title="Download the SVG to your local filesystem"
-            onClick={() => saveSvg(optimizedSVG, fileName || defaultFileName)}
+            onClick={() => saveSVG(optimizedSVG, fileName || defaultFileName)}
           >
             <DownloadIcon />
             <span>Download</span>

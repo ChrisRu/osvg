@@ -1,6 +1,6 @@
 import { useState, Fragment } from 'react'
 import styled from 'styled-components/macro'
-import { ISetting } from '../services/svgoSettings'
+import type { ISetting } from '../services/svgoSettings'
 import { capitalize } from '../services/stringTransformService'
 import { Checkbox } from './elements/Checkbox'
 import { SearchIcon } from './elements/Icons'

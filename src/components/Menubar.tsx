@@ -4,10 +4,10 @@ import { getFileSizeGZIP, getFileSize } from '../services/fileSizeService'
 import { getHumanReadableBytes } from '../services/byteService'
 import { CloseIcon } from './elements/Icons'
 import { Logo } from './elements/Logo'
-import { FileSizePopup as FileSizePopupFunction } from './elements/FileSizePopup'
+import { FileSizePopup } from './elements/FileSizePopup'
 import { fixFileExtension } from '../services/stringTransformService'
 
-const FileSizePopup = styled(FileSizePopupFunction)`
+const CustomFileSizePopup = styled(FileSizePopup)`
   z-index: 1;
   display: none;
   margin-top: 2rem;
@@ -132,7 +132,7 @@ const FileDetails = styled.span`
   position: relative;
 
   &:hover {
-    ${FileSizePopup} {
+    ${CustomFileSizePopup} {
       display: table;
     }
   }
@@ -249,7 +249,7 @@ export function Menubar({
           />
           {!loading ? (
             <FileDetails>
-              <FileSizePopup
+              <CustomFileSizePopup
                 gzipInitialSize={gzipInitialSize}
                 gzipOptimizedSize={gzipOptimizedSize}
                 diskInitialSize={diskInitialSize}

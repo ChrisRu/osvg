@@ -13,7 +13,7 @@ import { useTheme } from '../hooks/useTheme'
 import * as svgoWorkerFile from 'workerize-loader!../services/svgo.worker'
 /* eslint-enable */
 import { IFileDetails, loadSVGWith, createOpenFile } from '../services/fileService'
-import { saveSvg } from '../services/fileService'
+import { saveSVG } from '../services/fileService'
 import { ISettings } from '../services/svgoSettings'
 import { getSVGTitle } from '../services/svgService'
 
@@ -165,7 +165,7 @@ export function App() {
       if (event.ctrlKey && event.key === 's') {
         if (state.optimizedSVG) {
           event.preventDefault()
-          saveSvg(state.optimizedSVG, state.fileName || defaultFileName)
+          saveSVG(state.optimizedSVG, state.fileName || defaultFileName)
         }
 
         return
@@ -197,7 +197,7 @@ export function App() {
     }
   }, [state.fileName, state.optimizedSVG])
 
-  const preloadSvg = useCallback((fileDetails: IFileDetails | undefined) => {
+  const preloadSVG = useCallback((fileDetails: IFileDetails | undefined) => {
     if (fileDetails) {
       dispatch({
         type: 'load-file',
@@ -228,7 +228,7 @@ export function App() {
         <HomeScreen
           loading={state.optimizing}
           error={state.error}
-          onPreloadSVG={preloadSvg}
+          onPreloadSVG={preloadSVG}
           onReset={reset}
         />
       ) : (

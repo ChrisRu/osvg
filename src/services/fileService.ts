@@ -50,7 +50,7 @@ export function openFile(files: FileList | null) {
   })
 }
 
-export function saveSvg(image: string, imageName: string) {
+export function saveSVG(image: string, imageName: string) {
   const svgBlob = new Blob([image], { type: 'image/svg+xml;charset=utf-8' })
   const svgUrl = URL.createObjectURL(svgBlob)
 

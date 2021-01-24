@@ -6,7 +6,7 @@
 
 A GUI for optimizing your SVGs online using [SVGO](https://github.com/svg/svgo).
 
-Try it out at: https://osvg.netlify.com
+Try it out at: https://osvg.netlify.app
 
 ## Setup
 
