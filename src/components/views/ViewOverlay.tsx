@@ -172,7 +172,6 @@ export function ViewOverlay({ fileName, optimizedSVG }: IProps) {
     try {
       dispatchCopyingJSX('copying')
 
-      await new Promise((r) => setTimeout(r, 1000))
       const service = await import('../../services/htmlToJSXService')
       const jsx = service.convertHtmlToJSX(content)
       copyToClipboard(jsx)
