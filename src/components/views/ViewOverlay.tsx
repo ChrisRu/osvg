@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useReducer } from 'react'
+import { useCallback, useContext, useReducer } from 'react'
 import styled, { css, ThemeContext } from 'styled-components/macro'
 import { saveSVG } from '../../services/fileService'
 import {
