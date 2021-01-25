@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom'
 import { createGlobalStyle } from 'styled-components/macro'
 import { Normalize } from 'styled-normalize'
 import { App } from './components/App'
-import * as serviceWorker from './services/serviceWorker'
+import { makeToast } from './components/Toastie'
+import * as serviceWorker from './serviceWorkerRegistration'
 
 const GlobalStyle = createGlobalStyle`
   html, body {
@@ -29,4 +30,6 @@ ReactDOM.render(
   document.getElementById('root'),
 )
 
-serviceWorker.register()
+serviceWorker.register({
+  onSuccess: () => makeToast('App now works offline!'),
+})

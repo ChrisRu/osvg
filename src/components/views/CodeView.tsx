@@ -19,9 +19,10 @@ interface IProps {
   optimizing: boolean
   optimizedSVG?: string
   fileName?: string
+  pretty?: boolean
 }
 
-const SyntaxHighlighter = styled(lazy(() => import('../elements/MarkupHighlighter')))`
+const MarkupHighlighter = styled(lazy(() => import('../elements/MarkupHighlighter')))`
   padding: 2rem !important;
   margin: 0 !important;
   flex: 1;
@@ -41,7 +42,7 @@ const LoadingSyntaxHighlighter = styled.div`
   }
 `
 
-export function CodeView({ optimizedSVG, fileName }: IProps) {
+export function CodeView({ optimizedSVG, pretty, fileName }: IProps) {
   const codeRef = useRef<HTMLDivElement>(null)
   const { themeName } = useContext<IThemeContext>(ThemeContext)
 
@@ -69,9 +70,9 @@ export function CodeView({ optimizedSVG, fileName }: IProps) {
           </LoadingSyntaxHighlighter>
         }
       >
-        <SyntaxHighlighter style={themeName === 'light' ? lightTheme : darkTheme}>
+        <MarkupHighlighter style={themeName === 'light' ? lightTheme : darkTheme} pretty={pretty}>
           {optimizedSVG || ''}
-        </SyntaxHighlighter>
+        </MarkupHighlighter>
       </Suspense>
     </Wrapper>
   )

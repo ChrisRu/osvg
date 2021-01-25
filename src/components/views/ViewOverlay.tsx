@@ -1,4 +1,4 @@
-import { useCallback, useContext, useReducer } from 'react'
+import { useCallback, useContext, useEffect, useReducer } from 'react'
 import styled, { css, ThemeContext } from 'styled-components/macro'
 import { saveSVG } from '../../services/fileService'
 import {
@@ -10,6 +10,7 @@ import {
 } from '../elements/Icons'
 import type { IThemeContext } from '../../hooks/useTheme'
 import { defaultFileName } from '../App'
+import { copyToClipboard } from '../../services/copy'
 
 const Wrapper = styled.div`
   position: absolute;
@@ -118,15 +119,6 @@ const ExportButton = styled.button<{ success?: boolean }>`
 interface IProps {
   fileName?: string
   optimizedSVG?: string
-}
-
-function copyToClipboard(content: string) {
-  const textArea = document.createElement('textarea')
-  textArea.value = content
-  document.body.appendChild(textArea)
-  textArea.select()
-  document.execCommand('copy')
-  document.body.removeChild(textArea)
 }
 
 interface CopyingState {

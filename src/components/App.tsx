@@ -16,6 +16,7 @@ import { IFileDetails, loadSVGWith, createOpenFile } from '../services/fileServi
 import { saveSVG } from '../services/fileService'
 import { ISettings } from '../services/svgoSettings'
 import { getSVGTitle } from '../services/svgService'
+import { Toastie } from './Toastie'
 
 const Main = styled.main`
   position: relative;
@@ -224,6 +225,7 @@ export function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <Toastie />
       {!state.optimizedOnce || !state.initialSVG || state.error ? (
         <HomeScreen
           loading={state.optimizing}
@@ -264,6 +266,7 @@ export function App() {
                 optimizing={state.optimizing}
                 optimizedSVG={state.optimizedSVG}
                 fileName={state.fileName}
+                pretty={prettify}
               />
             )}
           </Main>

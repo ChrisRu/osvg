@@ -13,6 +13,7 @@ import {
 } from '../services/fileService'
 import { LoadingIcon } from './elements/Icons'
 import { getRandomTip } from '../util/tips'
+import { useInterval } from '../hooks/useInterval'
 
 const HomeWrapper = styled.div<{ fade: boolean }>`
   position: relative;
@@ -93,6 +94,7 @@ const Tip = styled.div`
   right: 1rem;
   margin-left: 1rem;
   background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
   padding: 0.5rem 1rem;
   font-size: 1.2rem;
 
@@ -173,7 +175,11 @@ export function HomeScreen({ loading, error, onPreloadSVG, onReset }: IProps) {
   // Dragging is a number, because drag leave events are triggered
   // when hovering over a transitioning element.
   const [dragging, setDragging] = useState(0)
-  const tip = useMemo(() => getRandomTip(), [])
+  const [tip, setTip] = useState(() => getRandomTip())
+
+  useInterval(() => {
+    setTip(getRandomTip())
+  }, 8000)
 
   const loadSVGWithAnimation = useCallback(
     async (file?: IFileDetails) => {

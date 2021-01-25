@@ -4,9 +4,13 @@ import type { SyntaxHighlighterProps } from 'react-syntax-highlighter'
 
 SyntaxHighlighter.registerLanguage('markup', markup)
 
-export default function MarkupHighlighter({ children, ...props }: SyntaxHighlighterProps) {
+export default function MarkupHighlighter({
+  children,
+  pretty,
+  ...props
+}: SyntaxHighlighterProps & { pretty?: boolean }) {
   return (
-    <SyntaxHighlighter language="markup" {...props}>
+    <SyntaxHighlighter language="markup" wrapLongLines={!pretty} {...props}>
       {children}
     </SyntaxHighlighter>
   )
